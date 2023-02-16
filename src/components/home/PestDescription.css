@@ -1,0 +1,177 @@
+.con{
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+.desc_container h1{
+    text-align: center;
+}
+.child1 h3,.header1{
+    color: rgb(201, 104, 25);
+}
+.desc_container{
+    width: 95%;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    /* align-items: center; */
+}
+
+.desc_container .child1{
+    margin-top: 2rem;
+    margin-bottom: 20px;
+}
+.child1 p{
+    font-size: smaller;
+    /* font-size: 3vmin; */
+}
+
+.admin textarea{
+    resize: none;
+    width: 100%;
+    height: 15vh;
+    border-radius: 10px;
+    padding: 7px;
+    border: none;
+    transition: 0.2s ;
+    border: 1px solid rgb(175, 175, 175);
+}
+textarea:focus{
+    outline: none !important;
+   border: 2px solid rgb(58, 159, 253);
+}
+.editSaveCon{
+    position: absolute;
+    z-index: 10;
+    right: 20px;
+    display: flex;
+    top: 10px;
+}
+.editSave{
+    width: 5em;
+    padding: 10px;
+    border: 2px solid rgb(63, 63, 63);
+    background-color: transparent;
+    font-weight: bolder;
+    color: rgb(34, 34, 34);
+    border-radius: 5px;
+    text-transform: uppercase;
+    transition: 0.6s;
+    margin-right: 1.5em;
+}
+.save{
+    color: rgb(238, 238, 238);
+    border: none;
+    background-color: rgb(33, 131, 33);
+}
+.save:hover{
+    cursor: pointer;
+    background-color: rgb(22, 94, 22);
+}
+.edit:hover{
+    cursor: pointer;
+    background-color: rgb(101, 60, 168);
+}
+
+.editSave:hover{
+    border: none;
+    color: white;
+}
+#noData{
+    width:40%;
+    height:80vh;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+   
+}
+.error{
+    background-color: rgba(209, 209, 209, 0.26);
+    padding: 6em;
+    width: 80%;
+    margin: auto;
+    border-radius: 15px;
+    /* box-shadow: rgba(0, 0, 0, 0.178) 0px 2px 4px 3px inset; */
+    /* box-shadow: -15px -15px 15px rgba(255, 255, 255, 0.2),
+                 15px 15px 15px rgba(0, 0, 0, 0.1) ; */
+     box-shadow: -15px -15px 15px rgba(255, 255, 255, 0.3),
+                 5px 5px 5px rgba(0, 0, 0, 0.1),
+                 inset  -5px -5px 5px rgba(255, 255, 255, 0.2),
+                 inset  5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+.error:hover{
+    cursor: not-allowed;
+}
+#noData h2{
+    color: #808080;
+}
+#noData p{
+    color: #7e7e7e;
+}
+.location{
+    border-radius: 5px;
+    background-color: rgb(243, 243, 243);
+    width: 90%;
+    margin: auto;
+    text-align: center;
+}
+.helpImprove h4{
+    font-size: larger;
+    margin: 10px 0;
+    color: rgb(70, 27, 139)
+}
+.helpful{
+    color: rgb(101, 60, 168);
+    border: 1px solid rgb(216, 216, 216);
+    background-color: rgb(236, 236, 236);
+    padding: 10px;
+    border-radius: 7px;
+    display: inline-block;
+    margin: 2em auto;
+    display: flex;
+    box-shadow: rgba(8, 8, 8, 0.562) 2px 2px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+    /* box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset; */
+    /* box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset; */
+}
+
+.helpful p,button{
+    margin-right: 1em;
+}
+.helpful button{
+    border-radius: 5px;
+    padding: 1px 5px;
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+    color: rgb(13, 171, 219);
+}
+.helpful button:hover{
+    cursor: pointer;
+    background-color: rgba(158, 157, 157, 0.4);
+}
+button:disabled,
+button[disabled]{
+  color: #666666;
+}
+button:disabled,
+button[disabled]:hover{
+ cursor: not-allowed;
+}
+@media only screen and (max-width: 900px) {
+    .desc_container h1{
+        text-align: left;
+    }
+    #noData{
+        width:70%;
+    }
+    .location{
+        width: 100%;
+    }
+    .child1 p{
+        line-height: 2rem;
+    }
+   }
+ 

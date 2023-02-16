@@ -19,7 +19,8 @@ const Header = ({ open, handleDrawerToggle }) => {
 
     const iconBackColor = 'grey.100';
     const iconBackColorOpen = 'grey.200';
-
+    console.log(process.env.REACT_APP_API_URL)
+        ;
     // common header
     const mainHeader = (
         <Toolbar>

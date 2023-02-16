@@ -1,0 +1,33 @@
+.leaflet-container{
+    height: 600px;
+    width:98%;
+    margin: 1%;
+}
+.latlngSubmit{
+    width: 20%;
+    margin: 0 1% 1% 1%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color:  rgb(101, 60, 168);
+    border: none;
+    color: rgb(235, 235, 235);
+    transition: 0.2s all ease-in-out;
+}
+.latlngSubmit:hover{
+    cursor: pointer;
+    outline: none;
+    background-color: rgb(70, 27, 139) ;
+}
+@media only screen and (max-width: 900px) {
+    .leaflet-container{
+        height: 400px;
+        width:99%;
+        
+    }
+    .latlngSubmit{
+        width: 98%;
+        background-color:  rgb(101, 60, 168);
+        color: white;
+        margin-bottom: 5px;
+    }
+   }

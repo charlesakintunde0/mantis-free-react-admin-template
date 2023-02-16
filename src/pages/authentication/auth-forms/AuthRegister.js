@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { Navigate } from 'react-router-dom'
 
 // material-ui
 import {
@@ -21,6 +22,12 @@ import {
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import { Flip, Slide, toast, Zoom } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Config from "../../../config";
+
+
+
 
 // project import
 import FirebaseSocial from './FirebaseSocial';
@@ -29,12 +36,18 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+toast.configure()
 
 // ============================|| FIREBASE - REGISTER ||============================ //
 
 const AuthRegister = () => {
     const [level, setLevel] = useState();
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setConfirmShowPassword] = useState(false);
+    const [navigate, setNavigate] = useState(false);
+    const handleClickConfirmShowPassword = () => {
+        setConfirmShowPassword(!showConfirmPassword);
+    };
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -42,6 +55,10 @@ const AuthRegister = () => {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+
+    const handleMouseDownConfirmPassword = (event) => {
+        event.preventDefault();
+    }
 
     const changePassword = (value) => {
         const temp = strengthIndicator(value);
@@ -52,6 +69,11 @@ const AuthRegister = () => {
         changePassword('');
     }, []);
 
+
+    if (navigate) // REDIRECT TO LOGIN PAGE AFTER BEING SUCCESSFULLY REGISTERED
+    {
+        return <Navigate to="/login" />
+    }
     return (
         <>
             <Formik
@@ -59,18 +81,53 @@ const AuthRegister = () => {
                     firstname: '',
                     lastname: '',
                     email: '',
-                    company: '',
                     password: '',
+                    confirmPassword: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
                     firstname: Yup.string().max(255).required('First Name is required'),
                     lastname: Yup.string().max(255).required('Last Name is required'),
                     email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-                    password: Yup.string().max(255).required('Password is required')
+                    password: Yup.string().max(255).required('Password is required'),
+                    confirmPassword: Yup.string()
+                        .oneOf([Yup.ref('password'), null], 'Passwords must match')
+                        .required('Confirm Password is Required'),
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
+                        const res = await fetch(Config.REGISTRATION, {
+                            method: 'POST',
+                            headers: { "Content-Type": 'application/json;charset=UTF-8' },
+                            body: JSON.stringify({
+                                firstname: values.firstname,
+                                lastname: values.lastname,
+                                email: values.email,
+                                password: values.password
+                            })
+                        });
+                        const content = await res.json();
+
+                        if (res.status === 400) // If the email is already taken 
+                        {
+                            toast.error(content.message, {
+                                position: toast.POSITION.TOP_CENTER,
+                                hideProgressBar: true,
+                                transition: Zoom,
+                                autoClose: true,
+                            });
+                        }
+                        else if (res.status === 200) // SUCCESSFULLY REGISTERED
+                        {
+                            toast.success(content.message, {
+                                position: toast.POSITION.TOP_CENTER,
+                                hideProgressBar: true,
+                                transition: Zoom,
+                                autoClose: true,
+                            });
+
+                            setNavigate(true);
+                        }
                         setStatus({ success: false });
                         setSubmitting(false);
                     } catch (err) {
@@ -123,27 +180,6 @@ const AuthRegister = () => {
                                     {touched.lastname && errors.lastname && (
                                         <FormHelperText error id="helper-text-lastname-signup">
                                             {errors.lastname}
-                                        </FormHelperText>
-                                    )}
-                                </Stack>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Stack spacing={1}>
-                                    <InputLabel htmlFor="company-signup">Company</InputLabel>
-                                    <OutlinedInput
-                                        fullWidth
-                                        error={Boolean(touched.company && errors.company)}
-                                        id="company-signup"
-                                        value={values.company}
-                                        name="company"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        placeholder="Demo Inc."
-                                        inputProps={{}}
-                                    />
-                                    {touched.company && errors.company && (
-                                        <FormHelperText error id="helper-text-company-signup">
-                                            {errors.company}
                                         </FormHelperText>
                                     )}
                                 </Stack>
@@ -207,6 +243,7 @@ const AuthRegister = () => {
                                         </FormHelperText>
                                     )}
                                 </Stack>
+
                                 <FormControl fullWidth sx={{ mt: 2 }}>
                                     <Grid container spacing={2} alignItems="center">
                                         <Grid item>
@@ -220,47 +257,88 @@ const AuthRegister = () => {
                                     </Grid>
                                 </FormControl>
                             </Grid>
+
                             <Grid item xs={12}>
-                                <Typography variant="body2">
-                                    By Signing up, you agree to our &nbsp;
-                                    <Link variant="subtitle2" component={RouterLink} to="#">
-                                        Terms of Service
-                                    </Link>
-                                    &nbsp; and &nbsp;
-                                    <Link variant="subtitle2" component={RouterLink} to="#">
-                                        Privacy Policy
-                                    </Link>
-                                </Typography>
-                            </Grid>
-                            {errors.submit && (
-                                <Grid item xs={12}>
-                                    <FormHelperText error>{errors.submit}</FormHelperText>
-                                </Grid>
-                            )}
-                            <Grid item xs={12}>
-                                <AnimateButton>
-                                    <Button
-                                        disableElevation
-                                        disabled={isSubmitting}
+                                <Stack spacing={1}>
+                                    <InputLabel htmlFor="confirmPassword-signup">Confirm Password</InputLabel>
+                                    <OutlinedInput
                                         fullWidth
-                                        size="large"
-                                        type="submit"
-                                        variant="contained"
-                                        color="primary"
-                                    >
-                                        Create Account
-                                    </Button>
-                                </AnimateButton>
+                                        error={Boolean(touched.confirmPassword && errors.confirmPassword)}
+                                        id="confirmPassword-signup"
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        value={values.confirmPassword}
+                                        name="confirmPassword"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickConfirmShowPassword}
+                                                    onMouseDown={handleMouseDownConfirmPassword}
+                                                    edge="end"
+                                                    size="large"
+                                                >
+                                                    {showConfirmPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                        placeholder="******"
+                                        inputProps={{}}
+                                    />
+                                    {touched.confirmPassword && errors.confirmPassword && (
+                                        <FormHelperText error id="helper-text-password-signup">
+                                            {errors.confirmPassword}
+                                        </FormHelperText>
+                                    )}
+                                </Stack>
                             </Grid>
-                            <Grid item xs={12}>
-                                <Divider>
-                                    <Typography variant="caption">Sign up with</Typography>
-                                </Divider>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <FirebaseSocial />
-                            </Grid>
+
                         </Grid>
+
+
+
+                        <Grid item xs={12}>
+                            <Typography variant="body2">
+                                By Signing up, you agree to our &nbsp;
+                                <Link variant="subtitle2" component={RouterLink} to="#">
+                                    Terms of Service
+                                </Link>
+                                &nbsp; and &nbsp;
+                                <Link variant="subtitle2" component={RouterLink} to="#">
+                                    Privacy Policy
+                                </Link>
+                            </Typography>
+                        </Grid>
+                        {errors.submit && (
+                            <Grid item xs={12}>
+                                <FormHelperText error>{errors.submit}</FormHelperText>
+                            </Grid>
+                        )}
+                        <Grid item xs={12}>
+                            <AnimateButton>
+                                <Button
+                                    disableElevation
+                                    disabled={isSubmitting}
+                                    fullWidth
+                                    size="large"
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Create Account
+                                </Button>
+                            </AnimateButton>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Divider>
+                                <Typography variant="caption">Sign up with</Typography>
+                            </Divider>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FirebaseSocial />
+                        </Grid>
+
                     </form>
                 )}
             </Formik>
