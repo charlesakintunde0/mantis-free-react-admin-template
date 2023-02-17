@@ -7,6 +7,10 @@ import { Grid, Stack, Typography } from '@mui/material';
 import FirebaseRegister from './auth-forms/AuthRegister';
 import AuthWrapper from './AuthWrapper';
 
+
+
+
+
 // ================================|| REGISTER ||================================ //
 
 const Register = () => (
