@@ -8,6 +8,13 @@ export const userApi = createApi({
         baseUrl: "https://localhost:44361/api/users/"
     }),
     endpoints: (builder) => ({
+        getAllUsers: builder.query({
+            query: () => ({
+                url: "getAll",
+                params: {},
+                method: "GET"
+            })
+        }),
         getUser: builder.query({
             query: () => ({
                 url: "getuser",
@@ -15,29 +22,43 @@ export const userApi = createApi({
                 method: "GET",
             }),
         }),
-        registerUser: builder.query({
-            query: (user) => ({
-                url: "register",
-                body: user,
-                method: "POST",
-            }),
-        }),
-        logIn: builder.query({
-            query: (user) => ({
+        userLogin: builder.mutation({
+            query: (userData) => ({
                 url: "login",
-                body: user,
                 method: "POST",
+                headers: {
+                    "Content-Type": 'application/json;charset=UTF-8',
+                },
+                credentials: 'include',
+                body: userData
             }),
         }),
-        logOut: builder.query({
-            query: (user) => ({
-                url: "logout",
-                body: user,
-                method: "POST",
+        changeUserRole: builder.mutation({
+            query: (userData) => ({
+                url: `updateuserrole/${userData.UId}`,
+                method: "PUT",
+                headers: {
+                    "Content-Type": 'application/json;charset=UTF-8',
+                },
+                body: JSON.stringify(userData.URole),
+
+
             }),
         }),
+        registerUser: builder.mutation({
+            query: (userData) => ({
+                url: "register",
+                method: "POST",
+                headers: {
+                    "Content-Type": 'application/json;charset=UTF-8',
+                },
+                credentials: 'include',
+                body: userData
+            }),
+        }),
+
     }),
 });
 
 
-export const { useLogOutMutation } = userApi;
+export const { useGetAllUsersQuery, useChangeUserRoleMutation, useUserLoginMutation, useRegisterUserMutation } = userApi;
