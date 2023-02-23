@@ -3,6 +3,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import { commentApi, cropApi, coordinatesApi, pestApi, userApi, weedApi, cropsPestApi } from '../api';
 
 import menu from './reducers/menu';
+import auth from './reducers/auth';
+import user from './reducers/user';
+
 
 
 // project import
@@ -19,11 +22,20 @@ const store = configureStore({
         [userApi.reducerPath]: userApi.reducer,
         [weedApi.reducerPath]: weedApi.reducer,
         [cropsPestApi.reducerPath]: cropsPestApi.reducer,
-        menu
+        menu,
+        auth,
+        user,
 
 
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(cropApi.middleware, commentApi.middleware, coordinatesApi.middleware, pestApi.middleware, userApi.middleware, weedApi.middleware, cropsPestApi.middleware),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().
+        concat(cropApi.middleware)
+        .concat(commentApi.middleware)
+        .concat(coordinatesApi.middleware)
+        .concat(pestApi.middleware)
+        .concat(userApi.middleware)
+        .concat(weedApi.middleware)
+        .concat(cropsPestApi.middleware)
 
 });
 

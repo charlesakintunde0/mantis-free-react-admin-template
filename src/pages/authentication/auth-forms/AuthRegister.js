@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Navigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 // material-ui
 import {
@@ -25,6 +25,7 @@ import { Formik } from 'formik';
 import { Flip, Slide, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Config from "../../../config";
+import { useRegisterUserMutation } from 'api/userApi';
 
 
 
@@ -38,13 +39,25 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 toast.configure()
 
+
 // ============================|| FIREBASE - REGISTER ||============================ //
 
 const AuthRegister = () => {
     const [level, setLevel] = useState();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setConfirmShowPassword] = useState(false);
-    const [navigate, setNavigate] = useState(false);
+    const [registerUser] = useRegisterUserMutation();
+    const navigate = useNavigate();
+    const initialValues = {
+        firstname: '',
+        lastname: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        submit: null
+    }
+
+
     const handleClickConfirmShowPassword = () => {
         setConfirmShowPassword(!showConfirmPassword);
     };
@@ -68,23 +81,10 @@ const AuthRegister = () => {
     useEffect(() => {
         changePassword('');
     }, []);
-
-
-    if (navigate) // REDIRECT TO LOGIN PAGE AFTER BEING SUCCESSFULLY REGISTERED
-    {
-        return <Navigate to="/login" />
-    }
     return (
         <>
             <Formik
-                initialValues={{
-                    firstname: '',
-                    lastname: '',
-                    email: '',
-                    password: '',
-                    confirmPassword: '',
-                    submit: null
-                }}
+                initialValues={initialValues}
                 validationSchema={Yup.object().shape({
                     firstname: Yup.string().max(255).required('First Name is required'),
                     lastname: Yup.string().max(255).required('Last Name is required'),
@@ -94,40 +94,27 @@ const AuthRegister = () => {
                         .oneOf([Yup.ref('password'), null], 'Passwords must match')
                         .required('Confirm Password is Required'),
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+                onSubmit={async (values, { setErrors, setStatus, setSubmitting, resetForm }) => {
                     try {
-                        const res = await fetch(Config.REGISTRATION, {
-                            method: 'POST',
-                            headers: { "Content-Type": 'application/json;charset=UTF-8' },
-                            body: JSON.stringify({
-                                firstname: values.firstname,
-                                lastname: values.lastname,
-                                email: values.email,
-                                password: values.password
-                            })
-                        });
-                        const content = await res.json();
+                        const response = await registerUser({
+                            UFirstName: values.firstname,
+                            ULastName: values.lastname,
+                            UEmail: values.email,
+                            UPassword: values.password
 
-                        if (res.status === 400) // If the email is already taken 
-                        {
-                            toast.error(content.message, {
-                                position: toast.POSITION.TOP_CENTER,
-                                hideProgressBar: true,
-                                transition: Zoom,
-                                autoClose: true,
-                            });
-                        }
-                        else if (res.status === 200) // SUCCESSFULLY REGISTERED
-                        {
-                            toast.success(content.message, {
-                                position: toast.POSITION.TOP_CENTER,
-                                hideProgressBar: true,
-                                transition: Zoom,
-                                autoClose: true,
-                            });
+                        })
 
-                            setNavigate(true);
+                        if (response.data) {
+                            resetForm({ values: initialValues });
+                            navigate('/');
                         }
+                        else {
+                            setStatus({ success: false });
+                            setErrors({ submit: response.error.data.message });
+                            setSubmitting(false);
+                        }
+
+
                         setStatus({ success: false });
                         setSubmitting(false);
                     } catch (err) {

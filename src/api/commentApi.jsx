@@ -15,11 +15,15 @@ export const commentApi = createApi({
             }),
         }),
         getReplies: builder.query({
-            query: () => ({
-                url: "getreplies",
+            query: (id) => ({
+                url: `getreplies/${id}`,
                 params: {},
                 method: "GET",
             }),
+            providesTags: (result) => [
+                { type: 'Reply', id: 'List' },
+                ...result?.map((user) => ({ type: 'Reply', id: user.id })),
+            ],
         }),
         postComment: builder.mutation({
             query: (comment) => ({
@@ -53,4 +57,4 @@ export const commentApi = createApi({
 });
 
 
-export const {useUpdateCommentImagesMutation, useGetAllCommentsQuery, useGetRepliesQuery, useDeleteCommentMutation, usePostCommentMutation, useUpdateCommentMutation, usePostReplyMutation } = commentApi;
+export const { useUpdateCommentImagesMutation, useGetAllCommentsQuery, useGetRepliesQuery, useDeleteCommentMutation, usePostCommentMutation, useUpdateCommentMutation, usePostReplyMutation } = commentApi;

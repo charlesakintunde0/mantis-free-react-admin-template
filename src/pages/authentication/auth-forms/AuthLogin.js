@@ -1,5 +1,11 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+
+import { useDispatch } from 'react-redux';
+
 
 // material-ui
 import {
@@ -21,6 +27,7 @@ import {
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import { toast, Zoom } from 'react-toastify';
 
 // project import
 import FirebaseSocial from './FirebaseSocial';
@@ -29,11 +36,32 @@ import AnimateButton from 'components/@extended/AnimateButton';
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
+// reducers
+import { setToken } from 'store/reducers/auth';
+import { setUser } from 'store/reducers/user';
+
+// api import
+import { useUserLoginMutation } from 'api/userApi';
+
+toast.configure()
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const AuthLogin = () => {
-    const [checked, setChecked] = React.useState(false);
 
+
+const AuthLogin = ({ }) => {
+    const [checked, setChecked] = React.useState(false);
+    const [userLogin] = useUserLoginMutation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const initialValues = {
+        email: '',
+        password: ''
+    };
+
+
+
+
+    // console.log(data);
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -42,23 +70,43 @@ const AuthLogin = () => {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-
     return (
         <>
             <Formik
-                initialValues={{
-                    email: 'info@codedthemes.com',
-                    password: '123456',
-                    submit: null
-                }}
+                initialValues={initialValues}
                 validationSchema={Yup.object().shape({
                     email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
                     password: Yup.string().max(255).required('Password is required')
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+                onSubmit={async (values, { setErrors, setStatus, setSubmitting, resetForm }) => {
                     try {
-                        setStatus({ success: false });
-                        setSubmitting(false);
+                        const response = await userLogin({
+                            UEmail: values.email,
+                            UPassword: values.password
+
+                        })
+
+
+
+
+
+                        resetForm({ values: initialValues });
+
+                        if (response.data) {
+                            dispatch(setToken(response.data.jwt));
+                            dispatch(setUser(response.data));
+                            localStorage.setItem('user', JSON.stringify(response.data));
+
+                            navigate('/');
+                        } else {
+                            setStatus({ success: false });
+                            setErrors({ submit: "Your password or username is incorrect" });
+                            setSubmitting(false);
+                        }
+
+
+
+
                     } catch (err) {
                         setStatus({ success: false });
                         setErrors({ submit: err.message });
@@ -164,14 +212,14 @@ const AuthLogin = () => {
                                     </Button>
                                 </AnimateButton>
                             </Grid>
-                            <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                                 <Divider>
                                     <Typography variant="caption"> Login with</Typography>
                                 </Divider>
                             </Grid>
                             <Grid item xs={12}>
                                 <FirebaseSocial />
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </form>
                 )}

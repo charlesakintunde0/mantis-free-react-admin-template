@@ -1,91 +1,92 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
+
+import { useDispatch } from 'react-redux';
+import { setUser } from 'store/reducers/user';
 
 import { Link } from "react-router-dom";
 import axios from 'axios'
 import './insects.css'
-import Admin_Crops from './Admin/Admin_Crops';
+import AdminCrops from '../../pages/admin-dashboard/AdminCrops';
 import './Crops.css'
 import Config from "./../../config.json";
 
+
+// antd
+import { Space, Spin } from 'antd';
+
+
+// constants
+import userRole from 'Constants/userRole';
+
+// api 
+import { useGetUserQuery } from 'api/userApi';
+import { useGetAllCropsQuery } from 'api/cropApi';
+
+
+
 function Crops() {
+    const currentlyLoggedInUserData = useGetUserQuery();
+    const allStoredCrops = useGetAllCropsQuery(null);
+    const [allCrops, setAllCrop] = useState(null);
+    const dispatch = useDispatch();
 
-    const [crop, setCrop] = useState([]);
-    const [user, setUser] = useState(null);
-    const [add, setAdd] = useState(false);
-    const[loading,setLoading] = useState(true); // for populating all the states until its false
-    const[loading1,setLoading1] = useState(true);
-    useEffect(()=>{
-        fetchUser();
-        if(loading){
-            fetchUser();
+
+    const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
+
+
+
+    useEffect(() => {
+        if (currentlyLoggedInUserData.data) {
+            setCurentlyLoggedInUser(currentlyLoggedInUserData.data[0])
+            dispatch(setUser(currentlyLoggedInUserData.data[0]));
         }
-        fetchCrops();
-        if(loading1){
-            fetchCrops();
+        if (allStoredCrops.data) {
+            setAllCrop(allStoredCrops.data)
         }
-    }, [loading,loading1])
-    //console.log(user);
-    const fetchUser = async() => {
-        try{
-            const res = await fetch(Config.GET_USER, {
-                headers: {"Content-Type": 'application/json;charset=UTF-8'},
-                credentials: 'include',
-            });
+    }, [currentlyLoggedInUserData.status, allStoredCrops.status]);
 
-            const content = await res.json();
-            setUser(content[0]);
-            //console.log(user);
-            if(user && user.uAuthLevel=="Admin") {
-                setAdd(true);
-                
-            }
-            setLoading(false);
-          }
-          catch(e){
-            console.log(e);
-          }
-    }
 
-    const fetchCrops = async () =>{
-        try{
-            const res = await axios.get(Config.FETCH_CROPS)
-            .then(res => {
-                setCrop(res.data);
-                setLoading1(false);
-            })
-            
-        }catch(err){
-            console.log(err);
-        }
-    }
 
-    
+
     return (
         <div className="outer">
-            <div className='adminStyle'> 
+            <div className='adminStyle'>
                 <h2> Select the Crop </h2>
+                {
+                    curentlyLoggedInUser ?
+                        <>{curentlyLoggedInUser.isAdmin == userRole.ADMIN ?
+                            <div className='adminAccess'>
+                                <Link to="/AdminCrops">
+                                    <button className="editSave edit">Edit</button>
+                                </Link>
+                            </div> :
+                            ''
+                        }</> : ''
+                }
 
-                {add && 
-                <div className='adminAccess'> 
-                <Link to="/AdminCrops">
-                    <button className="editSave edit">Edit</button>
-                </Link>
-                </div>}
+
             </div>
-            
+
             <div className="cards">
-                
-            {crop.map(cr => (
-                <Link to={`/Crops/${cr.id}`} key={cr.id}>
-                            <div className="card">
-                                <p className="description">{cr.crop}</p>
-                                <div className="cropImg">
-                                    <img src={cr.image} alt="Loading Images"></img>
+                {
+                    allCrops ? <> {
+                        allCrops.map(cr => (
+                            <Link to={`/Crops/${cr.id}`} key={cr.id}>
+                                <div className="card">
+                                    <p className="description">{cr.crop}</p>
+                                    <div className="cropImg">
+                                        <img src={cr.image} alt="Loading Images"></img>
+                                    </div>
                                 </div>
-                            </div>
-                    </Link>
-            )
-            )}
+                            </Link>
+                        )
+                        )
+                    } </>
+                        : <Space size="middle">
+                            <Spin size="large" />
+                        </Space>
+                }
+
             </div>
         </div>
     )

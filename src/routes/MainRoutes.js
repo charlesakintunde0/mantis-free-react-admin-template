@@ -8,7 +8,10 @@ import MainLayout from '../layout/MainLayout';
 
 
 // render - utilities
-const Navbar = Loadable(lazy(() => import('../components/navbar/navbar')));
+const AdminDashboard = lazy(() => import('pages/admin-dashboard/index'));
+const SamplePage = lazy(() => import('pages/extra-pages/SamplePage'));
+const Login = lazy(() => import('../pages/authentication/Login'));
+const Register = lazy(() => import('../pages/authentication/Register'));
 const Home = Loadable(lazy(() => import('../components/home/home')));
 const AllPests = Loadable(lazy(() => import('../components/home/AllPests')));
 const Crops = Loadable(lazy(() => import('../components/home/Crops')));
@@ -16,40 +19,13 @@ const Weeds = Loadable(lazy(() => import('../components/home/Weeds')));
 const PestDescription = Loadable(lazy(() => import('../components/home/PestDescription')));
 const AllDiseases = Loadable(lazy(() => import('../components/home/AllDiseases')));
 const CropsDisease = Loadable(lazy(() => import('../components/home/CropsDisease')));
-const Registration = Loadable(lazy(() => import('../components/reg-log/Registration')));
-const Login = Loadable(lazy(() => import('../components/reg-log/Login')));
 const Comments = Loadable(lazy(() => import('../components/Comments/Comments')));
-const Admin_Pests = Loadable(lazy(() => import('../components/home/Admin/Admin_Pests')));
-const Admin_Crops = Loadable(lazy(() => import('../components/home/Admin/Admin_Crops')));
+const AdminPests = Loadable(lazy(() => import('../pages/admin-dashboard/AdminPests')));
+const AdminCrops = Loadable(lazy(() => import('../pages/admin-dashboard/AdminCrops')));
 const ExampleComment = Loadable(lazy(() => import('../components/Comments/ExampleComment')));
 
 
-// const [name, setName] = useState(null);
-// const [user, setUser] = useState(null);
 
-
-// console.log(data);
-
-// useEffect(() => {
-
-//     (
-//         async () => {
-//             try {
-//                 const res = await fetch('https://localhost:44361/api/users/getuser', {
-//                     headers: { "Content-Type": 'application/json;charset=UTF-8' },
-//                     credentials: 'include',
-//                 });
-//                 const content = await res.json();
-//                 setUser(content);
-//                 setName(content[0].uFirstName); // has to be content[0]
-//             }
-//             catch (e) {
-//                 console.log(e);
-//             }
-//         }
-
-//     )();
-// }, [name])
 
 
 
@@ -57,20 +33,19 @@ const ExampleComment = Loadable(lazy(() => import('../components/Comments/Exampl
 const MainRoutes = {
     path: '/',
     element: <MainLayout />,
-    // element: <Navbar />,
     children: [
         {
-            path: '/free',
+            path: '',
             element: <Home />
         },
         {
             path: 'registration',
-            element: <Registration />
+            element: <Register />
         },
-        // {
-        //     path: '/login',
-        //     element: <Login setName={setName} />
-        // },
+        {
+            path: '/login',
+            element: <Login />
+        },
         {
             path: '/crops',
             element: <Crops />
@@ -107,14 +82,23 @@ const MainRoutes = {
             path: '/examplecomments',
             element: <ExampleComment />
         },
-        // {
-        //     path: '/AdminCrops',
-        //     element: <Admin_Crops user={user} />
-        // },
-        // {
-        //     path: '/AdminPests/:cropID',
-        //     element: <Admin_Pests user={user} />
-        // }
+        {
+            path: '/AdminCrops',
+            element: <AdminCrops />
+        },
+        {
+            path: '/samplepages',
+            element: <SamplePage />
+        },
+        {
+            path: '/dashboard',
+            element: <AdminDashboard />
+        }
+        ,
+        {
+            path: '/AdminPests/:cropID',
+            element: <AdminPests />
+        }
 
     ]
 };

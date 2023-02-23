@@ -4,8 +4,12 @@ import axios from 'axios'
 import "./Admin_Crops.css";
 import DeleteIcon from './delete.svg';
 import { toast } from 'react-toastify';
-import Config from "./../../../config.json"
-import { useGetAllUsersQuery } from 'api/userApi';
+import Config from './../../config.json';
+// import Config from "./../../../config.json"
+import { useGetAllUsersQuery, useGetUserQuery } from 'api/userApi';
+import userRole from 'Constants/userRole';
+
+
 toast.configure()
 
 const initialImageValues = {
@@ -15,8 +19,8 @@ const initialImageValues = {
 }
 
 function AdminCrops() {
-    const { data } = useGetAllUsersQuery();
-    const [userAuth, SetUserAuth] = useState(data.user[0].uAuthLevel);
+    const currentlyLoggedInUserData = useGetUserQuery();
+    const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
     const [crop, setCrop] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cropName, setCropName] = useState("");
@@ -31,7 +35,20 @@ function AdminCrops() {
     }, [loading, crop])
 
 
-    console.log(data);
+
+    useEffect(() => {
+        if (currentlyLoggedInUserData.data) {
+            setCurentlyLoggedInUser(currentlyLoggedInUserData.data[0])
+        }
+        // if (allStoredCrops.data) {
+        //     setAllCrop(allStoredCrops.data)
+        // }
+    }, [currentlyLoggedInUserData.status]);
+
+
+
+
+
     const fetchCrops = async () => {
         try {
             const res = await axios.get(Config.FETCH_CROPS)
@@ -140,43 +157,63 @@ function AdminCrops() {
 
     return (
         <div className='adminMainDiv'>
-            {userAuth === "Admin" && <div className="addingForm">
-                <form className="cropsForm" autoComplete='off' onSubmit={editCrops}>
-                    <div className="form-groups">
-                        <input name="cropName" type="text" placeholder="Crop name" required
-                            onChange={e => setCropName(e.target.value)}
-                            value={cropName}
-                        />
-                    </div>
-                    <div className="form-groups">
-                        <input className="adminCropDesc" name="cropDesc" type="text" placeholder="Short description" required
-                            onChange={e => setCropDesc(e.target.value)}
-                            value={cropDesc}
-                        />
-                    </div>
-                    <div className="imageUploadDiv form-groups">
-                        <input required type="file" accept='image/*' className='imageFile' onChange={showPreview} id="imageUploader" />
-                    </div>
 
-                    <button className='adminSave'>Save</button>
-                </form>
-            </div>}
-            {userAuth === "Admin" && <div className="existingData">
-                <div className="adminHeading">
-                    <h3>Crops</h3>
-                    <h5>({crop.length} items)</h5>
-                </div>
-                <div className="cropsList">
-                    {crop.map(cr => (
-                        <div className="cropItself" key={cr.id}>
-                            <p>{cr.crop}</p>
-                            <img className="adminRemoveIcon" src={DeleteIcon} alt="remove" onClick={e => removeCrop(e, cr.id)} />
+            {
+                curentlyLoggedInUser
+                    ?
+                    <>  {
+
+                        curentlyLoggedInUser.isAdmin === userRole.ADMIN && <div className="addingForm">
+                            <form className="cropsForm" autoComplete='off' onSubmit={editCrops}>
+                                <div className="form-groups">
+                                    <input name="cropName" type="text" placeholder="Crop name" required
+                                        onChange={e => setCropName(e.target.value)}
+                                        value={cropName}
+                                    />
+                                </div>
+                                <div className="form-groups">
+                                    <input className="adminCropDesc" name="cropDesc" type="text" placeholder="Short description" required
+                                        onChange={e => setCropDesc(e.target.value)}
+                                        value={cropDesc}
+                                    />
+                                </div>
+                                <div className="imageUploadDiv form-groups">
+                                    <input required type="file" accept='image/*' className='imageFile' onChange={showPreview} id="imageUploader" />
+                                </div>
+
+                                <button className='adminSave'>Save</button>
+                            </form>
                         </div>
-                    ))
-                    }
-                </div>
-            </div>}
-        </div>
+
+                    } </>
+
+                    : ''
+            }
+            {
+                curentlyLoggedInUser
+                    ?
+                    <>
+                        {
+                            curentlyLoggedInUser.isAdmin === userRole.ADMIN && <div className="existingData">
+                                <div className="adminHeading">
+                                    <h3>Crops</h3>
+                                    <h5>({crop.length} items)</h5>
+                                </div>
+                                <div className="cropsList">
+                                    {crop.map(cr => (
+                                        <div className="cropItself" key={cr.id}>
+                                            <p>{cr.crop}</p>
+                                            <img className="adminRemoveIcon" src={DeleteIcon} alt="remove" onClick={e => removeCrop(e, cr.id)} />
+                                        </div>
+                                    ))
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </>
+                    : ''
+            }
+        </div >
     )
 }
 

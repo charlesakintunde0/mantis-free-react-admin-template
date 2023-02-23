@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;500&display=swap');
 
-.outer{
+.outer {
     margin: auto;
     width: 80%;
     margin-top: 2.5em;
@@ -8,6 +8,7 @@
     justify-content: space-around;
     flex-wrap: wrap;
 }
+
 .cards {
     margin: auto;
     width: 100%;
@@ -16,13 +17,12 @@
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    background-color: rgba(228, 227, 227, 0.397);
     border-radius: 7px;
     padding: 3em 1em;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
 }
 
-.card{
+.card {
     text-decoration: none;
     background-color: white;
     overflow: hidden;
@@ -38,38 +38,42 @@
     flex-direction: column;
 }
 
-.cropImg{
+.cropImg {
     margin-top: 1rem;
     width: 100%;
     height: 70vh;
     border-radius: inherit;
     overflow: hidden;
 }
-.cropImg img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position: 50% 50%; /*shows the center of the photo*/
+
+.cropImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    /*shows the center of the photo*/
     transition: 0.3s ease-in-out;
     border-radius: 7px;
 }
-.cropImg img:hover{
+
+.cropImg img:hover {
     transform: scale(1.6);
 }
-a{
+
+a {
     text-decoration: none;
     color: rgb(29, 29, 29);
 }
 
-.card:hover{
+.card:hover {
     /* background-color: rgb(183, 185, 172); */
     background-color: rgb(162, 132, 211);
     color: rgb(255, 255, 255);
     cursor: pointer;
 }
-.adminStyle{
+
+.adminStyle {
     width: 100%;
     display: flex;
     justify-content: space-between;
 }
-

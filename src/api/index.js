@@ -7,4 +7,4 @@ import { coordinatesApi } from "./coordinates";
 import { cropsPestApi } from "./cropsPestApi";
 
 
-export {commentApi, cropApi, coordinatesApi, pestApi, userApi, weedApi, cropsPestApi}
+export { commentApi, cropApi, coordinatesApi, pestApi, userApi, weedApi, cropsPestApi }

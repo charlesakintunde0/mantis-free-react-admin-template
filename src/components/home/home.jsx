@@ -1,78 +1,27 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from "react-router-dom";
 import './home.css'
-import axios from 'axios';
 import Searchbar from '../SearchBar/Searchbar';
 import Footer from '../Footer/Footer';
-import Config from "./../../config.json";
+import { useGetAllPestsQuery } from 'api/pestApi';
+import { useGetAllCropsQuery } from 'api/cropApi';
+import { useGetAllUsersQuery } from 'api/userApi';
 
 function Home() {
-    const [cropsData, setCropsData] = useState([]);
-    const [pestsData, setPestsData] = useState([]);
-    const [pressed, setPressed] = useState(false);
-    const[loading,setLoading] = useState(true); 
-    const[loading1,setLoading1] = useState(true);
-    
-    const handleSubmit = async(e) => {
+    const crops = useGetAllCropsQuery();
+    const pests = useGetAllPestsQuery();
+    // const { data } = useGetAllUsersQuery();
+
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
-       //console.log(data);
-       //test comment
+
     }
 
-    // useEffect(()=>{
-    //     const fetchCrops = async () =>{
-    //         try{
-    //             const res = await axios.get(Config.FETCH_CROPS);
-    //             console.log(res.data);
-    //             setData(res.data);
-    //         }catch(err){
-    //             console.log(err);
-    //         }
-    //     }
-
-    //     fetchCrops();
-    // }, [])
-
-    const fetchCrops = async () =>{
-        try{
-            const res = await axios.get(Config.FETCH_CROPS);
-            console.log(res.data);
-            setCropsData(res.data);
-        }
-        catch(err){
-            console.log(err);
-        }
-        finally{
-            setLoading(false);
-        }
-    }
-
-    const fetchPests = async () =>{
-        try{
-            const res = await axios.get(Config.FETCH_PESTS);
-            console.log(res.data);
-            setPestsData(res.data);
-        }
-        catch(err){
-            console.log(err);
-        }
-        finally{
-            setLoading1(false);
-        }
-    }
-
-    useEffect(()=>{
-       fetchCrops();
-       if(loading) fetchCrops();
-
-        fetchPests();
-        if(loading1) fetchPests();
-    }, [])
 
     return (
         <div>
-            <Searchbar placeholder='e.g. Corn' cropsData={cropsData} pestsData={pestsData}/>
+            <Searchbar placeholder='e.g. Corn' cropsData={crops.data} pestsData={pests.data} />
             <div className="container">
                 <Link to="/Crops">
                     <div className="insects con-item">
@@ -80,13 +29,13 @@ function Home() {
                     </div>
                 </Link>
 
-                <Link to = "/diseases">
+                <Link to="/diseases">
                     <div className="diseases con-item">
                         <h4>Diseases</h4>
                     </div>
                 </Link>
 
-                <Link to="weeds"> 
+                <Link to="weeds">
                     <div className="weeds con-item">
                         <h4>Weeds</h4>
                     </div>
