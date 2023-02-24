@@ -1,8 +1,5 @@
-import React from 'react'
-import { useParams } from 'react-router'
-import axios from 'axios'
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+
+import React, { useState, useEffect, useRef } from 'react'
 import "./PestDescription.css";
 import LeafletLocation from '../hooks/LeafletLocation';
 import { toast } from 'react-toastify';
@@ -11,37 +8,42 @@ import useGeoLocation from '../hooks/useGeoLocation';
 import Footer from '../Footer/Footer';
 import Config from "./../../config.json"
 
+//mui
+import { IconButton } from '@mui/material';
+
+//router
+import { useParams } from 'react-router'
+
+// react router
+import { Link, useNavigate } from 'react-router-dom';
 
 //redux
 import { setUser } from 'store/reducers/user';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { openModal } from 'store/reducers/descriptionModal';
 
 // components
 import Descriptor from 'components/Descriptor/Descriptor';
+import DescriptionManager from 'components/contentManager/DescriptionManager';
 
-
+// antd
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 // api
 import { useGetUserQuery } from 'api/userApi';
+import { useGetPestInfoDescriptionQuery } from 'api/pestApi';
+import { Grid } from '../../../node_modules/@mui/material/index';
+import MainCard from 'components/MainCard';
 
 toast.configure()
 
 function PestDescription() {
-    const currentlyLoggedInUser = JSON.parse(localStorage.getItem('user'));
-
-
-
-
-
-
-
-
-
-
-
-
+    const dispatch = useDispatch();
+    const anchorRef = useRef(null);
+    const drawerOpen = useSelector(state => state.menu.drawerOpen);
     const PId = useParams().pestID; //saves the pest ID from previous page
+    const pestInfoDescriptionData = useGetPestInfoDescriptionQuery(PId);
+    const currentlyLoggedInUser = JSON.parse(localStorage.getItem('user'));
     // const map = LeafletLocation(PId, currentlyLoggedInUser.uId);
     const userLocation = useGeoLocation();
     const [loading, setLoading] = useState(true); // for populating all the states until its false
@@ -49,13 +51,16 @@ function PestDescription() {
     const [saving, setSaving] = useState(false); //for changing the button to "saving" and disabled after clicking save
     const [show, setShow] = useState(true);
     const [pestName, setPestName] = useState(null);
-    const [PinBiologicalinfo, setBio] = useState(null);
-    const [PinMonitoringMethod, setMonitor] = useState(null);
-    const [PinControlThreshold, setControl] = useState(null);
-    const [PinPhysicalControl, setPhyCon] = useState(null);
-    const [PinBiologicalControl, setBioCon] = useState(null);
-    const [PinCulturalControl, setCulCon] = useState(null);
-    const [PinChemicalControl, setChemCon] = useState(null);
+    const [PinBiologicalinfo, setBiologicalinfo] = useState(null);
+    const [PinMonitoringMethod, setMonitoringMethod] = useState(null);
+    const [PinControlThreshold, setControlThreshold] = useState(null);
+    const [PinPhysicalControl, setPhysicalControl] = useState(null);
+    const [PinBiologicalControl, setBiologicalControl] = useState(null);
+    const [PinCulturalControl, setCulturalControl] = useState(null);
+    const [PinChemicalControl, setChemicalControl] = useState(null);
+    const [pestInfoDescription, setPestInfoDescription] = useState([]);
+
+
 
 
     const [userId, setUserId] = useState(null);
@@ -64,6 +69,27 @@ function PestDescription() {
     const [informative, setinformative] = useState(false);
     const navigate = useNavigate(); // to keep track of the history. Might use later to navigate to different pages
     //const location = useGeoLocatioin();
+
+    // console.log(pestInfoDescription)
+    useEffect(() => {
+        if (pestInfoDescriptionData.isSuccess) {
+            setPestInfoDescription(pestInfoDescriptionData.data)
+
+        }
+
+    }, [pestInfoDescriptionData])
+
+    const handleAddButtonClick = () => {
+        dispatch(openModal());
+    }
+
+
+
+    console.log(pestInfoDescriptionData)
+
+    console.log(pestInfoDescription)
+
+
 
     const saveGeo = (e) => {
         e.preventDefault();
@@ -92,41 +118,19 @@ function PestDescription() {
 
         //console.log(position.lat + " " + position.lng);
     }
-    useEffect(() => {
-        getRole();
-        if (loading1) {
-            getRole();
-        }
-        load();
-        if (loading) {
-            load();
-        }
+    // useEffect(() => {
+    //     getRole();
+    //     if (loading1) {
+    //         getRole();
+    //     }
+    //     load();
+    //     if (loading) {
+    //         load();
+    //     }
 
-    }, [loading, loading1])
+    // }, [loading, loading1])
 
-    const load = async () => {
 
-        try {
-            const res = await axios.get(Config.FETCH_SPECIFIC_PEST_DESCRIPTION + PId)
-                .then((response) => {
-                    return response.data;
-                });
-            console.log(res[0]);
-            setPestName(res[0].pestName);
-            setBio(res[0].biologicalInfo);
-            setMonitor(res[0].monitoringMethod);
-            setControl(res[0].controlThreshold);
-            setPhyCon(res[0].physicalControl);
-            setBioCon(res[0].biologicalControl);
-            setChemCon(res[0].chemicalControl);
-            setCulCon(res[0].culturalControl);
-
-            setLoading(false);
-        } catch (err) {
-            console.log(err);
-        }
-
-    }
     /* THE BELOW GETROLE() METHOD WILL REQUEST THE USERS DATA BY THE ACCESS TOKEN
     IF HE/SHE IS AN ADMIN THE EDIT BUTTON WILL BE SHOWN  */
     const getRole = async () => {
@@ -181,65 +185,81 @@ function PestDescription() {
         }
     }
     console.log(edit);
+
+
+    // const iconBackColorOpen = 'grey.300';
+    // const iconBackColor = 'grey.100';
+
+    // return (
+    //     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
+    //         <IconButton
+    //             disableRipple
+    //             color="secondary"
+    //             sx={{ color: 'text.primary', bgcolor: open ? iconBackColorOpen : iconBackColor }}
+    //             aria-label="open profile"
+    //             ref={anchorRef}
+    //             aria-controls={open ? 'profile-grow' : undefined}
+    //             aria-haspopup="true"
+    //             onClick={handleToggle}
+    //         >
+    //             <Badge badgeContent={4} color="primary">
+    //                 <BellOutlined />
+    //             </Badge>
+    //         </IconButton>
+
     //console.log(userId);
     //saving false
     //show true
 
-    const contentStyle = {
-        height: '160px',
-        color: '#fff',
-        lineHeight: '160px',
-        textAlign: 'center',
-        background: '#364d79',
-    };
+
     return (
-        <div className="con">
+        <>
+            <Grid
+                container
+                spacing={2}
+            // alignItems="center"
+            // justifyContent="center"
+            >
 
-            {edit ? <div className="editSaveCon">
-                {show ? <button className="editSave edit" onClick={toggle}> edit </button>
-                    :
-                    (saving ? <button disabled className="editSave save"> saving </button>
-                        : <button className="editSave save" onClick={saveData}> save </button>)
+                <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
+                    <MainCard>
+                        <Grid
+                            container
+                            spacing={2}>
+                            <Grid
+                                item
+                                style={{ display: "flex", justifyContent: "flex-start" }}
+                                alignItems="center"
+                                jusity="left">
+                                <IconButton
+                                    color="secondary"
+                                    sx={{ color: 'text.primary', bgcolor: 'grey.100' }}
+                                    ref={anchorRef}
+                                    onClick={handleAddButtonClick}
+                                >
+                                    <PlusCircleOutlined />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                        <DescriptionManager />
+                    </MainCard>
 
+                </Grid>
+
+
+
+                {pestInfoDescription.map((description) =>
+                (
+                    <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
+                        <Descriptor key={description.id} description={description} />
+                    </Grid>
+
+                )
+                )
                 }
-            </div> : null}
-            {show ? <div className="desc_container">
-                <h1>{pestName}</h1>
 
-                {PinBiologicalinfo ? <div className="description child1">
-                    <Descriptor title={'Description'} content={PinBiologicalinfo} />
-                </div> : null}
 
-                {PinMonitoringMethod ? <div className="PinMonitoringMethod child1">
-                    <Descriptor title={'Monitoring Method'} content={PinMonitoringMethod} />
-                </div> : null}
 
-                {PinControlThreshold ? <div className="PinControlThreshold child1">
-                    <Descriptor title={'Control Threshold'} content={PinControlThreshold} />
-                </div> : null}
-
-                {PinPhysicalControl ? <div className="PinPhysicalControl child1" >
-                    <Descriptor title={'Physical control measures: '} content={PinPhysicalControl} />
-                </div> : null}
-                {PinBiologicalControl ? <div className="PinBiologicalControl child1">
-                    <Descriptor title={'Biological control measures:'} content={PinBiologicalControl} />
-                </div> : null}
-
-                {PinCulturalControl ? <div className="PinCulturalControl child1">
-                    <Descriptor title={'Cultural control measures: '} content={PinCulturalControl} />
-                </div> : null}
-
-                {PinChemicalControl ? <div className="PinChemicalControl child1">
-                    <Descriptor title={'Chemical control measures:'} content={PinChemicalControl} />
-                </div> : null}
-
-                {(!PinBiologicalinfo && !PinChemicalControl && !PinCulturalControl && !PinBiologicalControl && !PinPhysicalControl && !PinControlThreshold && !PinMonitoringMethod) ?
-                    <div id="noData">
-                        <div className="error">
-                            <h2>Not enough data</h2>
-                            <p>Sorry, we do not have enough data about {pestName}. We will update once we have enough information</p>
-                        </div>
-                    </div> : null}
                 {!informative ? <div className="helpful">
                     <p>Was this information helpful? </p>
                     <button onClick={saveGeo}>Yes</button>
@@ -255,58 +275,13 @@ function PestDescription() {
                         <h4>Help us improve</h4>
                         <p>Drag the marker on the map to the location where you saw this pest</p>
                     </div>
-                    {/* <div className="map"> {map} </div> */}
+
 
                 </div>
-            </div>
 
-                : /* i f Edit button is pressed then the below div will show up */
-                <div className="desc_container admin">
-                    <h1>{pestName}</h1>
-                    <div className="description child1 admin">
-                        <h3>Description</h3>
-                        <textarea name="Description" onChange={(event) => { setBio(event.target.value) }} value={PinBiologicalinfo}></textarea>
-                    </div>
+            </Grid>
 
-                    <div className="PinMonitoringMethod child1 admin">
-                        <h3>Monitoring Method</h3>
-                        <textarea name="PinMonitoringMethod" onChange={(event) => { setMonitor(event.target.value) }} value={PinMonitoringMethod}></textarea>
-                    </div>
-
-                    <div className="PinControlThreshold child1 admin">
-                        <h3>Control Threshold</h3>
-                        <textarea name="PinControlThreshold" onChange={(event) => { setControl(event.target.value) }} value={PinControlThreshold}></textarea>
-
-                    </div>
-
-                    <div className="PinPhysicalControl child1 admin" >
-                        <p className="physicalHeader header1">Physical control measures: </p>
-                        <textarea name="PinPhysicalControl" onChange={(event) => { setPhyCon(event.target.value) }} value={PinPhysicalControl}></textarea>
-                    </div>
-
-                    <div className="PinBiologicalControl child1 admin">
-                        <p className="biologicalHeader header1">Biological control measures: </p>
-                        <textarea name="PinBiologicalControl" onChange={(event) => { setBioCon(event.target.value) }} value={PinBiologicalControl}></textarea>
-                    </div>
-
-                    <div className="PinCulturalControl child1 admin">
-                        <p className="culturalHeader header1">Cultural control measures: </p>
-                        <textarea name="PinCulturalControl" onChange={(event) => { setCulCon(event.target.value) }} value={PinCulturalControl}></textarea>
-                    </div>
-
-                    <div className="PinChemicalControl child1 admin">
-                        <p className="chemicalHeader header1">Chemical control measures: </p>
-                        <textarea name="PinChemicalControl" onChange={(event) => { setChemCon(event.target.value) }} value={PinChemicalControl}></textarea>
-                    </div>
-
-                </div>}
-
-            {/* <div className="userLocation">
-               {
-                   userLocation.loaded ? JSON.stringify(userLocation) : "Not Available"
-               }
-           </div> */}
-        </div>
+        </>
     )
 }
 

@@ -20,7 +20,7 @@ import userRole from 'Constants/userRole';
 import { Carousel } from 'antd';
 
 
-import React from 'react';
+
 
 
 
