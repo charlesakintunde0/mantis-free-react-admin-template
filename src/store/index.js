@@ -5,6 +5,7 @@ import { commentApi, cropApi, coordinatesApi, pestApi, userApi, weedApi, cropsPe
 import menu from './reducers/menu';
 import auth from './reducers/auth';
 import user from './reducers/user';
+import descriptionModal from './reducers/descriptionModal';
 
 
 
@@ -25,6 +26,7 @@ const store = configureStore({
         menu,
         auth,
         user,
+        descriptionModal
 
 
     },

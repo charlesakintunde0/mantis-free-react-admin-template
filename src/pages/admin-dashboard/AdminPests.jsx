@@ -16,6 +16,17 @@ import { useGetAllPestsQuery } from 'api/pestApi';
 import userRole from 'Constants/userRole';
 
 
+// antd
+import { Carousel } from 'antd';
+
+
+import React from 'react';
+
+
+
+
+
+
 // api
 import { useGetAllUsersQuery, useGetUserQuery } from 'api/userApi';
 toast.configure()
@@ -133,6 +144,8 @@ function AdminPests() {
             .catch(err => console.log(err))
 
     }
+
+
 
     const removePest = (e, pestId) => {
         /* Needs to be edited */

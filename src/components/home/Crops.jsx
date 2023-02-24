@@ -36,6 +36,8 @@ function Crops() {
 
 
     useEffect(() => {
+
+
         if (currentlyLoggedInUserData.data) {
             setCurentlyLoggedInUser(currentlyLoggedInUserData.data[0])
             dispatch(setUser(currentlyLoggedInUserData.data[0]));

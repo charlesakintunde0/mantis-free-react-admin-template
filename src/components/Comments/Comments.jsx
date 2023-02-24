@@ -6,6 +6,7 @@ import Comment from './Comment';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom'
 import Config from "./../../config.json"
+// import {useGet} 
 
 toast.configure()
 const initialImageValues = {
@@ -24,7 +25,7 @@ const Comments = () => {
     const [userId, setUserId] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
     const [imgValues, setImgValues] = useState(initialImageValues);
-    const [userAuth, setUserAuth] = useState(null);
+    const [userStatus, setStatus] = useState(null);
     const [commentId, setCommentId] = useState(null);
 
 
@@ -75,7 +76,7 @@ const Comments = () => {
             setUserId(content[0].uId);
             setUserFirstName(content[0].uFirstName);
             setUserEmail(content[0].uEmail);
-            setUserAuth(content[0].uAuthLevel)
+            setStatus(content[0].isAdmin)
 
             setLoading1(false);
         } catch (err) {
@@ -217,7 +218,7 @@ const Comments = () => {
 
                 <div className="commentsArea">
                     {allComments.map(c => (
-                        <Comment userId={userId} userAuth={userAuth} userName={userFirstName} userEmail={userEmail} FId={c.fId} uName={c.uName} uComment={c.comment} uImageName={c.imageName} uImageSrc={c.imageSrc} uTime={c.time} />
+                        <Comment userId={userId} userAuth={userStatus} userName={userFirstName} userEmail={userEmail} FId={c.fId} uName={c.uName} uComment={c.comment} uImageName={c.imageName} uImageSrc={c.imageSrc} uTime={c.time} />
                     )
                     )}
                 </div>
