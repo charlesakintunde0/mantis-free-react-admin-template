@@ -21,6 +21,13 @@ export const pestApi = createApi({
                 method: "GET",
             }),
         }),
+        createPestInfoDescription: builder.mutation({
+            query: (data) => ({
+                url: `createDescription/${data.pestId}`,
+                body: data,
+                method: "POST",
+            }),
+        }),
         // getSpecificCrop: builder.query({
         //     query: () => ({
         //         url: "getspecific",
@@ -53,4 +60,4 @@ export const pestApi = createApi({
 });
 
 
-export const { useGetPestInfoDescriptionQuery, useGetAllPestsQuery } = pestApi;
+export const { useGetPestInfoDescriptionQuery, useGetAllPestsQuery, useCreatePestInfoDescriptionMutation } = pestApi;

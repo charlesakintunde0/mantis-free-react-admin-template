@@ -2,29 +2,30 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     isOpen: false,
-    componentId: null,
-    componentData: {}
+    pestId: null,
+    componentData: null
 };
 
 const descriptionModal = createSlice({
     name: 'modal',
     initialState,
     reducers: {
-        storeComponentData(state, action) {
+        storedDescriptionCardData(state, action) {
             state.componentData = action.payload.componentData;
         },
-        closeModal(state) {
+        closeDescriptionModal(state) {
             state.isOpen = false;
             state.componentId = null;
             state.componentData = {};
         },
-        openModal(state, action) {
+        openDescriptionModal(state, action) {
             state.isOpen = action.payload.isOpen;
+            state.pestId = action.payload.pestId;
         },
 
     }
 });
 
-export const { openModal, closeModal, storeComponentData } = descriptionModal.actions;
+export const { openDescriptionModal, closeDescriptionModal, storedDescriptionCardData } = descriptionModal.actions;
 
 export default descriptionModal.reducer;

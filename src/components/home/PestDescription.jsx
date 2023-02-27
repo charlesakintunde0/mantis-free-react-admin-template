@@ -20,7 +20,7 @@ import { Link, useNavigate } from 'react-router-dom';
 //redux
 import { setUser } from 'store/reducers/user';
 import { useDispatch, useSelector } from 'react-redux';
-import { openModal } from 'store/reducers/descriptionModal';
+import { openDescriptionModal } from 'store/reducers/descriptionModal';
 
 // components
 import Descriptor from 'components/Descriptor/Descriptor';
@@ -31,7 +31,7 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 
 // api
 import { useGetUserQuery } from 'api/userApi';
-import { useGetPestInfoDescriptionQuery } from 'api/pestApi';
+import { useGetPestInfoDescriptionQuery, useCreatePestInfoDescriptionMutation } from 'api/pestApi';
 import { Grid } from '../../../node_modules/@mui/material/index';
 import MainCard from 'components/MainCard';
 
@@ -40,6 +40,8 @@ toast.configure()
 function PestDescription() {
     const dispatch = useDispatch();
     const anchorRef = useRef(null);
+    const [createPestInfoDescription] = useCreatePestInfoDescriptionMutation();
+
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
     const PId = useParams().pestID; //saves the pest ID from previous page
     const pestInfoDescriptionData = useGetPestInfoDescriptionQuery(PId);
@@ -80,7 +82,15 @@ function PestDescription() {
     }, [pestInfoDescriptionData])
 
     const handleAddButtonClick = () => {
-        dispatch(openModal());
+
+        console.log(PId)
+
+        dispatch(openDescriptionModal({
+            isOpen: true,
+            pestId: PId
+        }));
+
+        console.log('clicked')
     }
 
 
