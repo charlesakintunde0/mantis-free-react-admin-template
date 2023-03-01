@@ -51,7 +51,7 @@ function AdminPests() {
     const [pestID, setPestID] = useState("");
     const [pestName, setPestName] = useState("");
     const [pestDesc, setPestDesc] = useState("");
-    const [imgValues, setImgValues] = useState(initialImageValues);
+    const [imgValues,] = useState(initialImageValues);
 
 
     useEffect(() => {
