@@ -3,17 +3,49 @@ import React from 'react'
 // material-ui
 import {
     Grid,
-    Typography
+    Typography,
+    Box
 } from '@mui/material';
 
+// react redux
+import { useDispatch, useSelector } from 'react-redux'
+
+
+//reducers
+import { storedDescriptionCardData } from 'store/reducers/descriptionModal';
+
+// api
+
+import { useDeletePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation } from '../../api/pestApi'
 
 // antd
-import { Carousel } from 'antd';
+import {
+    Carousel,
+    Button,
+    Tooltip,
+} from 'antd';
+import {
+    DeleteFilled,
+    EditOutlined
+} from '@ant-design/icons';
 
 
 const Descriptor = ({ description }) => {
+    const dispatch = useDispatch();
+    const store = useSelector(state => state.descriptionModal);
 
-    // console.log(description)
+    const [deletePestInfoDescription] = useDeletePestInfoDescriptionMutation();
+    const handleDeleteDescription = () => {
+        deletePestInfoDescription(description.id);
+    }
+
+
+    const handleEditDescription = () => {
+        dispatch(storedDescriptionCardData({
+            componentData: description,
+            isOpen: true
+        }));
+    }
 
 
     const contentStyle = {
@@ -28,15 +60,29 @@ const Descriptor = ({ description }) => {
     };
     return (
         <MainCard>
-            <Grid spacing={3}>
+            <Grid container spacing={3}>
                 <Grid item xs={12}>
+                    <Box display="flex">
+                        <Box flexGrow={1}>
+                            <Typography variant='h6'>{description.descriptionTitle ? description.descriptionTitle.toUpperCase() : 'TITLE HERE'}</Typography>
+                        </Box>
+                        <Box alignSelf="flex-end">
+                            <Tooltip placement="top" title={'Edit'}>
+                                <Button onClick={handleEditDescription} type="primary" ghost icon={<EditOutlined />} />
+                            </Tooltip>
 
-                    <Typography variant='h6'>{description.descriptionTitle ? description.descriptionTitle.toUpperCase() : 'TITLE HERE'}</Typography>
+                            <Tooltip placement="top" title={'Delete'}>
+                                <Button onClick={handleDeleteDescription} type="primary" ghost danger icon={<DeleteFilled />} />
+                            </Tooltip>
+                        </Box>
+                    </Box>
                 </Grid>
 
                 <Grid item xs={12}>
                     <Carousel>
                         {description.peiPestInfoDescriptionImages.map((img) => (<>
+                            {console.log(img)}
+
                             <img key={img.id} style={contentStyle} src={img.peiPestDescriptionInfoImageUrl} />
                         </>))}
 
