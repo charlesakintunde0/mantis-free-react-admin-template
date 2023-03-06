@@ -8,9 +8,22 @@ import useGeoLocation from '../hooks/useGeoLocation';
 import Footer from '../Footer/Footer';
 import Config from "./../../config.json"
 
-//mui
-import { IconButton } from '@mui/material';
+// material-ui
+import {
+    Grid,
+    Typography,
+    Box
+} from '@mui/material';
 
+
+
+
+// antd
+import {
+    Carousel,
+    Button,
+    Tooltip,
+} from 'antd';
 //router
 import { useParams } from 'react-router'
 
@@ -27,12 +40,11 @@ import Descriptor from 'components/Descriptor/Descriptor';
 import DescriptionManager from 'components/contentManager/DescriptionManager';
 
 // antd
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 
 // api
 import { useGetUserQuery } from 'api/userApi';
 import { useGetPestInfoDescriptionQuery, useCreatePestInfoDescriptionMutation } from 'api/pestApi';
-import { Grid } from '../../../node_modules/@mui/material/index';
 import MainCard from 'components/MainCard';
 
 toast.configure()
@@ -235,20 +247,22 @@ function PestDescription() {
                     <MainCard>
                         <Grid
                             container
-                            spacing={2}>
+                            spacing={3}>
                             <Grid
-                                item
-                                style={{ display: "flex", justifyContent: "flex-start" }}
-                                alignItems="center"
-                                jusity="left">
-                                <IconButton
-                                    color="secondary"
-                                    sx={{ color: 'text.primary', bgcolor: 'grey.100' }}
-                                    ref={anchorRef}
-                                    onClick={handleAddButtonClick}
-                                >
-                                    <PlusCircleOutlined />
-                                </IconButton>
+                                item xs={12}
+                            >
+
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Box flexGrow={2}>
+                                        <Typography>{'PEST NAME'}</Typography>
+                                    </Box>
+                                    <Box alignSelf="flex-end">
+                                        <Tooltip placement="bottom" title={'Add Description'}>
+                                            <Button onClick={handleAddButtonClick} type="primary"
+                                                icon={<PlusOutlined />} />
+                                        </Tooltip>
+                                    </Box>
+                                </Box>
                             </Grid>
                         </Grid>
                         <DescriptionManager />

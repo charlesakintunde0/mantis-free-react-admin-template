@@ -66,7 +66,7 @@ export const userApi = createApi({
                     'Content-Type': 'application/json',
                 },
             }),
-            invalidatesTags: [{ type: '', id: 'List' }, { type: 'User', id: (id) => id }],
+            invalidatesTags: [{ type: 'User', id: 'List' }, { type: 'User', id: (id) => id }],
         }),
 
 

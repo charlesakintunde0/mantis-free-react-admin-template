@@ -12,11 +12,12 @@ const descriptionModal = createSlice({
     reducers: {
         storedDescriptionCardData(state, action) {
             state.componentData = action.payload.componentData;
+            state.isOpen = action.payload.isOpen
         },
         closeDescriptionModal(state) {
             state.isOpen = false;
             state.componentId = null;
-            state.componentData = {};
+            state.componentData = null;
         },
         openDescriptionModal(state, action) {
             state.isOpen = action.payload.isOpen;
