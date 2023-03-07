@@ -1,8 +1,8 @@
-import { DashboardOutlined } from '@ant-design/icons';
+import { DashboardFilled } from '@ant-design/icons';
 
 // icons
 const icons = {
-    DashboardOutlined
+    DashboardFilled
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -17,7 +17,7 @@ const dashboard = {
             title: 'Dashboard',
             type: 'item',
             url: '/dashboard',
-            icon: icons.DashboardOutlined,
+            icon: icons.DashboardFilled,
             breadcrumbs: false
         }
     ]

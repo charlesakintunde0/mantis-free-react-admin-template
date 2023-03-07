@@ -4,12 +4,55 @@ import axios from 'axios'
 import { Link } from "react-router-dom";
 import Config from "./../../config.json";
 
+// material-ui
+import {
+    Grid,
+    Typography,
+    Box
+} from '@mui/material';
+
+
+// antd
+import {
+    Space,
+    Spin,
+    Button,
+    Tooltip,
+    Card
+} from 'antd';
+
+
+import MainCard from 'components/MainCard';
+
+//antd icons
+import { PlusOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+
+//component
+import PestManager from 'components/contentManager/PestManager/PestManager';
+
+
 
 // api 
 import { useGetUserQuery } from 'api/userApi';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { openPestModal } from 'store/reducers/pestModal';
+
 //constant 
 import userRole from 'Constants/userRole';
+
+const contentStyle = {
+    width: '100%',
+    height: '250px',
+    color: '#fff',
+    lineHeight: '160px',
+    textAlign: 'center',
+    background: '#364d79',
+    objectFit: 'cover',
+
+};
+
 
 function AllPests() {
     //test comment
@@ -19,6 +62,8 @@ function AllPests() {
         pathname: "/AdminPests",
         param1: cropID,
     }
+    const drawerOpen = useSelector(state => state.menu.drawerOpen);
+    const dispatch = useDispatch();
     const [pest, setPest] = useState([]);
     const [cropName, setCropName] = useState([]);
     const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
@@ -39,6 +84,13 @@ function AllPests() {
         }
 
     }, [loading, loading1])
+
+    const handleAddButtonClick = () => {
+        dispatch(openPestModal({
+            isOpen: true,
+            cropId: cropID,
+        }));
+    }
 
 
     useEffect(() => {
@@ -88,35 +140,78 @@ function AllPests() {
 
 
     return (
-        <div className="outer">
-            <div className='adminStyle'>
-                <h2> Select the Pest for {cropName}</h2>
+        <>
+            <Grid
+                container
+                spacing={5}>
+                <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                    <MainCard>
 
-                {add &&
-                    <div className='adminAccess'>
-                        <Link to={{
-                            pathname: `/AdminPests/${cropID}`
-                        }}>
-                            <button className="editSave edit">Edit</button>
-                        </Link>
-                    </div>}
-            </div>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Box flexGrow={2}>
+                                <Typography variant='h5' style={{ textTransform: 'uppercase' }}> {cropName} PEST</Typography>
+                            </Box>
+                            <Box alignSelf="flex-end">
+                                <Tooltip placement="bottom" title={'Add Pest'}>
+                                    <Button onClick={handleAddButtonClick} type="primary"
+                                        icon={<PlusOutlined />} />
+                                </Tooltip>
+                            </Box>
+                        </Box>
+                        <PestManager />
+                    </MainCard>
 
-            <div className="cards">
+                </Grid>
+            </Grid>
 
-                {pest.map(p => (
-                    <Link to={`/Pest/Description/${p.pId}`}>
-                        <div className="card">
-                            <p className="description">{p.pName}</p>
-                            <div className="cropImg">
-                                <img src={p.pUrl} alt="Loading Images"></img>
-                            </div>
-                        </div>
-                    </Link>
-                )
-                )}
-            </div>
-        </div>
+            <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                <Grid container spacing={5}>
+                    {
+                        pest ? <> {
+                            pest.map(p => (
+
+                                <Grid item xs={12} sm={6} md={3}>
+                                    <Card
+                                        hoverable
+                                        cover={
+                                            <Link to={`/Pest/Description/${p.pId}`}>
+                                                <img
+                                                    alt="Loading Images"
+                                                    src={p.pUrl}
+                                                    style={contentStyle}
+                                                />
+                                            </Link>
+                                        }
+                                        actions={[
+                                            <EditOutlined key="edit" />,
+                                            <DeleteOutlined key="delete" />,
+                                        ]}
+                                    >
+                                        <Link to={`/Pest/Description/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
+                                    </Card>
+
+
+                                </Grid>
+
+                            )
+                            )
+                        } </>
+                            : <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Space size="middle">
+                                        <Spin tip={'Loading content...'} size="large" />
+                                    </Space>
+
+                                </Box>
+                            </Grid>
+
+                    }
+                </Grid>
+
+            </Grid>
+
+        </>
+
     )
 }
 

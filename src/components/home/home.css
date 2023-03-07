@@ -23,19 +23,22 @@
 }
 
 .container a:hover {
-    background-color: rgb(183, 185, 172);
-    cursor: pointer;
+    border: 1px solid #1890ff;
+    color: #1890ff;
+    /* transform: translateY(-.7px); */
+    transition: all 0.2s ease-in-out;
 }
+
 @media only screen and (max-width: 780px) {
-    .container{
+    .container {
         width: 100%;
         margin-top: 0.5rem;
         /* flex-direction: column; */
         justify-content: space-around;
         align-items: center;
     }
-    .container a{
+
+    .container a {
         width: 30%;
     }
-   }
- 
+}

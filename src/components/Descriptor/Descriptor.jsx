@@ -64,7 +64,7 @@ const Descriptor = ({ description }) => {
                 <Grid item xs={12}>
                     <Box display="flex">
                         <Box flexGrow={1}>
-                            <Typography variant='h5'>{description.descriptionTitle ? description.descriptionTitle.toUpperCase() : 'TITLE HERE'}</Typography>
+                            <Typography variant='h5'>{description.descriptionTitle ? description.descriptionTitle.toUpperCase() : ''}</Typography>
                         </Box>
                         <Box alignSelf="flex-end">
                             <Tooltip placement="top" title={'Edit'}>

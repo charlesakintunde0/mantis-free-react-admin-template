@@ -11,7 +11,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import './DescriptionManager.css'
 
 // api
-import { useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation } from '../../api/pestApi'
+import { useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation } from '../../../api/pestApi'
 
 // react-redux
 import { useSelector, useDispatch } from 'react-redux';

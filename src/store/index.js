@@ -6,7 +6,8 @@ import menu from './reducers/menu';
 import auth from './reducers/auth';
 import user from './reducers/user';
 import descriptionModal from './reducers/descriptionModal';
-
+import cropModal from './reducers/cropModal';
+import pestModal from './reducers/pestModal';
 
 
 // project import
@@ -26,7 +27,9 @@ const store = configureStore({
         menu,
         auth,
         user,
-        descriptionModal
+        descriptionModal,
+        cropModal,
+        pestModal
 
 
     },

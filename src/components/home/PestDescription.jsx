@@ -37,7 +37,7 @@ import { openDescriptionModal } from 'store/reducers/descriptionModal';
 
 // components
 import Descriptor from 'components/Descriptor/Descriptor';
-import DescriptionManager from 'components/contentManager/DescriptionManager';
+import DescriptionManager from 'components/contentManager/DescriptionManger/DescriptionManager';
 
 // antd
 import { PlusOutlined } from '@ant-design/icons';
@@ -239,8 +239,6 @@ function PestDescription() {
             <Grid
                 container
                 spacing={2}
-            // alignItems="center"
-            // justifyContent="center"
             >
 
                 <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>

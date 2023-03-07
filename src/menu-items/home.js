@@ -1,9 +1,15 @@
 // assets
-import { DashboardOutlined } from '@ant-design/icons';
+import {
+    HomeFilled,
+    MessageFilled,
+    CustomerServiceFilled
+} from '@ant-design/icons';
 
 // icons
 const icons = {
-    DashboardOutlined
+    HomeFilled,
+    MessageFilled,
+    CustomerServiceFilled
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -18,7 +24,7 @@ const home = {
             title: 'Home',
             type: 'item',
             url: '/',
-            icon: icons.DashboardOutlined,
+            icon: icons.HomeFilled,
             breadcrumbs: false
         },
         {
@@ -26,7 +32,7 @@ const home = {
             title: 'Feedback',
             type: 'item',
             url: '/comments',
-            icon: icons.DashboardOutlined,
+            icon: icons.CustomerServiceFilled,
             breadcrumbs: false
         },
         {
@@ -34,7 +40,7 @@ const home = {
             title: 'About',
             type: 'item',
             url: '/About',
-            icon: icons.DashboardOutlined,
+            icon: icons.MessageFilled,
             breadcrumbs: false
         },
     ]
