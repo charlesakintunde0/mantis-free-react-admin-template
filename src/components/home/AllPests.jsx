@@ -37,7 +37,7 @@ import PestManager from 'components/contentManager/PestManager/PestManager';
 import { useGetUserQuery } from 'api/userApi';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { openPestModal } from 'store/reducers/pestModal';
+import { openPestModal, storedPestCardData } from 'store/reducers/pestModal';
 
 //constant 
 import userRole from 'Constants/userRole';
@@ -140,26 +140,33 @@ function AllPests() {
 
 
 
-    const handleEditCrop = (crop) => {
-        // dispatch(storedCropCardData({
-        //     componentData: crop,
-        //     isOpen: true,
-        //     cropId: crop.id,
-        // }));
+    const handleEditCrop = (pest) => {
+        console.log
+        dispatch(storedPestCardData({
+            componentData: pest,
+            isOpen: true,
+            pestId: pest.pId,
+        }));
 
 
     }
 
-    const handleDeleteCrop = (cropId) => {
-        // axios.delete(Config.DELETE_CROP + cropId)
-        //     .then(res => {
-        //         // toast.success('record has been deleted', { //THE SUCCESS NOTIFICATION
-        //         //     position: toast.POSITION.TOP_RIGHT,
-        //         //     hideProgressBar: false,
-        //         //     autoClose: 2000,
+    const handleDeleteCrop = (pestId) => {
+        console.log(pestId)
 
-        //         // });
-        //     })
+        axios.delete(`${Config.DELETE_PEST_FROM_CROP}/${cropID}/${pestId
+            }`)
+            .then(res => {
+                // toast.success('record has been deleted', { //THE SUCCESS NOTIFICATION
+                //     position: toast.POSITION.TOP_RIGHT,
+                //     hideProgressBar: false,
+                //     autoClose: 2000,
+
+                // });
+            })
+
+
+
 
     }
 
@@ -209,8 +216,8 @@ function AllPests() {
                                                 </Link>
                                             }
                                             actions={[
-                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(pest)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteCrop(pest.id)} />
+                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(p)} />,
+                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteCrop(p.pId)} />
 
                                             ]}
                                         >

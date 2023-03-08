@@ -88,7 +88,7 @@ function Crops() {
             cropId: crop.id,
         }));
 
-        console.log(crop);
+
     }
 
 
