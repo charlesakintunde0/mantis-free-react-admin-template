@@ -21,7 +21,7 @@ const cropModal = createSlice({
         },
         openCropModal(state, action) {
             state.isOpen = action.payload.isOpen;
-            state.pestId = action.payload.pestId;
+            state.cropId = action.payload.pestId;
         },
 
     }

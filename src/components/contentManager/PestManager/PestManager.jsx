@@ -96,12 +96,9 @@ const PestManager = () => {
 
             formData.append('PName', values.pest_name);
             formData.append('PImageFile', values.image_upload.originFileObj);
-            formData.append('CId', cropId);
+            formData.append('CrId', cropId);
 
-            console.log(cropId)
-
-
-            axios.post('https://localhost:44361/api/cropsPests/create', formData, {
+            axios.post('https://localhost:44361/api/pests/create', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 },

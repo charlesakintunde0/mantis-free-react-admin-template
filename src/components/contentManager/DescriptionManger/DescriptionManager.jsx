@@ -76,11 +76,11 @@ const DescriptionManager = () => {
                     return imageFile;
                 });
                 const images = await Promise.all(imagePromises);
-                setDefaultImages(images);
+                return images;
                 // form.setFieldsValue({ image_upload: componentData ? { fileList: defaultImages } : [] })
             };
 
-            fetchImages();
+            fetchImages().then(images => setFileList([images]));
             form.setFieldsValue({ title: componentData ? componentData.descriptionTitle : '' })
             form.setFieldsValue({ description: componentData ? componentData.peiPestInfoDescriptionContent : '' })
         }
@@ -164,7 +164,7 @@ const DescriptionManager = () => {
     const handleCancel = () => {
         dispatch(closeDescriptionModal());
         form.resetFields();
-        setDefaultImages([]);
+        setFileList([]);
     };
 
     // const handleUpload = (file) => {
@@ -199,8 +199,9 @@ const DescriptionManager = () => {
 
     const handleImageChange = (info) => {
         // if (!info.file.status) {
-        setAddedImages([...addedImages, info.file]);
-        form.setFieldsValue({ image_upload: { fileList: addedImages } })
+
+        setFileList(fileList);
+        form.setFieldsValue({ image_upload: { fileList: fileList } })
         // }
 
 
@@ -278,6 +279,7 @@ const DescriptionManager = () => {
                         beforeUpload={false}
                         multiple
                         listType="picture"
+                        fileList={fileList}
                         defaultFileList={defaultImages}
                         className="upload-list-inline"
                     >

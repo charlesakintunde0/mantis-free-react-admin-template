@@ -85,7 +85,10 @@ function Crops() {
         dispatch(storedCropCardData({
             componentData: crop,
             isOpen: true,
+            cropId: crop.id,
         }));
+
+        console.log(crop);
     }
 
 

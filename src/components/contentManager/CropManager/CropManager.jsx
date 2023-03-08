@@ -28,7 +28,7 @@ const CropManager = () => {
     const [loading, setLoading] = useState(false);
     const [createPestInfoDescription, { isLoading }] = useCreatePestInfoDescriptionMutation();
     const [updatePestInfoDescription] = useUpdatePestInfoDescriptionMutation();
-    const { isOpen, componentData, pestId } = useSelector(state => state.cropModal);
+    const { isOpen, componentData, cropId } = useSelector(state => state.cropModal);
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [defaultImages, setDefaultImages] = useState([]);
@@ -79,15 +79,15 @@ const CropManager = () => {
                 const images = await getImage(imageUrl, imgId);
                 return images;
 
-                // setDefaultImages([...defaultImages, images]);
             };
 
-            fetchImages().then(images => setDefaultImages([images]));
+            fetchImages().then(images => setFileList([images]));
             form.setFieldsValue({ crop_name: componentData ? componentData.crop : '' })
         }
 
     }, [componentData])
-    form.setFieldsValue({ image_upload: componentData ? { fileList: defaultImages } : [] })
+    form.setFieldsValue({ image_upload: { fileList: fileList } })
+    console.log(fileList);
 
     const handleCropCardManagerSubmit = () => {
         form.validateFields().then(values => {
@@ -96,7 +96,7 @@ const CropManager = () => {
 
             const formData = new FormData();
 
-            console.log(values.image_upload.file.originFileObj);
+
 
             formData.append('CName', values.crop_name);
             formData.append('CImageFile', values.image_upload.file.originFileObj);
@@ -126,8 +126,12 @@ const CropManager = () => {
             // setLoading(true);
 
 
+            console.log(componentData)
+            console.log(cropId);
+
             const formData = new FormData();
             formData.append('CName', values.crop_name);
+            formData.append('CId', cropId)
             console.log(values);
             values.image_upload.fileList.forEach(fileObj => {
                 formData.append('CImageFile', fileObj.originFileObj);
@@ -155,7 +159,7 @@ const CropManager = () => {
     const handleCancel = () => {
         dispatch(closeCropModal());
         form.resetFields();
-        setDefaultImages([]);
+        setFileList([]);
     };
     const handleImageRemove = (file) => {
         console.log(file);
@@ -247,7 +251,7 @@ const CropManager = () => {
                         multiple={false}
                         listType="picture"
                         defaultFileList={defaultImages}
-                        // fileList={fileList}
+                        fileList={fileList}
                         className="upload-list-inline"
                     >
                         <Button icon={<UploadOutlined />}>Upload</Button>

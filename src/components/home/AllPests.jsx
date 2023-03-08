@@ -139,6 +139,32 @@ function AllPests() {
 
 
 
+
+    const handleEditCrop = (crop) => {
+        // dispatch(storedCropCardData({
+        //     componentData: crop,
+        //     isOpen: true,
+        //     cropId: crop.id,
+        // }));
+
+
+    }
+
+    const handleDeleteCrop = (cropId) => {
+        // axios.delete(Config.DELETE_CROP + cropId)
+        //     .then(res => {
+        //         // toast.success('record has been deleted', { //THE SUCCESS NOTIFICATION
+        //         //     position: toast.POSITION.TOP_RIGHT,
+        //         //     hideProgressBar: false,
+        //         //     autoClose: 2000,
+
+        //         // });
+        //     })
+
+    }
+
+
+
     return (
         <>
             <Grid
@@ -162,52 +188,54 @@ function AllPests() {
                     </MainCard>
 
                 </Grid>
-            </Grid>
-
-            <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
-                <Grid container spacing={5}>
-                    {
-                        pest ? <> {
-                            pest.map(p => (
-
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <Card
-                                        hoverable
-                                        cover={
-                                            <Link to={`/Pest/Description/${p.pId}`}>
-                                                <img
-                                                    alt="Loading Images"
-                                                    src={p.pUrl}
-                                                    style={contentStyle}
-                                                />
-                                            </Link>
-                                        }
-                                        actions={[
-                                            <EditOutlined key="edit" />,
-                                            <DeleteOutlined key="delete" />,
-                                        ]}
-                                    >
-                                        <Link to={`/Pest/Description/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
-                                    </Card>
 
 
+                <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                    <Grid container spacing={5}>
+                        {
+                            pest ? <> {
+                                pest.map(p => (
+
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card
+                                            hoverable
+                                            cover={
+                                                <Link to={`/Pest/Description/${p.pId}`}>
+                                                    <img
+                                                        alt="Loading Images"
+                                                        src={p.pUrl}
+                                                        style={contentStyle}
+                                                    />
+                                                </Link>
+                                            }
+                                            actions={[
+                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(pest)} />,
+                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteCrop(pest.id)} />
+
+                                            ]}
+                                        >
+                                            <Link to={`/Pest/Description/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
+                                        </Card>
+
+
+                                    </Grid>
+
+                                )
+                                )
+                            } </>
+                                : <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <Space size="middle">
+                                            <Spin tip={'Loading content...'} size="large" />
+                                        </Space>
+
+                                    </Box>
                                 </Grid>
 
-                            )
-                            )
-                        } </>
-                            : <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
-                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                    <Space size="middle">
-                                        <Spin tip={'Loading content...'} size="large" />
-                                    </Space>
+                        }
+                    </Grid>
 
-                                </Box>
-                            </Grid>
-
-                    }
                 </Grid>
-
             </Grid>
 
         </>
