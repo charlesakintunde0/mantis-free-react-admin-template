@@ -18,6 +18,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 // reducers
 import { closeDescriptionModal } from 'store/reducers/descriptionModal';
+import { ImageList } from '../../../../node_modules/@mui/material/index';
 
 const DescriptionManager = () => {
     const { TextArea } = Input;
@@ -42,7 +43,7 @@ const DescriptionManager = () => {
     const getImage = async (imageUrl, imgId) => {
         try {
             const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/[^a-zA-Z]/, '');
+            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/\d+/g, '');
             const urlObject = new URL(imageUrl);
             const ext = urlObject.pathname.split('.').pop();
             const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
@@ -72,20 +73,22 @@ const DescriptionManager = () => {
                 const imagePromises = componentData.peiPestInfoDescriptionImages.map(async img => {
                     const imgId = img.id;
                     const imageUrl = img.peiPestDescriptionInfoImageUrl;
-                    const imageFile = await getImage(imageUrl, imgId);
-                    return imageFile;
+                    const images = await getImage(imageUrl, imgId);
+                    return images;
                 });
+
                 const images = await Promise.all(imagePromises);
                 return images;
-                // form.setFieldsValue({ image_upload: componentData ? { fileList: defaultImages } : [] })
             };
 
-            fetchImages().then(images => setFileList([images]));
+            fetchImages().then(images => setFileList(images));
             form.setFieldsValue({ title: componentData ? componentData.descriptionTitle : '' })
             form.setFieldsValue({ description: componentData ? componentData.peiPestInfoDescriptionContent : '' })
+
         }
 
     }, [componentData])
+    form.setFieldsValue({ image_upload: { fileList: fileList } })
 
 
 
@@ -97,8 +100,6 @@ const DescriptionManager = () => {
     const handleDescriptionCardManagerSubmit = () => {
         form.validateFields().then(values => {
             setLoading(true);
-
-
             const formData = new FormData();
             formData.append('descriptionTitle', values.title);
             formData.append('peiPestInfoDescriptionContent', values.description);
@@ -138,8 +139,13 @@ const DescriptionManager = () => {
             formData.append('descriptionTitle', values.title);
             formData.append('peiPestInfoDescriptionContent', values.description);
             formData.append('Id', componentData.id);
-            addedImages.forEach(fileObj => {
-                formData.append('files', fileObj);
+            // addedImages.forEach(fileObj => {
+            //     formData.append('files', fileObj);
+
+            // });
+
+            values.image_upload.fileList.forEach(fileObj => {
+                formData.append('files', fileObj.originFileObj);
 
             });
 
@@ -165,6 +171,7 @@ const DescriptionManager = () => {
         dispatch(closeDescriptionModal());
         form.resetFields();
         setFileList([]);
+        setLoading(false);
     };
 
     // const handleUpload = (file) => {
@@ -197,9 +204,15 @@ const DescriptionManager = () => {
             });
     }
 
-    const handleImageChange = (info) => {
+    const handleImageChange = ({ fileList }) => {
         // if (!info.file.status) {
 
+
+
+
+        // if (fileList.length > 5) {
+        //     fileList.splice(1);
+        // }
         setFileList(fileList);
         form.setFieldsValue({ image_upload: { fileList: fileList } })
         // }
@@ -274,13 +287,12 @@ const DescriptionManager = () => {
                     <Upload
                         onRemove={handleImageRemove}
                         onChange={handleImageChange}
-                        limit={1}
+
                         accept=".jpg,.jpeg,.png"
                         beforeUpload={false}
                         multiple
                         listType="picture"
                         fileList={fileList}
-                        defaultFileList={defaultImages}
                         className="upload-list-inline"
                     >
                         <Button icon={<UploadOutlined />}>Upload</Button>
