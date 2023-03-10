@@ -2,8 +2,14 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+//antd
+import { Button, Modal } from 'antd';
 
+//redux
+import { useSelector, useDispatch } from 'react-redux';
 
+//reducer
+import { closeUserModal } from 'store/reducers/usersModal';
 
 // material-ui
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
@@ -58,10 +64,12 @@ function stableSort(array, comparator) {
 
 }
 
-export default function OrderTable() {
+export default function UsersTable() {
     const { data } = useGetAllUsersQuery();
     const [changeRoles] = useChangeUserRoleMutation();
     const [deleteUser] = useDeleteUserMutation();
+    const dispatch = useDispatch();
+    const isOpen = useSelector((state) => state.usersModal.isOpen);
 
     const rows = data ? data.map((row) => createData(row.uId, row.uFirstName, row.uLastName, row.uEmail, row.uRole)) : [];
 
@@ -76,64 +84,73 @@ export default function OrderTable() {
 
     };
 
+
+    const handleCancel = () => {
+        dispatch(closeUserModal());
+    };
+
     const handleUserDelete = (id) => {
         deleteUser(id);
 
     }
     return (
-        <Box>
-            <TableContainer
-                sx={{
-                    width: '100%',
-                    overflowX: 'auto',
-                    position: 'relative',
-                    display: 'block',
-                    maxWidth: '100%',
-                    '& td, & th': { whiteSpace: 'nowrap' }
-                }}
-            >
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="left">User Id</TableCell>
-                            <TableCell align="left">First Name</TableCell>
-                            <TableCell align="left">Last Name</TableCell>
-                            <TableCell align="left">Email</TableCell>
-                            <TableCell align="left">Role</TableCell>
-                            <TableCell align="right"></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    {rows.length > 0 ?
-                        <TableBody>
-                            {rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >   <TableCell align="left">{row.id}</TableCell>
-                                    <TableCell align="left">{row.firstname}</TableCell>
-                                    <TableCell align="left">{row.lastname}</TableCell>
-                                    <TableCell align="left">{row.email}</TableCell>
-                                    <TableCell align="left"> <Space wrap>
+        <Modal title={'EDIT USERS'} open={isOpen} onCancel={handleCancel} width={800} footer={null}>
+            <Box>
+                <TableContainer
+                    sx={{
+                        width: '100%',
+                        overflowX: 'auto',
+                        position: 'relative',
+                        display: 'block',
+                        maxWidth: '100%',
+                        '& td, & th': { whiteSpace: 'nowrap' }
+                    }}
+                >
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="left"> ID</TableCell>
+                                <TableCell align="left">{'FIRSTNAME'}</TableCell>
+                                <TableCell align="left">{'LASTNAME'}</TableCell>
+                                <TableCell align="left">{'EMAIL'}</TableCell>
+                                <TableCell align="left">{'ROLE'}</TableCell>
+                                <TableCell align="right"></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        {rows.length > 0 ?
+                            <TableBody>
+                                {rows.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >   <TableCell align="left">{row.id}</TableCell>
+                                        <TableCell align="left">{row.firstname}</TableCell>
+                                        <TableCell align="left">{row.lastname}</TableCell>
+                                        <TableCell align="left">{row.email}</TableCell>
+                                        <TableCell align="left"> <Space wrap>
 
-                                        <Select
-                                            defaultValue={row.role}
-                                            style={{ width: 120 }}
-                                            onChange={(value) => handleChange(value, row.id, row.firstname, row.lastname, row.email)}
-                                            options={[
-                                                { value: 'User', label: 'User' },
-                                                { value: 'Moderator', label: 'Moderator' },
-                                                { value: 'Admin', label: 'Admin' },
-                                            ]}
-                                        />
-                                    </Space></TableCell>
-                                    <TableCell align="right" onClick={() => handleUserDelete(row.id)}><DeleteFilled cursor="pointer" /></TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                        : <Typography align='center'>No registered user as of now...</Typography>}
-                </Table>
-            </TableContainer>
-        </Box>
+                                            <Select
+                                                defaultValue={row.role}
+                                                style={{ width: 120 }}
+                                                onChange={(value) => handleChange(value, row.id, row.firstname, row.lastname, row.email)}
+                                                options={[
+                                                    { value: 'User', label: 'User' },
+                                                    { value: 'Moderator', label: 'Moderator' },
+                                                    { value: 'Admin', label: 'Admin' },
+                                                ]}
+                                            />
+                                        </Space></TableCell>
+                                        <TableCell align="right" onClick={() => handleUserDelete(row.id)}>
+                                            <Button danger ghost icon={<DeleteFilled />} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                            : <Typography align='center'>No registered user as of now...</Typography>}
+                    </Table>
+                </TableContainer>
+            </Box>
+        </Modal>
     );
 }
 

@@ -21,19 +21,8 @@ const HeaderContent = () => {
             {!matchesXs && <Search />}
             {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
 
-            <IconButton
-                target="_blank"
-                disableRipple
-                color="secondary"
-                title="Edit User"
-                sx={{ color: 'text.primary', bgcolor: 'grey.100' }}
-            >
 
 
-                <Tooltip placement="bottom" title={"Edit User"}>
-                    <EditOutlined />
-                </Tooltip>
-            </IconButton>
 
             {!matchesXs && <Profile />}
             {matchesXs && <MobileSection />}
