@@ -3,7 +3,6 @@ import { setUser } from 'store/reducers/user';
 
 import { Link } from "react-router-dom";
 import './insects.css'
-import AdminCrops from '../../pages/admin-dashboard/AdminCrops';
 import './Crops.css'
 import Config from "./../../config.json";
 

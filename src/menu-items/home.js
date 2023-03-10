@@ -15,8 +15,8 @@ const icons = {
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
 
 const home = {
-    id: 'group-dashboard',
-    title: 'Navigation',
+    id: 'app-home',
+    title: 'Home',
     type: 'group',
     children: [
         {
@@ -27,22 +27,7 @@ const home = {
             icon: icons.HomeFilled,
             breadcrumbs: false
         },
-        {
-            id: 'feedback',
-            title: 'Feedback',
-            type: 'item',
-            url: '/comments',
-            icon: icons.CustomerServiceFilled,
-            breadcrumbs: false
-        },
-        {
-            id: 'about',
-            title: 'About',
-            type: 'item',
-            url: '/About',
-            icon: icons.MessageFilled,
-            breadcrumbs: false
-        },
+
     ]
 };
 

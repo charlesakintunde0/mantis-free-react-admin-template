@@ -8,7 +8,7 @@ import user from './reducers/user';
 import descriptionModal from './reducers/descriptionModal';
 import cropModal from './reducers/cropModal';
 import pestModal from './reducers/pestModal';
-
+import usersModal from './reducers/usersModal';
 
 // project import
 
@@ -29,7 +29,8 @@ const store = configureStore({
         user,
         descriptionModal,
         cropModal,
-        pestModal
+        pestModal,
+        usersModal
 
 
     },

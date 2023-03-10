@@ -1,12 +1,15 @@
 // material-ui
 import { Box, IconButton, Link, useMediaQuery } from '@mui/material';
-import { GithubOutlined } from '@ant-design/icons';
+import { EditOutlined } from '@ant-design/icons';
 
 // project import
 import Search from './Search';
 import Profile from './Profile';
 import Notification from './Notification';
 import MobileSection from './MobileSection';
+
+//antd 
+import { Tooltip } from 'antd';
 
 // ==============================|| HEADER - CONTENT ||============================== //
 
@@ -19,18 +22,19 @@ const HeaderContent = () => {
             {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
 
             <IconButton
-                component={Link}
-                href="https://github.com/codedthemes/mantis-free-react-admin-template"
                 target="_blank"
                 disableRipple
                 color="secondary"
-                title="Download Free Version"
+                title="Edit User"
                 sx={{ color: 'text.primary', bgcolor: 'grey.100' }}
             >
-                <GithubOutlined />
+
+
+                <Tooltip placement="bottom" title={"Edit User"}>
+                    <EditOutlined />
+                </Tooltip>
             </IconButton>
 
-            <Notification />
             {!matchesXs && <Profile />}
             {matchesXs && <MobileSection />}
         </>

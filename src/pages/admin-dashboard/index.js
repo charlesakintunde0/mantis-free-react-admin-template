@@ -14,7 +14,7 @@ import { useGetAllUsersQuery } from 'api/userApi';
 
 // project import
 import MainCard from 'components/MainCard';
-import OrdersTable from './OrdersTable';
+import UsersTable from './UsersTables';
 
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
@@ -34,7 +34,7 @@ const AdminDashboard = () => {
                     <Grid item />
                 </Grid>
                 <MainCard sx={{ mt: 2 }} content={false}>
-                    <OrdersTable />
+                    <UsersTable />
                 </MainCard>
             </Grid>
         </Grid>

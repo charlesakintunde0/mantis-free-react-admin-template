@@ -20,8 +20,6 @@ const PestDescription = Loadable(lazy(() => import('../components/home/PestDescr
 const AllDiseases = Loadable(lazy(() => import('../components/home/AllDiseases')));
 const CropsDisease = Loadable(lazy(() => import('../components/home/CropsDisease')));
 const Comments = Loadable(lazy(() => import('../components/Comments/Comments')));
-const AdminPests = Loadable(lazy(() => import('../pages/admin-dashboard/AdminPests')));
-const AdminCrops = Loadable(lazy(() => import('../pages/admin-dashboard/AdminCrops')));
 const ExampleComment = Loadable(lazy(() => import('../components/Comments/ExampleComment')));
 
 
@@ -83,21 +81,12 @@ const MainRoutes = {
             element: <ExampleComment />
         },
         {
-            path: '/AdminCrops',
-            element: <AdminCrops />
-        },
-        {
             path: '/samplepages',
             element: <SamplePage />
         },
         {
             path: '/dashboard',
             element: <AdminDashboard />
-        }
-        ,
-        {
-            path: '/AdminPests/:cropID',
-            element: <AdminPests />
         }
 
     ]

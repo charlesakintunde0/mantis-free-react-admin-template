@@ -1,19 +1,42 @@
 // assets
-import { LoginOutlined, ProfileOutlined } from '@ant-design/icons';
+import {
+    LoginOutlined,
+    ProfileOutlined,
+    MessageFilled,
+    CustomerServiceFilled
+} from '@ant-design/icons';
 
 // icons
 const icons = {
     LoginOutlined,
-    ProfileOutlined
+    ProfileOutlined,
+    MessageFilled,
+    CustomerServiceFilled
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
 
 const pages = {
-    id: 'authentication',
-    title: 'Authentication',
+    id: 'pages',
+    title: 'Navigation',
     type: 'group',
     children: [
+        {
+            id: 'feedback',
+            title: 'Feedback',
+            type: 'item',
+            url: '/comments',
+            icon: icons.CustomerServiceFilled,
+            breadcrumbs: false
+        },
+        {
+            id: 'about',
+            title: 'About',
+            type: 'item',
+            url: '/About',
+            icon: icons.MessageFilled,
+            breadcrumbs: false
+        },
         {
             id: 'login1',
             title: 'Login',
@@ -29,7 +52,8 @@ const pages = {
             url: '/registration',
             icon: icons.ProfileOutlined,
             target: true
-        }
+        },
+
     ]
 };
 
