@@ -55,36 +55,27 @@ function PestDescription() {
     const [createPestInfoDescription] = useCreatePestInfoDescriptionMutation();
 
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
-    const PId = useParams().pestID; //saves the pest ID from previous page
-    const pestInfoDescriptionData = useGetPestInfoDescriptionQuery(PId);
+    const { pestId, pestName } = useParams(); //saves the pest ID from previous page
+    const pestInfoDescriptionData = useGetPestInfoDescriptionQuery(pestId);
     const currentlyLoggedInUser = JSON.parse(localStorage.getItem('user'));
-    // const map = LeafletLocation(PId, currentlyLoggedInUser.uId);
+    const userId = currentlyLoggedInUser.uId;
+    const map = LeafletLocation(pestId, userId);
+    console.log(pestInfoDescriptionData)
     const userLocation = useGeoLocation();
     const [loading, setLoading] = useState(true); // for populating all the states until its false
     const [loading1, setLoading1] = useState(true);
     const [saving, setSaving] = useState(false); //for changing the button to "saving" and disabled after clicking save
     const [show, setShow] = useState(true);
-    const [pestName, setPestName] = useState(null);
-    const [PinBiologicalinfo, setBiologicalinfo] = useState(null);
-    const [PinMonitoringMethod, setMonitoringMethod] = useState(null);
-    const [PinControlThreshold, setControlThreshold] = useState(null);
-    const [PinPhysicalControl, setPhysicalControl] = useState(null);
-    const [PinBiologicalControl, setBiologicalControl] = useState(null);
-    const [PinCulturalControl, setCulturalControl] = useState(null);
-    const [PinChemicalControl, setChemicalControl] = useState(null);
-    const [pestInfoDescription, setPestInfoDescription] = useState([]);
+    const [pestInfoDescription, setPestInfoDescription] = useState([])
 
 
 
-
-    const [userId, setUserId] = useState(null);
+    // const [userId, setUserId] = useState(null);
     const [role, setRole] = useState(null);
     const [edit, setEdit] = useState(false);
     const [informative, setinformative] = useState(false);
     const navigate = useNavigate(); // to keep track of the history. Might use later to navigate to different pages
-    //const location = useGeoLocatioin();
 
-    // console.log(pestInfoDescription)
     useEffect(() => {
         if (pestInfoDescriptionData.isSuccess) {
             setPestInfoDescription(pestInfoDescriptionData.data)
@@ -95,11 +86,11 @@ function PestDescription() {
 
     const handleAddButtonClick = () => {
 
-        console.log(PId)
+        console.log(pestId)
 
         dispatch(openDescriptionModal({
             isOpen: true,
-            pestId: PId
+            pestId: pestId
         }));
 
         console.log('clicked')
@@ -121,7 +112,7 @@ function PestDescription() {
                 method: 'POST',
                 headers: { "Content-Type": 'application/json;charset=UTF-8' },
                 body: JSON.stringify({
-                    PId: PId,
+                    PId: pestId,
                     UId: userId,
                     CoordLat: userLocation.coordinates.lat,
                     CoordLng: userLocation.coordinates.lng
@@ -165,7 +156,7 @@ function PestDescription() {
             const content = await res.json();
             //console.log(content);
             setRole(content[0].uAuthLevel);
-            setUserId(content[0].uId);
+            // setUserId(content[0].uId);
             if (role === 'Admin') {
                 // console.log("dhumse");
                 setEdit(true);
@@ -176,30 +167,7 @@ function PestDescription() {
             console.log(err);
         }
     }
-    /* SAVEDATA() FUNCTION SAVES THE DATA AFTER EDITING
-    ONLY ACCESSIBLE BY ADMIN */
-    const saveData = (e) => {
-        e.preventDefault();
-        const objToUpdate = { PId, PinBiologicalinfo, PinMonitoringMethod, PinControlThreshold, PinPhysicalControl, PinChemicalControl, PinBiologicalControl, PinCulturalControl };
-        setSaving(true);
-        fetch(Config.UPDATE_PEST_DESCRIPTION, {
-            method: 'PUT',
-            headers: { "Content-Type": 'application/json;charset=UTF-8' },
-            body: JSON.stringify(objToUpdate)
-        }).then(() => {
-            setSaving(false);
-            setShow(true);
-            toast.success('Successfully updated', {
-                position: toast.POSITION.TOP_RIGHT,
-                hideProgressBar: false,
-                autoClose: 2000,
 
-            });
-
-            //window.location.reload();
-        })
-
-    }
     const toggle = () => {
         console.log(role)
         if (role === 'Admin') {
@@ -210,73 +178,84 @@ function PestDescription() {
 
     return (
         <>
-            <Grid
-                container
-                spacing={2}
-            >
+            <div className="container">
+                <Grid
+                    container
+                    spacing={2}
+                >
 
-                <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
-                    <MainCard>
-                        <Grid
-                            container
-                            spacing={3}>
+                    <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                        <MainCard>
                             <Grid
-                                item xs={12}
-                            >
+                                container
+                                spacing={3}>
+                                <Grid
+                                    item xs={12}
+                                >
 
-                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                    <Box flexGrow={2}>
-                                        <Typography>{'PEST NAME'}</Typography>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <Box flexGrow={2}>
+                                            <Typography variant='h5'>{pestName ? pestName.toUpperCase() : "PEST NAME"}</Typography>
+                                        </Box>
+                                        <Box alignSelf="flex-end">
+                                            <Tooltip placement="bottom" title={'Add Description'}>
+                                                <Button onClick={handleAddButtonClick} type="primary"
+                                                    icon={<PlusOutlined />} />
+                                            </Tooltip>
+                                        </Box>
                                     </Box>
-                                    <Box alignSelf="flex-end">
-                                        <Tooltip placement="bottom" title={'Add Description'}>
-                                            <Button onClick={handleAddButtonClick} type="primary"
-                                                icon={<PlusOutlined />} />
-                                        </Tooltip>
-                                    </Box>
-                                </Box>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <DescriptionManager />
-                    </MainCard>
+                            <DescriptionManager />
+                        </MainCard>
 
-                </Grid>
-
-
-
-                {pestInfoDescription.map((description) =>
-                (
-                    <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
-                        <Descriptor key={description.id} description={description} />
                     </Grid>
 
-                )
-                )
-                }
 
 
+                    <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                        <Grid container spacing={5}>
+                            {pestInfoDescription.map((description) =>
+                            (
+                                <Grid item xs={12} sm={6} md={4}>
+                                    <Descriptor key={description.id} description={description} />
+                                </Grid>
 
-                {!informative ? <div className="helpful">
-                    <p>Was this information helpful? </p>
-                    <button onClick={saveGeo}>Yes</button>
-                    <button>No</button>
-                </div>
-                    : <div className="helpful">
-                        <p>Was this information helpful? </p>
-                        <button disabled>Yes</button>
-                        <button disabled>No</button>
-                    </div>}
-                <div className="location child1"> {/* The Map DIv will be shown in the end of the description */}
-                    <div className="helpImprove">
-                        <h4>Help us improve</h4>
-                        <p>Drag the marker on the map to the location where you saw this pest</p>
-                    </div>
+                            )
+                            )
+                            }     </Grid>
+                    </Grid>
+
+                    <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                        {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
+                            <p>Was this information helpful? </p>
+                            <button onClick={saveGeo}>Yes</button>
+                            <button>No</button>
+                        </Box>
+                            : <Box className="helpful">
+                                <p>Was this information helpful? </p>
+                                <button disabled>Yes</button>
+                                <button disabled>No</button>
+                            </Box>}
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
+                        <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}
+                            <Box className="helpImprove">
+                                <h4>Help us improve</h4>
+                                <p>Drag the marker on the map to the location where you saw this pest</p>
+                            </Box>
 
 
-                </div>
+                            <Box>
+                                {map}
+                            </Box>
 
-            </Grid>
+                        </Box>
+                    </Grid>
 
+                </Grid>
+            </div>
         </>
     )
 }

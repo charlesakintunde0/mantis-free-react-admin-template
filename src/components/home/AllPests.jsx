@@ -141,7 +141,7 @@ function AllPests() {
 
 
     const handleEditCrop = (pest) => {
-        console.log
+
         dispatch(storedPestCardData({
             componentData: pest,
             isOpen: true,
@@ -207,7 +207,7 @@ function AllPests() {
                                         <Card
                                             hoverable
                                             cover={
-                                                <Link to={`/Pest/Description/${p.pId}`}>
+                                                <Link to={`/Pest/Description/${p.pName}/${p.pId}`}>
                                                     <img
                                                         alt="Loading Images"
                                                         src={p.pUrl}
@@ -221,7 +221,7 @@ function AllPests() {
 
                                             ]}
                                         >
-                                            <Link to={`/Pest/Description/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
+                                            <Link to={`/Pest/Description/${p.pName}/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
                                         </Card>
 
 

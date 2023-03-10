@@ -71,7 +71,7 @@ const MainRoutes = {
             element: <AllPests />
         },
         {
-            path: '/Pest/Description/:pestID',
+            path: '/Pest/Description/:pestName/:pestId',
             element: <PestDescription />
         },
         {

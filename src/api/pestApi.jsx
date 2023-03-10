@@ -15,8 +15,8 @@ export const pestApi = createApi({
             }),
         }),
         getPestInfoDescription: builder.query({
-            query: (id) => ({
-                url: `getDescription/${id}`,
+            query: (pestId) => ({
+                url: `getDescription/${pestId}`,
                 params: {},
                 method: "GET",
                 providesTags: (result) => [

@@ -3,7 +3,7 @@ import './CropManager.css'
 
 import MainCard from 'components/MainCard'
 
-import { Button, Modal, Upload, Input, Form } from 'antd';
+import { Button, Modal, Upload, Input, Form,notification } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
@@ -32,6 +32,8 @@ const CropManager = () => {
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [defaultImages, setDefaultImages] = useState([]);
+    const [api, contextHolder] = notification.useNotification();
+
     const [addedImages, setAddedImages] = useState([]);
 
 
@@ -43,7 +45,7 @@ const CropManager = () => {
     const getImage = async (imageUrl, imgId) => {
         try {
             const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/[^a-zA-Z]/, '');
+            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/\d+/g, '');
             const urlObject = new URL(imageUrl);
             const ext = urlObject.pathname.split('.').pop();
             const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
@@ -131,14 +133,14 @@ const CropManager = () => {
 
             const formData = new FormData();
             formData.append('CName', values.crop_name);
-            formData.append('CId', cropId)
+            formData.append('CId', componentData.id)
             console.log(values);
             values.image_upload.fileList.forEach(fileObj => {
                 formData.append('CImageFile', fileObj.originFileObj);
 
             });
 
-            axios.put('https://localhost:44361/api/pests/updateDescription', formData, {
+            axios.put('https://localhost:44361/api/crops/updateCrop', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 },
@@ -185,7 +187,7 @@ const CropManager = () => {
     const handleImageChange = ({ fileList }) => {
 
         if (fileList.length > 1) {
-            fileList.splice(1);
+            fileList.splice(0);
         }
 
         setFileList(fileList);

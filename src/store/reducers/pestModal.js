@@ -13,7 +13,8 @@ const pestModal = createSlice({
     reducers: {
         storedPestCardData(state, action) {
             state.componentData = action.payload.componentData;
-            state.isOpen = action.payload.isOpen
+            state.isOpen = action.payload.isOpen;
+            state.pestId = action.payload.pestId;
         },
         closePestModal(state) {
             state.isOpen = false;

@@ -28,7 +28,7 @@ const PestManager = () => {
     const [loading, setLoading] = useState(false);
     const [createPestInfoDescription, { isLoading }] = useCreatePestInfoDescriptionMutation();
     const [updatePestInfoDescription] = useUpdatePestInfoDescriptionMutation();
-    const { isOpen, componentData, cropId } = useSelector(state => state.pestModal);
+    const { isOpen, componentData, cropId, pestId } = useSelector(state => state.pestModal);
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [defaultImages, setDefaultImages] = useState([]);
@@ -43,7 +43,7 @@ const PestManager = () => {
     const getImage = async (imageUrl, imgId) => {
         try {
             const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/[^a-zA-Z]/, '');
+            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/\d+/g, '');
             const urlObject = new URL(imageUrl);
             const ext = urlObject.pathname.split('.').pop();
             const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
@@ -67,23 +67,26 @@ const PestManager = () => {
         }
     };
 
+
     useEffect(() => {
         if (isOpen) {
             const fetchImages = async () => {
 
                 const img = componentData;
-                const imgId = img.id;
-                const imageUrl = img.image;
+                const imgId = img.pid;
+                const imageUrl = img.pUrl;
                 const images = await getImage(imageUrl, imgId);
-                setDefaultImages([...defaultImages, images]);
+                return images;
+
             };
 
-            fetchImages();
-            form.setFieldsValue({ pest_name: componentData ? componentData.pest : '' })
+            fetchImages().then(images => setFileList([images]));
+            form.setFieldsValue({ pest_name: componentData ? componentData.pName : '' })
         }
 
     }, [componentData])
-    // form.setFieldsValue({ image_upload: componentData ? { fileList: defaultImages } : [] })
+    form.setFieldsValue({ image_upload: { fileList: fileList } })
+    console.log(fileList);
 
     const handlePestCardManagerSubmit = () => {
         form.validateFields().then(values => {
@@ -95,7 +98,7 @@ const PestManager = () => {
             console.log(values.image_upload.file.originFileObj);
 
             formData.append('PName', values.pest_name);
-            formData.append('PImageFile', values.image_upload.originFileObj);
+            formData.append('PImageFile', values.image_upload.file.originFileObj);
             formData.append('CrId', cropId);
 
             axios.post('https://localhost:44361/api/pests/create', formData, {
@@ -122,15 +125,17 @@ const PestManager = () => {
             // setLoading(true);
 
 
+            console.log(pestId)
             const formData = new FormData();
-            formData.append('CName', values.pest_name);
+            formData.append('PName', values.pest_name);
+            formData.append('PId', pestId);
             console.log(values);
             values.image_upload.fileList.forEach(fileObj => {
-                formData.append('CImageFile', fileObj.originFileObj);
+                formData.append('PImageFile', fileObj.originFileObj);
 
             });
 
-            axios.put('https://localhost:44361/api/pests/updateDescription', formData, {
+            axios.put('https://localhost:44361/api/pests/updatePest', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 },
@@ -151,7 +156,7 @@ const PestManager = () => {
     const handleCancel = () => {
         dispatch(closePestModal());
         form.resetFields();
-        setDefaultImages([]);
+        setFileList([]);
     };
     const handleImageRemove = (file) => {
         console.log(file);
@@ -175,13 +180,11 @@ const PestManager = () => {
     }
 
     const handleImageChange = ({ fileList }) => {
-
         if (fileList.length > 1) {
-            fileList.splice(1);
+            fileList.splice(-1, 1);
         }
 
         setFileList(fileList);
-        console.log(fileList);
         form.setFieldsValue({ image_upload: { fileList: fileList } })
 
     }
@@ -244,7 +247,7 @@ const PestManager = () => {
                         multiple={false}
                         listType="picture"
                         defaultFileList={defaultImages}
-                        // fileList={fileList}
+                        fileList={fileList}
                         className="upload-list-inline"
                     >
                         <Button icon={<UploadOutlined />}>Upload</Button>
