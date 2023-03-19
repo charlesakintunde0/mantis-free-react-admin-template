@@ -23,7 +23,7 @@ const home = {
             id: 'home',
             title: 'Home',
             type: 'item',
-            url: '/',
+            url: '/home',
             icon: icons.HomeFilled,
             breadcrumbs: false
         },

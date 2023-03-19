@@ -1,5 +1,4 @@
 import { lazy } from 'react';
-import { useEffect, useState } from 'react';
 
 
 // project import
@@ -33,7 +32,7 @@ const MainRoutes = {
     element: <MainLayout />,
     children: [
         {
-            path: '',
+            path: 'home',
             element: <Home />
         },
         {

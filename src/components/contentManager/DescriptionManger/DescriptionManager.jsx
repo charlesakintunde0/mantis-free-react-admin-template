@@ -11,7 +11,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import './DescriptionManager.css'
 
 // api
-import { useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation } from '../../../api/pestApi'
+import { useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation, useDeleteUploadedImageMutation } from '../../../api/pestApi'
 
 // react-redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -28,6 +28,7 @@ const DescriptionManager = () => {
     const [loading, setLoading] = useState(false);
     const [createPestInfoDescription, { isLoading }] = useCreatePestInfoDescriptionMutation();
     const [updatePestInfoDescription] = useUpdatePestInfoDescriptionMutation();
+    const [deleteUploadedImage] = useDeleteUploadedImageMutation();
     const { isOpen, componentData, pestId } = useSelector(state => state.descriptionModal);
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
@@ -43,7 +44,7 @@ const DescriptionManager = () => {
     const getImage = async (imageUrl, imgId) => {
         try {
             const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/\d+/g, '');
+            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.'));
             const urlObject = new URL(imageUrl);
             const ext = urlObject.pathname.split('.').pop();
             const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
@@ -53,13 +54,14 @@ const DescriptionManager = () => {
             const fileUid = uuidv4();
             const file = new File([blob], `${imageName}.${ext}`, { type: `image/${format}` });
             const thumbUrl = URL.createObjectURL(file);
-
+            console.log(imageName)
             return {
                 uid: fileUid,
                 originFileObj: file,
                 thumbUrl,
                 name: imageName,
-                imgId: imgId
+                imgId: imgId,
+                imageUrl: imageUrl
             };
         } catch (error) {
             console.error(error);
@@ -104,18 +106,14 @@ const DescriptionManager = () => {
             formData.append('descriptionTitle', values.title);
             formData.append('peiPestInfoDescriptionContent', values.description);
             formData.append('peiPestInfoId', pestId);
-
+            formData.append('id', pestId);
 
 
             values.image_upload.fileList.forEach(file => {
                 formData.append('files', file.originFileObj);
             });
 
-            axios.post('https://localhost:44361/api/pests/createDescription', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-            }).
+            createPestInfoDescription(formData).
                 then(() => {
                     setLoading(false);
                     setOpen(false);
@@ -139,21 +137,18 @@ const DescriptionManager = () => {
             formData.append('descriptionTitle', values.title);
             formData.append('peiPestInfoDescriptionContent', values.description);
             formData.append('Id', componentData.id);
-            // addedImages.forEach(fileObj => {
-            //     formData.append('files', fileObj);
 
-            // });
 
-            values.image_upload.fileList.forEach(fileObj => {
-                formData.append('files', fileObj.originFileObj);
-
+            values.image_upload.fileList.forEach(file => {
+                formData.append('files', file.originFileObj);
             });
 
-            axios.put('https://localhost:44361/api/pests/updateDescription', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-            })
+            // axios.put('https://localhost:44361/api/pests/updateDescription', formData, {
+            //     headers: {
+            //         "Content-Type": "multipart/form-data"
+            //     },
+            // })
+            updatePestInfoDescription(formData)
                 .then(() => {
                     setLoading(false);
                     setOpen(false);
@@ -190,12 +185,10 @@ const DescriptionManager = () => {
 
         form.setFieldsValue({ image_upload: newFileList });
 
-        axios.delete(`https://localhost:44361/api/pests/deleteUploadedImage/${file.imgId}`, {
-        })
+        // axios.delete(`https://localhost:44361/api/pests/deleteUploadedImage/${file.imgId}`, {
+        // })
+        deleteUploadedImage(file.imgId)
             .then(() => {
-                setLoading(false);
-                setOpen(false);
-                handleCancel();
             })
             .catch(error => {
                 console.log(error);
@@ -209,10 +202,10 @@ const DescriptionManager = () => {
 
 
 
+        if (fileList.length > 5) {
+            fileList.splice(5);
+        }
 
-        // if (fileList.length > 5) {
-        //     fileList.splice(1);
-        // }
         setFileList(fileList);
         form.setFieldsValue({ image_upload: { fileList: fileList } })
         // }

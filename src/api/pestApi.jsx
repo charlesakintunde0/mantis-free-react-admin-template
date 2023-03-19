@@ -19,44 +19,53 @@ export const pestApi = createApi({
                 url: `getDescription/${pestId}`,
                 params: {},
                 method: "GET",
-                providesTags: (result) => [
-                    { type: 'PestInfoDescription', id: 'List' },
-                    ...result?.map((PestInfoDescription) => ({ type: 'PestInfoDescription', id: PestInfoDescription.id })),
-                ],
+
             }),
+            providesTags: (result) => [
+                { type: 'PestInfoDescription', id: 'List' },
+                ...result?.map((PestInfoDescription) => ({ type: 'PestInfoDescription', id: PestInfoDescription.id })),
+            ],
         }),
         createPestInfoDescription: builder.mutation({
-            query: (formData) => ({
-                url: `createDescription`,
-                body: formData,
-                method: "POST",
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-                invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
-            }),
+            query: (formData) => {
+                console.log(Object.fromEntries(formData.entries()));
+
+                return {
+                    url: '/createDescription',
+                    method: 'POST',
+                    body: formData,
+                }
+            },
+            invalidatesTags: [
+                { type: 'PestInfoDescription', id: 'List' },
+                { type: 'PestInfoDescription', id: (id) => id },
+            ],
         }),
         updatePestInfoDescription: builder.mutation({
             query: (data) => ({
                 url: `updateDescription`,
                 body: data,
                 method: "PUT",
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-
-                invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
             }),
+            invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
         }),
         deletePestInfoDescription: builder.mutation({
             query: (id) => ({
                 url: `deleteDescription/${id}`,
                 method: "DELETE",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
             }),
+            invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
+        }),
+        onError: (error) => {
+            console.error('An error occurred in the API:', error);
+            // Handle the error here
+        },
+        deleteUploadedImage: builder.mutation({
+            query: (id) => ({
+                url: `deleteUploadedImage/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
         }),
         onError: (error) => {
             console.error('An error occurred in the API:', error);
@@ -94,4 +103,4 @@ export const pestApi = createApi({
 });
 
 
-export const { useUpdatePestInfoDescriptionMutation, useDeletePestInfoDescriptionMutation, useGetPestInfoDescriptionQuery, useGetAllPestsQuery, useCreatePestInfoDescriptionMutation } = pestApi;
+export const { useUpdatePestInfoDescriptionMutation, useDeletePestInfoDescriptionMutation, useDeleteUploadedImageMutation, useGetPestInfoDescriptionQuery, useGetAllPestsQuery, useCreatePestInfoDescriptionMutation } = pestApi;

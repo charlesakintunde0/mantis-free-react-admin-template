@@ -76,6 +76,8 @@ function PestDescription() {
     const [informative, setinformative] = useState(false);
     const navigate = useNavigate(); // to keep track of the history. Might use later to navigate to different pages
 
+
+    console.log(pestInfoDescriptionData.data)
     useEffect(() => {
         if (pestInfoDescriptionData.isSuccess) {
             setPestInfoDescription(pestInfoDescriptionData.data)
@@ -217,7 +219,7 @@ function PestDescription() {
                         <Grid container spacing={5}>
                             {pestInfoDescription.map((description) =>
                             (
-                                <Grid item xs={12} sm={6} md={4}>
+                                <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
                                     <Descriptor key={description.id} description={description} />
                                 </Grid>
 

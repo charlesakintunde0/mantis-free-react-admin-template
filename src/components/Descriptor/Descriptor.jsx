@@ -57,7 +57,13 @@ const Descriptor = ({ description }) => {
         background: '#364d79',
         objectFit: 'cover',
 
+
     };
+
+    const carouselStyle = {
+        maxWidth: '80%',
+        margin: '0 auto',
+    }
     return (
         <MainCard>
             <Grid container spacing={3}>
@@ -79,13 +85,15 @@ const Descriptor = ({ description }) => {
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Carousel>
-                        {description.peiPestInfoDescriptionImages.map((img) => (<>
+                    <Box display="flex" style={carouselStyle} justifyContent="center">
+                        <Carousel >
+                            {description.peiPestInfoDescriptionImages.map((img) => (<>
 
-                            <img key={img.id} style={contentStyle} src={img.peiPestDescriptionInfoImageUrl} />
-                        </>))}
+                                <img key={img.id} style={contentStyle} src={img.peiPestDescriptionInfoImageUrl} />
+                            </>))}
 
-                    </Carousel>
+                        </Carousel>
+                    </Box>
                 </Grid>
 
                 <Grid item xs={12}>
