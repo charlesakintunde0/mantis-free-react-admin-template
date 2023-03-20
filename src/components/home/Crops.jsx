@@ -6,8 +6,8 @@ import './insects.css'
 import './Crops.css'
 import Config from "./../../config.json";
 
-//toast
-import { toast } from 'react-toastify';
+// api
+import { useDeleteCropMutation } from 'api/cropApi';
 
 // axios
 import axios from 'axios'
@@ -32,6 +32,9 @@ import {
 
 // components
 import CropManager from 'components/contentManager/CropManager/CropManager';
+import Loading from 'components/Loading';
+import EmptySet from 'components/EmptySet/EmptySet';
+import { Notification, handleDeleteConfirmation } from 'components/Notifications/Notification';
 
 
 
@@ -67,8 +70,9 @@ const contentStyle = {
 function Crops() {
     const currentlyLoggedInUserData = useGetUserQuery();
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
+    const [deleteCrop] = useDeleteCropMutation();
     const allStoredCrops = useGetAllCropsQuery(null);
-    const [allCrops, setAllCrop] = useState(null);
+    const [allCrops, setAllCrop] = useState([]);
     const dispatch = useDispatch();
 
     const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
@@ -93,14 +97,12 @@ function Crops() {
 
 
     const handleDeleteCrop = (cropId) => {
-        axios.delete(Config.DELETE_CROP + cropId)
+        // axios.delete(Config.DELETE_CROP + cropId)
+        deleteCrop(cropId)
             .then(res => {
-                // toast.success('record has been deleted', { //THE SUCCESS NOTIFICATION
-                //     position: toast.POSITION.TOP_RIGHT,
-                //     hideProgressBar: false,
-                //     autoClose: 2000,
-
-                // });
+                Notification('success', 'Operation successful', 'Crop deleted successfully')
+            }).catch(err => {
+                Notification('error', 'Operation failed', err)
             })
 
     }
@@ -143,8 +145,11 @@ function Crops() {
 
                 <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
                     <Grid container spacing={5}>
-                        {
-                            allCrops ? <> {
+
+
+
+                        {allStoredCrops.isLoading &&
+                            allStoredCrops.status === 'fulfilled' ? <Loading /> : !allStoredCrops.isLoading && !allStoredCrops.status !== 'fulfilled' && allCrops.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'crop'} parentName={''} /> </Grid> : <>{
                                 allCrops.map(crop => (
 
                                     <Grid item xs={12} sm={6} md={4}>
@@ -162,7 +167,7 @@ function Crops() {
                                             actions={[
 
                                                 <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteCrop(crop.id)} />
+                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteConfirmation(handleDeleteCrop(crop.id))} />
 
                                             ]}
                                         >
@@ -174,18 +179,12 @@ function Crops() {
 
                                 )
                                 )
-                            } </>
-                                :
-                                <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                        <Space size="middle">
-                                            <Spin tip={'Loading content...'} size="large" />
-                                        </Space>
+                            }
 
-                                    </Box>
-                                </Grid>
+                            </>}
 
-                        }
+
+
                     </Grid>
 
                 </Grid>

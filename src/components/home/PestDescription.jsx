@@ -38,6 +38,10 @@ import { openDescriptionModal } from 'store/reducers/descriptionModal';
 // components
 import Descriptor from 'components/Descriptor/Descriptor';
 import DescriptionManager from 'components/contentManager/DescriptionManger/DescriptionManager';
+import EmptySet from 'components/EmptySet/EmptySet';
+
+// notifications
+import { Notification } from 'components/Notifications/Notification';
 
 // antd
 import { PlusOutlined } from '@ant-design/icons';
@@ -45,7 +49,9 @@ import { PlusOutlined } from '@ant-design/icons';
 // api
 import { useGetUserQuery } from 'api/userApi';
 import { useGetPestInfoDescriptionQuery, useCreatePestInfoDescriptionMutation } from 'api/pestApi';
+import { useCreateCoordinatesMutation } from 'api/coordinates';
 import MainCard from 'components/MainCard';
+import Loading from 'components/Loading';
 
 toast.configure()
 
@@ -53,7 +59,7 @@ function PestDescription() {
     const dispatch = useDispatch();
     const anchorRef = useRef(null);
     const [createPestInfoDescription] = useCreatePestInfoDescriptionMutation();
-
+    const [createUserCoordinates] = useCreateCoordinatesMutation();
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
     const { pestId, pestName } = useParams(); //saves the pest ID from previous page
     const pestInfoDescriptionData = useGetPestInfoDescriptionQuery(pestId);
@@ -94,60 +100,30 @@ function PestDescription() {
             isOpen: true,
             pestId: pestId
         }));
-
-        console.log('clicked')
     }
 
 
 
-    console.log(pestInfoDescriptionData)
 
-    console.log(pestInfoDescription)
-
-
-
-    const saveGeo = (e) => {
+    const saveUserCoordinataes = (e) => {
         e.preventDefault();
         setinformative(true);
         if (userLocation.loaded) {
-            fetch(Config.CREATE_COORDINATE, {
-                method: 'POST',
-                headers: { "Content-Type": 'application/json;charset=UTF-8' },
-                body: JSON.stringify({
+            createUserCoordinates(
+                JSON.stringify({
                     PId: pestId,
                     UId: userId,
                     CoordLat: userLocation.coordinates.lat,
                     CoordLng: userLocation.coordinates.lng
                 })
-            }).then(() => {
-                toast.success('Data has been recorded', {
-                    position: toast.POSITION.TOP_RIGHT,
-                    hideProgressBar: false,
-                    autoClose: 2000,
+            )
+                .then(() => {
 
-                });
-
-                //window.location.reload();
-            })
+                    Notification('success', 'Operation successful', "Data saved successfully");
+                })
         }
-
-        //console.log(position.lat + " " + position.lng);
     }
-    // useEffect(() => {
-    //     getRole();
-    //     if (loading1) {
-    //         getRole();
-    //     }
-    //     load();
-    //     if (loading) {
-    //         load();
-    //     }
 
-    // }, [loading, loading1])
-
-
-    /* THE BELOW GETROLE() METHOD WILL REQUEST THE USERS DATA BY THE ACCESS TOKEN
-    IF HE/SHE IS AN ADMIN THE EDIT BUTTON WILL BE SHOWN  */
     const getRole = async () => {
 
         try {
@@ -200,10 +176,12 @@ function PestDescription() {
                                             <Typography variant='h5'>{pestName ? pestName.toUpperCase() : "PEST NAME"}</Typography>
                                         </Box>
                                         <Box alignSelf="flex-end">
-                                            <Tooltip placement="bottom" title={'Add Description'}>
-                                                <Button onClick={handleAddButtonClick} type="primary"
-                                                    icon={<PlusOutlined />} />
-                                            </Tooltip>
+
+                                            <Button onClick={handleAddButtonClick} type="primary"
+                                                icon={<PlusOutlined />} >
+                                                {'Add Description'}
+                                            </Button>
+
                                         </Box>
                                     </Box>
                                 </Grid>
@@ -215,23 +193,24 @@ function PestDescription() {
 
 
 
-                    <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
-                        <Grid container spacing={5}>
-                            {pestInfoDescription.map((description) =>
-                            (
-                                <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
-                                    <Descriptor key={description.id} description={description} />
-                                </Grid>
 
-                            )
-                            )
-                            }     </Grid>
-                    </Grid>
+                    {pestInfoDescriptionData.isLoading && pestInfoDescriptionData.status === 'fulfilled' ? <Loading /> : !pestInfoDescriptionData.isLoading && !pestInfoDescriptionData.status !== 'fulfilled' && pestInfoDescriptionData.data.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'description'} parentName={pestName.toUpperCase()} /> </Grid> : <> {pestInfoDescription.map((description) =>
+                    (
+                        <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                            <Descriptor key={description.id} description={description} />
+                        </Grid>
+
+                    )
+                    )
+                    }
+
+                    </>}
+
 
                     <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
                         {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
                             <p>Was this information helpful? </p>
-                            <button onClick={saveGeo}>Yes</button>
+                            <button onClick={saveUserCoordinataes}>Yes</button>
                             <button>No</button>
                         </Box>
                             : <Box className="helpful">

@@ -194,6 +194,7 @@ const PestManager = () => {
             fileList={fileList}
             title={componentData ? 'Edit Pest' : 'Add Pest'}
             onCancel={handleCancel}
+            maskClosable={false}
             footer={[
                 <Button key="back" onClick={handleCancel}>
                     Return

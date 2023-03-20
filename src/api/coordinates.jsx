@@ -7,10 +7,11 @@ export const coordinatesApi = createApi({
         baseUrl: "https://localhost:44361/api/coordinates/"
     }),
     endpoints: (builder) => ({
-        createCoordinates: builder.query({
+        createCoordinates: builder.mutation({
             query: (coordinates) => ({
                 url: "create",
                 body: coordinates,
+                headers: { "Content-Type": 'application/json;charset=UTF-8' },
                 method: "POST",
             }),
         }),
@@ -18,4 +19,4 @@ export const coordinatesApi = createApi({
 });
 
 
-export const { use } = coordinatesApi;
+export const { useCreateCoordinatesMutation } = coordinatesApi;

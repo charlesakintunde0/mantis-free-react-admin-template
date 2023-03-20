@@ -10,6 +10,11 @@ import {
 // react redux
 import { useDispatch, useSelector } from 'react-redux'
 
+// //styles
+// import { makeStyles } from '@material-ui/core/styles';
+
+// notifications
+import { Notification, handleDeleteConfirmation } from 'components/Notifications/Notification';
 
 //reducers
 import { storedDescriptionCardData } from 'store/reducers/descriptionModal';
@@ -36,7 +41,16 @@ const Descriptor = ({ description }) => {
 
     const [deletePestInfoDescription] = useDeletePestInfoDescriptionMutation();
     const handleDeleteDescription = () => {
-        deletePestInfoDescription(description.id);
+        deletePestInfoDescription(description.id)
+            .then((response) => {
+                // handle successful response
+                console.log('Delete')
+                Notification('success', 'Operation successful', 'Description Deleted Successfully');
+            })
+            .catch((error) => {
+                // handle error
+                Notification('error', 'Error deleting description', error);
+            });
     }
 
 
@@ -50,7 +64,7 @@ const Descriptor = ({ description }) => {
 
     const contentStyle = {
         width: '100%',
-        height: '250px',
+        height: '350px',
         color: '#fff',
         lineHeight: '160px',
         textAlign: 'center',
@@ -59,15 +73,10 @@ const Descriptor = ({ description }) => {
 
 
     };
-
-    const carouselStyle = {
-        maxWidth: '80%',
-        margin: '0 auto',
-    }
     return (
         <MainCard>
             <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid item xs={12} >
                     <Box display="flex">
                         <Box flexGrow={1}>
                             <Typography variant='h5'>{description.descriptionTitle ? description.descriptionTitle.toUpperCase() : ''}</Typography>
@@ -78,14 +87,14 @@ const Descriptor = ({ description }) => {
                             </Tooltip>
 
                             <Tooltip placement="top" title={'Delete'}>
-                                <Button onClick={handleDeleteDescription} type="primary" ghost danger icon={<DeleteFilled />} />
+                                <Button onClick={() => { handleDeleteConfirmation(handleDeleteDescription) }} type="primary" ghost danger icon={<DeleteFilled />} />
                             </Tooltip>
                         </Box>
                     </Box>
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Box display="flex" style={carouselStyle} justifyContent="center">
+                    <Box >
                         <Carousel >
                             {description.peiPestInfoDescriptionImages.map((img) => (<>
 

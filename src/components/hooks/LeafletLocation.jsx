@@ -10,7 +10,13 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Footer from '../Footer/Footer';
 import Config from "./../../config.json"
-toast.configure()
+
+
+// notification
+import { Notification } from 'components/Notifications/Notification';
+
+// antd
+import { Button } from 'antd'
 
 
 const center = {
@@ -61,17 +67,8 @@ export default function LeafletLocation({ pestId, userId }) {
                 CoordLng: position.lng
             })
         }).then(() => {
-            toast.success('Data has been recorded', {
-                position: toast.POSITION.TOP_RIGHT,
-                hideProgressBar: false,
-                autoClose: 2000,
-
-            });
-
-            //window.location.reload();
+            Notification('success', 'Operation successful', 'Data saved successfully');
         })
-
-        console.log(position.lat + " " + position.lng);
     }
 
     return (
@@ -94,7 +91,7 @@ export default function LeafletLocation({ pestId, userId }) {
                     </Popup>
                 </Marker>
             </MapContainer>
-            <button className="latlngSubmit" onClick={saveLatLang}>Submit</button>
+            <Button type="primary" size={'medium'} onClick={saveLatLang}>{'Submit Pest Location'}</Button>
 
         </div>
     )

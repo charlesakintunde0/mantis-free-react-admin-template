@@ -3,17 +3,19 @@ import './CropManager.css'
 
 import MainCard from 'components/MainCard'
 
-import { Button, Modal, Upload, Input, Form,notification } from 'antd';
+import { Button, Modal, Upload, Input, Form, notification } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
-
+// antd
 import { UploadOutlined } from '@ant-design/icons';
+
+// componenets
+import { Notification } from 'components/Notifications/Notification';
 
 
 // api
-import { useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation } from '../../../api/pestApi'
-
+import { useCreateCropsMutation, useUpdateCropMutation, useDeleteUploadedImageMutation } from 'api/cropApi';
 // react-redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -26,8 +28,9 @@ const CropManager = () => {
     const formRef = React.useRef(null);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const [createPestInfoDescription, { isLoading }] = useCreatePestInfoDescriptionMutation();
-    const [updatePestInfoDescription] = useUpdatePestInfoDescriptionMutation();
+    const [createCreateCrops] = useCreateCropsMutation();
+    const [updateCrops] = useUpdateCropMutation();
+    const [deleteUploadedImage] = useDeleteUploadedImageMutation()
     const { isOpen, componentData, cropId } = useSelector(state => state.cropModal);
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
@@ -104,21 +107,23 @@ const CropManager = () => {
             formData.append('CImageFile', values.image_upload.file.originFileObj);
 
 
-            axios.post('https://localhost:44361/api/crops/Create', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-            }).
+            // axios.post('https://localhost:44361/api/crops/Create', formData, {
+            //     headers: {
+            //         "Content-Type": "multipart/form-data"
+            //     },
+            // }).
+            createCreateCrops(formData).
                 then(() => {
                     setLoading(false);
                     setOpen(false);
                     handleCancel();
+                    Notification('success', 'Operation suceessful', 'Crops created successfully')
                 })
                 .catch(error => {
-                    console.log(error);
+                    Notification('error', 'Operation failed', 'An error occured, Unable to create crop!')
                 });
         }).catch(error => {
-            console.log(error);
+            Notification('error', 'Operation failed', 'An error occured, Unable to create crop!')
         });
     };
 
@@ -140,11 +145,12 @@ const CropManager = () => {
 
             });
 
-            axios.put('https://localhost:44361/api/crops/updateCrop', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-            })
+            // axios.put('https://localhost:44361/api/crops/updateCrop', formData, {
+            //     headers: {
+            //         "Content-Type": "multipart/form-data"
+            //     },
+            // })
+            updateCrops(formData)
                 .then(() => {
                     setLoading(false);
                     setOpen(false);
@@ -164,24 +170,31 @@ const CropManager = () => {
         setFileList([]);
     };
     const handleImageRemove = (file) => {
-        console.log(file);
-        const newFileList = fileList.filter((f) => f.uid !== file.uid);
+        try {
+            console.log(file);
+            const newFileList = fileList.filter((f) => f.uid !== file.uid);
 
-        form.setFieldsValue({ image_upload: { fileList: newFileList } })
-        setFileList(newFileList);
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+            setFileList(newFileList);
 
-        axios.delete(`https://localhost:44361/api/pests/deleteUploadedImage/${file.imgId}`, {
-        })
-            .then(() => {
-                setLoading(false);
-                setOpen(false);
-                handleCancel();
-            })
-            .catch(error => {
-                console.log(error);
-            }).catch(error => {
-                console.log(error);
-            });
+
+            deleteUploadedImage(file.imgId)
+                .then(() => {
+                    setLoading(false);
+                    setOpen(false);
+                    handleCancel();
+                    Notification('success', 'Operation successful', 'Image deleted sucessfully');
+                })
+                .catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                }).catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                });
+
+        } catch (error) {
+            Notification('error', 'Operation failed', error.message)
+        }
+
     }
 
     const handleImageChange = ({ fileList }) => {
@@ -200,6 +213,7 @@ const CropManager = () => {
             fileList={fileList}
             title={componentData ? 'Edit Crop' : 'Add Crop'}
             onCancel={handleCancel}
+            maskClosable={false}
             footer={[
                 <Button key="back" onClick={handleCancel}>
                     Return

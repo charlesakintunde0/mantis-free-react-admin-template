@@ -13,6 +13,10 @@ export const cropApi = createApi({
                 params: {},
                 method: "GET"
             })
+            , providesTags: (result) => [
+                { type: 'Crop', id: 'List' },
+                ...result?.map((Crop) => ({ type: 'Crop', id: Crop.id })),
+            ],
         }),
         // getDiseases: builder.query({
         //     query: () => ({
@@ -28,29 +32,39 @@ export const cropApi = createApi({
         //         method: "GET",
         //     }),
         // }),
-        // createCrops: builder.mutation({
-        //     query: (crop) => ({
-        //         url: "create",
-        //         body: crop,
-        //         method: "POST",
-        //     }),
-        // }),
-        // updateCrop: builder.mutation({
-        //     query: (crop) => ({
-        //         url: `DeleteCrop/${crop.id}`,
-        //         body: crop,
-        //         method: "PUT",
-        //     }),
-        // }),
-        // deleteCrop: builder.mutation({
-        //     query: (id) => ({
-        //         url: `DeleteCrop/${id}`,
-        //         body: id,
-        //         method: "DELETE",
-        //     }),
-        // }),
+        createCrops: builder.mutation({
+            query: (crop) => ({
+                url: "create",
+                body: crop,
+                method: "POST",
+            }),
+            invalidatesTags: [{ type: 'Crop', id: 'List' }, { type: 'Crop', id: (id) => id }],
+        }),
+        updateCrop: builder.mutation({
+            query: (crop) => ({
+                url: `updateCrop`,
+                body: crop,
+                method: "PUT",
+            }),
+            invalidatesTags: [{ type: 'Crop', id: 'List' }, { type: 'Crop', id: (id) => id }],
+        }),
+        deleteCrop: builder.mutation({
+            query: (id) => ({
+                url: `DeleteCrop/${id}`,
+                body: id,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: 'Crop', id: 'List' }, { type: 'Crop', id: (id) => id }],
+        }),
+        deleteUploadedImage: builder.mutation({
+            query: (id) => ({
+                url: `deleteUploadedImage/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: 'Crop', id: 'List' }, { type: 'Crop', id: (id) => id }],
+        }),
     }),
 });
 
 
-export const { useGetAllCropsQuery } = cropApi;
+export const { useDeleteUploadedImageMutation, useGetAllCropsQuery, useCreateCropsMutation, useUpdateCropMutation, useDeleteCropMutation } = cropApi;

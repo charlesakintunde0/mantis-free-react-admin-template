@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
 
+
+
 import { UploadOutlined } from '@ant-design/icons';
 
 //custom styles
@@ -18,7 +20,10 @@ import { useSelector, useDispatch } from 'react-redux';
 
 // reducers
 import { closeDescriptionModal } from 'store/reducers/descriptionModal';
-import { ImageList } from '../../../../node_modules/@mui/material/index';
+
+
+// notification
+import { Notification } from 'components/Notifications/Notification';
 
 const DescriptionManager = () => {
     const { TextArea } = Input;
@@ -91,14 +96,6 @@ const DescriptionManager = () => {
 
     }, [componentData])
     form.setFieldsValue({ image_upload: { fileList: fileList } })
-
-
-
-
-
-
-
-
     const handleDescriptionCardManagerSubmit = () => {
         form.validateFields().then(values => {
             setLoading(true);
@@ -118,12 +115,13 @@ const DescriptionManager = () => {
                     setLoading(false);
                     setOpen(false);
                     handleCancel();
+                    Notification('success', 'Operation successful', 'Description Added Successfully');
                 })
                 .catch(error => {
-                    console.log(error);
+                    Notification('error', 'Operation Failed', error);
                 });
         }).catch(error => {
-            console.log(error);
+            Notification('error', 'Operation Failed', error);
         });
     };
 
@@ -143,64 +141,68 @@ const DescriptionManager = () => {
                 formData.append('files', file.originFileObj);
             });
 
-            // axios.put('https://localhost:44361/api/pests/updateDescription', formData, {
-            //     headers: {
-            //         "Content-Type": "multipart/form-data"
-            //     },
-            // })
+
             updatePestInfoDescription(formData)
                 .then(() => {
                     setLoading(false);
                     setOpen(false);
                     handleCancel();
+                    Notification('success', 'Operation successful', 'Your changes have been saved.');
                 })
                 .catch(error => {
-                    console.log(error);
+                    Notification('error', 'Operation Failed', error);
                 });
         }).catch(error => {
-            console.log(error);
+            Notification('error', 'Operation Failed', error);
         });
     };
 
     const handleCancel = () => {
-        dispatch(closeDescriptionModal());
-        form.resetFields();
-        setFileList([]);
-        setLoading(false);
+        const values = form.getFieldsValue();
+
+        if (values.description && values.title && values.image_upload.fileList.length === 0) {
+            // Show an error message or prevent the modal from closing
+            Notification('warning', 'Warning', "Image upload field is empty!");
+
+        } else {
+            // Allow the modal to close
+            dispatch(closeDescriptionModal());
+            form.resetFields();
+            setFileList([]);
+            setLoading(false);
+        }
+
+
     };
 
-    // const handleUpload = (file) => {
-    //     // Process the uploaded file here, e.g. send it to the server
-    //     console.log('Uploaded file:', file);
-
-    //     // Add the uploaded file to the list of files
-    //     setDefaultImages([...defaultImages, file]);
-
-    //     // Add the file list to the Form instance
-    //     form.setFieldsValue({ image_upload: defaultImages });
-    // };
 
     const handleImageRemove = (file) => {
-        const newFileList = fileList.filter((f) => f.uid !== file.uid);
+        if (fileList.length > 1) {
+            const newFileList = fileList.filter((f) => f.uid !== file.uid);
+            form.setFieldsValue({ image_upload: newFileList });
+            deleteUploadedImage(file.imgId)
+                .then(() => {
+                    Notification('success', 'Operation successful', "Image deleted successfully");
+                })
+                .catch(error => {
+                    Notification('error', 'Operation failed', error.message);
+                }).catch(error => {
+                    console.log(error);
+                });
+        } else {
+            Notification('error', 'Operation failed', 'At least one image must be uploaded!');
+        }
 
-        form.setFieldsValue({ image_upload: newFileList });
-
-        // axios.delete(`https://localhost:44361/api/pests/deleteUploadedImage/${file.imgId}`, {
-        // })
-        deleteUploadedImage(file.imgId)
-            .then(() => {
-            })
-            .catch(error => {
-                console.log(error);
-            }).catch(error => {
-                console.log(error);
-            });
     }
 
+
     const handleImageChange = ({ fileList }) => {
-        // if (!info.file.status) {
 
-
+        // Check if the fileList has only one file
+        if (fileList.length === 1) {
+            // Set showRemoveIcon to false to prevent deletion
+            fileList[0].showRemoveIcon = false;
+        }
 
         if (fileList.length > 5) {
             fileList.splice(5);
@@ -208,7 +210,6 @@ const DescriptionManager = () => {
 
         setFileList(fileList);
         form.setFieldsValue({ image_upload: { fileList: fileList } })
-        // }
 
 
 
@@ -220,6 +221,7 @@ const DescriptionManager = () => {
             fileList={fileList}
             title={componentData ? 'Edit Description' : 'Add Description'}
             onCancel={handleCancel}
+            maskClosable={false}
             footer={[
                 <Button key="back" onClick={handleCancel}>
                     Return
@@ -280,9 +282,7 @@ const DescriptionManager = () => {
                     <Upload
                         onRemove={handleImageRemove}
                         onChange={handleImageChange}
-
                         accept=".jpg,.jpeg,.png"
-                        beforeUpload={false}
                         multiple
                         listType="picture"
                         fileList={fileList}
