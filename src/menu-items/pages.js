@@ -3,7 +3,8 @@ import {
     LoginOutlined,
     ProfileOutlined,
     MessageFilled,
-    CustomerServiceFilled
+    CustomerServiceFilled,
+
 } from '@ant-design/icons';
 
 // icons
@@ -11,7 +12,8 @@ const icons = {
     LoginOutlined,
     ProfileOutlined,
     MessageFilled,
-    CustomerServiceFilled
+    CustomerServiceFilled,
+
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
@@ -33,7 +35,7 @@ const pages = {
             id: 'about',
             title: 'About',
             type: 'item',
-            url: '/About',
+            url: '/about',
             icon: icons.MessageFilled,
             breadcrumbs: false
         },
@@ -49,7 +51,15 @@ const pages = {
             id: 'register1',
             title: 'Register',
             type: 'item',
-            url: '/registration',
+            url: '/register',
+            icon: icons.ProfileOutlined,
+            target: true
+        },
+        {
+            id: 'register1',
+            title: 'Register',
+            type: 'item',
+            url: '/register',
             icon: icons.ProfileOutlined,
             target: true
         },
