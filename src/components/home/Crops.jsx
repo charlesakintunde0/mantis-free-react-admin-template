@@ -22,8 +22,6 @@ import {
 
 // antd
 import {
-    Space,
-    Spin,
     Button,
     Tooltip,
     Card
@@ -34,7 +32,7 @@ import {
 import CropManager from 'components/contentManager/CropManager/CropManager';
 import Loading from 'components/Loading';
 import EmptySet from 'components/EmptySet/EmptySet';
-import { Notification, handleDeleteConfirmation } from 'components/Notifications/Notification';
+import { Notification, handleDeleteWithIdConfirmation } from 'components/Notifications/Notification';
 
 
 
@@ -97,7 +95,7 @@ function Crops() {
 
 
     const handleDeleteCrop = (cropId) => {
-        // axios.delete(Config.DELETE_CROP + cropId)
+
         deleteCrop(cropId)
             .then(res => {
                 Notification('success', 'Operation successful', 'Crop deleted successfully')
@@ -167,7 +165,7 @@ function Crops() {
                                             actions={[
 
                                                 <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteConfirmation(handleDeleteCrop(crop.id))} />
+                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, crop.id)} />
 
                                             ]}
                                         >

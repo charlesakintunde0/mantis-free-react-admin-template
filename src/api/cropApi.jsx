@@ -18,20 +18,6 @@ export const cropApi = createApi({
                 ...result?.map((Crop) => ({ type: 'Crop', id: Crop.id })),
             ],
         }),
-        // getDiseases: builder.query({
-        //     query: () => ({
-        //         url: "getDiseases",
-        //         params: {},
-        //         method: "GET",
-        //     }),
-        // }),
-        // getSpecificCrop: builder.query({
-        //     query: () => ({
-        //         url: "getspecific",
-        //         params: {},
-        //         method: "GET",
-        //     }),
-        // }),
         createCrops: builder.mutation({
             query: (crop) => ({
                 url: "create",

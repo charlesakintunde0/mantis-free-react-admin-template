@@ -1,85 +1,40 @@
 import MainCard from 'components/MainCard'
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Upload, Input, Form } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
-import axios from 'axios';
-
-
-
-
 import { UploadOutlined } from '@ant-design/icons';
 
 //custom styles
 import './DescriptionManager.css'
 
-// api
-import { useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation, useDeleteUploadedImageMutation } from '../../../api/pestApi'
-
 // react-redux
 import { useSelector, useDispatch } from 'react-redux';
 
-// reducers
-import { closeDescriptionModal } from 'store/reducers/descriptionModal';
+// helper function
+import { getImage } from 'Helper/Utils';
+
 
 
 // notification
 import { Notification } from 'components/Notifications/Notification';
 
-const DescriptionManager = () => {
+const DescriptionManager = ({ isOpen, Id, componentData, closeDescriptionModal, useUpdateInfoDescriptionMutation, useCreateInfoDescriptionMutation, useDeleteUploadedImageMutation }) => {
     const { TextArea } = Input;
     const dispatch = useDispatch();
     const formRef = React.useRef(null);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const [createPestInfoDescription, { isLoading }] = useCreatePestInfoDescriptionMutation();
-    const [updatePestInfoDescription] = useUpdatePestInfoDescriptionMutation();
+    const [createInfoDescription, { isLoading }] = useCreateInfoDescriptionMutation();
+    const [updateInfoDescription] = useUpdateInfoDescriptionMutation();
     const [deleteUploadedImage] = useDeleteUploadedImageMutation();
-    const { isOpen, componentData, pestId } = useSelector(state => state.descriptionModal);
-    const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
-    const [defaultImages, setDefaultImages] = useState([]);
-    const [addedImages, setAddedImages] = useState([]);
-
-
-
-
-
-    // helper functions 
-
-    const getImage = async (imageUrl, imgId) => {
-        try {
-            const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.'));
-            const urlObject = new URL(imageUrl);
-            const ext = urlObject.pathname.split('.').pop();
-            const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
-
-            const response = await axios.get('https://localhost:44361/api/pests/getImageFile?url=' + imageUrl, { responseType: 'arraybuffer' });
-            const blob = new Blob([response.data], { type: response.headers['content-type'] });
-            const fileUid = uuidv4();
-            const file = new File([blob], `${imageName}.${ext}`, { type: `image/${format}` });
-            const thumbUrl = URL.createObjectURL(file);
-            console.log(imageName)
-            return {
-                uid: fileUid,
-                originFileObj: file,
-                thumbUrl,
-                name: imageName,
-                imgId: imgId,
-                imageUrl: imageUrl
-            };
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    };
+    const [open, setOpen] = useState(null);
 
     useEffect(() => {
         if (isOpen) {
             const fetchImages = async () => {
-                const imagePromises = componentData.peiPestInfoDescriptionImages.map(async img => {
+                const imagePromises = componentData.peiInfoDescriptionImages.map(async img => {
                     const imgId = img.id;
-                    const imageUrl = img.peiPestDescriptionInfoImageUrl;
+                    const imageUrl = img.peiDescriptionInfoImageUrl;
                     const images = await getImage(imageUrl, imgId);
                     return images;
                 });
@@ -90,39 +45,46 @@ const DescriptionManager = () => {
 
             fetchImages().then(images => setFileList(images));
             form.setFieldsValue({ title: componentData ? componentData.descriptionTitle : '' })
-            form.setFieldsValue({ description: componentData ? componentData.peiPestInfoDescriptionContent : '' })
+            form.setFieldsValue({ description: componentData ? componentData.peiInfoDescriptionContent : '' })
 
         }
 
     }, [componentData])
     form.setFieldsValue({ image_upload: { fileList: fileList } })
     const handleDescriptionCardManagerSubmit = () => {
-        form.validateFields().then(values => {
-            setLoading(true);
-            const formData = new FormData();
-            formData.append('descriptionTitle', values.title);
-            formData.append('peiPestInfoDescriptionContent', values.description);
-            formData.append('peiPestInfoId', pestId);
-            formData.append('id', pestId);
+        try {
+            form.validateFields().then(values => {
+                setLoading(true);
+                const formData = new FormData();
+                formData.append('descriptionTitle', values.title);
+                formData.append('peiInfoDescriptionContent', values.description);
+                formData.append('peiInfoId', Id);
+                formData.append('id', Id);
+
+                console.log(values)
 
 
-            values.image_upload.fileList.forEach(file => {
-                formData.append('files', file.originFileObj);
-            });
-
-            createPestInfoDescription(formData).
-                then(() => {
-                    setLoading(false);
-                    setOpen(false);
-                    handleCancel();
-                    Notification('success', 'Operation successful', 'Description Added Successfully');
-                })
-                .catch(error => {
-                    Notification('error', 'Operation Failed', error);
+                values.image_upload.fileList.forEach(file => {
+                    formData.append('files', file.originFileObj);
                 });
-        }).catch(error => {
+
+                createInfoDescription(formData).
+                    then(() => {
+                        setLoading(false);
+                        setOpen(false);
+                        handleCancel();
+
+                    })
+                    .catch(error => {
+                        Notification('error', 'Operation Failed', error);
+                    });
+            }).catch(error => {
+                Notification('error', 'Operation Failed', error);
+            });
+            Notification('success', 'Operation Successful', 'Description has been added');
+        } catch (error) {
             Notification('error', 'Operation Failed', error);
-        });
+        }
     };
 
 
@@ -133,16 +95,19 @@ const DescriptionManager = () => {
 
             const formData = new FormData();
             formData.append('descriptionTitle', values.title);
-            formData.append('peiPestInfoDescriptionContent', values.description);
+            formData.append('peiInfoDescriptionContent', values.description);
             formData.append('Id', componentData.id);
 
+
+
+            console.log(values)
 
             values.image_upload.fileList.forEach(file => {
                 formData.append('files', file.originFileObj);
             });
 
 
-            updatePestInfoDescription(formData)
+            updateInfoDescription(formData)
                 .then(() => {
                     setLoading(false);
                     setOpen(false);
@@ -240,7 +205,7 @@ const DescriptionManager = () => {
                 form={form}
                 layout={'vertical'}
                 ref={formRef}
-                initialValues={{ image_upload: defaultImages }}
+                initialValues={{ image_upload: fileList }}
                 name="control-ref"
                 onFinish={handleDescriptionCardManagerSubmit}
                 style={{

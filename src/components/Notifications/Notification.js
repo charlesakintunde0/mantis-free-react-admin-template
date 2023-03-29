@@ -22,6 +22,23 @@ export const Notification = (type, message, description) => {
     });
 };
 
+export const handleDeleteWithIdConfirmation = (deleteFunction, Id) => {
+    notification.warning({
+        message: 'Are you sure you want to delete this item?',
+        description: 'This action cannot be undone.',
+        duration: null,
+        onClose: () => { },
+        onClick: () => { },
+        style: notificationStyle,
+        key: 'deleteConfirmation',
+        btn: (
+            <Button onClick={() => { notification.destroy('deleteConfirmation'); deleteFunction(Id) }} type="primary" ghost danger>
+                Delete
+            </Button>
+        ),
+    });
+};
+
 export const handleDeleteConfirmation = (deleteFunction) => {
     notification.warning({
         message: 'Are you sure you want to delete this item?',
@@ -37,6 +54,11 @@ export const handleDeleteConfirmation = (deleteFunction) => {
             </Button>
         ),
     });
-};
+}
+
+
+
+
+
 
 

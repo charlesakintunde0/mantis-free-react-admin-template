@@ -28,7 +28,6 @@ export const pestApi = createApi({
         }),
         createPestInfoDescription: builder.mutation({
             query: (formData) => {
-                console.log(Object.fromEntries(formData.entries()));
 
                 return {
                     url: '/createDescription',
@@ -41,6 +40,7 @@ export const pestApi = createApi({
                 { type: 'PestInfoDescription', id: (id) => id },
             ],
         }),
+
         updatePestInfoDescription: builder.mutation({
             query: (data) => ({
                 url: `updateDescription`,
@@ -49,6 +49,7 @@ export const pestApi = createApi({
             }),
             invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
         }),
+
         deletePestInfoDescription: builder.mutation({
             query: (id) => ({
                 url: `deleteDescription/${id}`,

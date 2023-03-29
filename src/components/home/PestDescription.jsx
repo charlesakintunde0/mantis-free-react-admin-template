@@ -36,7 +36,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { openDescriptionModal } from 'store/reducers/descriptionModal';
 
 // components
-import Descriptor from 'components/Descriptor/Descriptor';
+import Descriptor from 'components/Descriptor/PestDescriptor';
 import DescriptionManager from 'components/contentManager/DescriptionManger/DescriptionManager';
 import EmptySet from 'components/EmptySet/EmptySet';
 
@@ -206,19 +206,27 @@ function PestDescription() {
 
                     </>}
 
+                    {
+                        pestInfoDescriptionData.data.length === 0
+                            ? ''
+                            :
+                            <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                                {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
+                                    <p>Was this information helpful? </p>
+                                    <button onClick={saveUserCoordinataes}>Yes</button>
+                                    <button>No</button>
+                                </Box>
+                                    : <Box className="helpful">
+                                        <p>Was this information helpful? </p>
+                                        <button disabled>Yes</button>
+                                        <button disabled>No</button>
+                                    </Box>}
+                            </Grid>
+                    }
 
-                    <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
-                        {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
-                            <p>Was this information helpful? </p>
-                            <button onClick={saveUserCoordinataes}>Yes</button>
-                            <button>No</button>
-                        </Box>
-                            : <Box className="helpful">
-                                <p>Was this information helpful? </p>
-                                <button disabled>Yes</button>
-                                <button disabled>No</button>
-                            </Box>}
-                    </Grid>
+
+
+
 
                     <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
                         <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}

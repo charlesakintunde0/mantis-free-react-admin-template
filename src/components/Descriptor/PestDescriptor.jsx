@@ -10,9 +10,18 @@ import {
 // react redux
 import { useDispatch, useSelector } from 'react-redux'
 
+// //styles
+// import { makeStyles } from '@material-ui/core/styles';
+
 // notifications
 import { Notification, handleDeleteConfirmation } from 'components/Notifications/Notification';
 
+//reducers
+import { storedDescriptionCardData } from 'store/reducers/descriptionModal';
+
+// api
+
+import { useDeletePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation } from '../../api/pestApi'
 
 // antd
 import {
@@ -26,13 +35,13 @@ import {
 } from '@ant-design/icons';
 
 
-const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescriptionCardData }) => {
+const Descriptor = ({ description }) => {
     const dispatch = useDispatch();
     const store = useSelector(state => state.descriptionModal);
 
-    const [deleteInfoDescription] = useDeleteInfoDescriptionMutation();
+    const [deletePestInfoDescription] = useDeletePestInfoDescriptionMutation();
     const handleDeleteDescription = () => {
-        deleteInfoDescription(description.id)
+        deletePestInfoDescription(description.id)
             .then((response) => {
                 // handle successful response
                 console.log('Delete')
@@ -45,15 +54,11 @@ const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescr
     }
 
 
-
-    console.log(description)
     const handleEditDescription = () => {
         dispatch(storedDescriptionCardData({
-            descriptionComponentData: description,
-            desricptionModalIsOpen: true
+            componentData: description,
+            isOpen: true
         }));
-
-
     }
 
 
@@ -65,6 +70,8 @@ const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescr
         textAlign: 'center',
         background: '#364d79',
         objectFit: 'cover',
+
+
     };
     return (
         <MainCard>
@@ -89,9 +96,9 @@ const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescr
                 <Grid item xs={12}>
                     <Box >
                         <Carousel >
-                            {description.peiInfoDescriptionImages.map((img) => (<>
+                            {description.peiPestInfoDescriptionImages.map((img) => (<>
 
-                                <img key={img.id} style={contentStyle} src={img.peiDescriptionInfoImageUrl} />
+                                <img key={img.id} style={contentStyle} src={img.peiPestDescriptionInfoImageUrl} />
                             </>))}
 
                         </Carousel>
@@ -99,7 +106,7 @@ const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescr
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Typography variant='p'>{description.peiInfoDescriptionContent
+                    <Typography variant='p'>{description.peiPestInfoDescriptionContent
                     }</Typography>
                 </Grid>
             </Grid>

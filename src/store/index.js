@@ -1,6 +1,6 @@
 // third-party
 import { configureStore } from '@reduxjs/toolkit';
-import { commentApi, cropApi, coordinatesApi, pestApi, userApi, weedApi, cropsPestApi } from '../api';
+import { commentApi, cropApi, coordinatesApi, pestApi, userApi, weedApi, cropsPestApi, diseasesApi, helperApi } from '../api';
 
 import menu from './reducers/menu';
 import auth from './reducers/auth';
@@ -9,6 +9,8 @@ import descriptionModal from './reducers/descriptionModal';
 import cropModal from './reducers/cropModal';
 import pestModal from './reducers/pestModal';
 import usersModal from './reducers/usersModal';
+import diseaseModal from './reducers/diseaseModal';
+import weedModal from './reducers/weedModal';
 
 // project import
 
@@ -24,13 +26,18 @@ const store = configureStore({
         [userApi.reducerPath]: userApi.reducer,
         [weedApi.reducerPath]: weedApi.reducer,
         [cropsPestApi.reducerPath]: cropsPestApi.reducer,
+        [diseasesApi.reducerPath]: diseasesApi.reducer,
+        [helperApi.reducerPath]: helperApi.reducer,
         menu,
         auth,
         user,
         descriptionModal,
         cropModal,
         pestModal,
-        usersModal
+        usersModal,
+        diseaseModal,
+        weedModal
+
 
 
     },
@@ -41,7 +48,9 @@ const store = configureStore({
         .concat(pestApi.middleware)
         .concat(userApi.middleware)
         .concat(weedApi.middleware)
-        .concat(cropsPestApi.middleware)
+        .concat(cropsPestApi.middleware).
+        concat(diseasesApi.middleware).
+        concat(helperApi.middleware)
 
 });
 

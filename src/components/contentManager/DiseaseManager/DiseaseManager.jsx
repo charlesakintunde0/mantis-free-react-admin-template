@@ -1,47 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import './CropManager.css'
-
-import MainCard from 'components/MainCard'
-
 import { Button, Modal, Upload, Input, Form, notification } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
 // antd
 import { UploadOutlined } from '@ant-design/icons';
-
 // componenets
 import { Notification } from 'components/Notifications/Notification';
-
-
 // api
 import { useCreateCropsMutation, useUpdateCropMutation, useDeleteUploadedImageMutation } from 'api/cropApi';
+import { useCreateDiseaseMutation, useUpdateDiseaseMutation, useDeleteDiseaseMutation } from 'api/diseasesApi';
 // react-redux
 import { useSelector, useDispatch } from 'react-redux';
-
 // reducers
-import { closeCropModal } from 'store/reducers/cropModal';
+import { closeDiseaseModal } from 'store/reducers/diseaseModal';
 
-const CropManager = () => {
+const DiseaseManager = () => {
     const { TextArea } = Input;
     const dispatch = useDispatch();
     const formRef = React.useRef(null);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const [createCreateCrops] = useCreateCropsMutation();
-    const [updateCrops] = useUpdateCropMutation();
-    const [deleteUploadedImage] = useDeleteUploadedImageMutation()
-    const { isOpen, componentData, cropId } = useSelector(state => state.cropModal);
+    const [createCropDiseases] = useCreateDiseaseMutation();
+    const [updateDisease] = useUpdateDiseaseMutation();
+    const [deleteUploadedImage] = useDeleteUploadedImageMutation();
+    const { isOpen, componentData, diseaseId, cropId } = useSelector(state => state.diseaseModal);
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [defaultImages, setDefaultImages] = useState([]);
     const [api, contextHolder] = notification.useNotification();
 
     const [addedImages, setAddedImages] = useState([]);
-
-
-
-
 
     // helper functions 
 
@@ -87,37 +76,28 @@ const CropManager = () => {
             };
 
             fetchImages().then(images => setFileList([images]));
-            form.setFieldsValue({ crop_name: componentData ? componentData.crop : '' })
+            form.setFieldsValue({ disease_name: componentData ? componentData.dName : '' })
+
+            console.log(componentData)
         }
 
     }, [componentData])
     form.setFieldsValue({ image_upload: { fileList: fileList } })
+    console.log(fileList);
 
-
-    const handleCropCardManagerSubmit = () => {
+    const handleDiseaseCardManagerSubmit = () => {
         form.validateFields().then(values => {
-            // setLoading(true);
-
 
             const formData = new FormData();
-
-
-
-            formData.append('CName', values.crop_name);
-            formData.append('CImageFile', values.image_upload.file.originFileObj);
-
-
-            // axios.post('https://localhost:44361/api/crops/Create', formData, {
-            //     headers: {
-            //         "Content-Type": "multipart/form-data"
-            //     },
-            // }).
-            createCreateCrops(formData).
+            formData.append('DName', values.disease_name);
+            formData.append('DImageFile', values.image_upload.file.originFileObj);
+            formData.append('CId', cropId);
+            createCropDiseases(formData).
                 then(() => {
                     setLoading(false);
                     setOpen(false);
                     handleCancel();
-                    Notification('success', 'Operation suceessful', 'Crops created successfully')
+                    Notification('success', 'Operation suceessful', 'Disease created successfully')
                 })
                 .catch(error => {
                     Notification('error', 'Operation failed', 'An error occured, Unable to create crop!')
@@ -128,29 +108,15 @@ const CropManager = () => {
     };
 
 
-    const handleCropCardManagerEdit = () => {
+    const handleDiseaseCardManagerEdit = () => {
         form.validateFields().then(values => {
-            // setLoading(true);
-
-
-            console.log(componentData)
-            console.log(cropId);
-
             const formData = new FormData();
-            formData.append('CName', values.crop_name);
-            formData.append('CId', componentData.id)
-            console.log(values);
+            formData.append('DName', values.disease_name);
+            formData.append('DId', componentData.dId)
             values.image_upload.fileList.forEach(fileObj => {
-                formData.append('CImageFile', fileObj.originFileObj);
-
+                formData.append('DImageFile', fileObj.originFileObj);
             });
-
-            // axios.put('https://localhost:44361/api/crops/updateCrop', formData, {
-            //     headers: {
-            //         "Content-Type": "multipart/form-data"
-            //     },
-            // })
-            updateCrops(formData)
+            updateDisease(formData)
                 .then(() => {
                     setLoading(false);
                     setOpen(false);
@@ -165,35 +131,33 @@ const CropManager = () => {
     };
 
     const handleCancel = () => {
-        dispatch(closeCropModal());
+        dispatch(closeDiseaseModal());
         form.resetFields();
         setFileList([]);
     };
+
     const handleImageRemove = (file) => {
-        try {
-            console.log(file);
-            const newFileList = fileList.filter((f) => f.uid !== file.uid);
+        // try {
 
-            form.setFieldsValue({ image_upload: { fileList: newFileList } })
-            setFileList(newFileList);
+        //     const newFileList = fileList.filter((f) => f.uid !== file.uid);
 
+        //     form.setFieldsValue({ image_upload: { fileList: newFileList } })
+        //     setFileList(newFileList);
+        //     deleteUploadedImage(file.imgId)
+        //         .then(() => {
+        //             setLoading(false);
+        //             setOpen(false);
+        //             Notification('success', 'Operation successful', 'Image deleted sucessfully');
+        //         })
+        //         .catch(error => {
+        //             Notification('error', 'Operation failed', error.message)
+        //         }).catch(error => {
+        //             Notification('error', 'Operation failed', error.message)
+        //         });
 
-            deleteUploadedImage(file.imgId)
-                .then(() => {
-                    setLoading(false);
-                    setOpen(false);
-                    handleCancel();
-                    Notification('success', 'Operation successful', 'Image deleted sucessfully');
-                })
-                .catch(error => {
-                    Notification('error', 'Operation failed', error.message)
-                }).catch(error => {
-                    Notification('error', 'Operation failed', error.message)
-                });
-
-        } catch (error) {
-            Notification('error', 'Operation failed', error.message)
-        }
+        // } catch (error) {
+        //     Notification('error', 'Operation failed', error.message)
+        // }
 
     }
 
@@ -211,7 +175,7 @@ const CropManager = () => {
         <Modal
             open={isOpen}
             fileList={fileList}
-            title={componentData ? 'Edit Crop' : 'Add Crop'}
+            title={componentData ? 'Edit Disease' : 'Add Disease'}
             onCancel={handleCancel}
             maskClosable={false}
             footer={[
@@ -219,10 +183,10 @@ const CropManager = () => {
                     Return
                 </Button>,
                 <>{componentData ?
-                    <Button key="submit" type="primary" loading={loading} onClick={handleCropCardManagerEdit}>
+                    <Button key="submit" type="primary" loading={loading} onClick={handleDiseaseCardManagerEdit}>
                         Edit
                     </Button>
-                    : <Button key="submit" type="primary" loading={loading} onClick={handleCropCardManagerSubmit}>
+                    : <Button key="submit" type="primary" loading={loading} onClick={handleDiseaseCardManagerSubmit}>
                         Submit
                     </Button>}</>,
             ]}
@@ -234,21 +198,21 @@ const CropManager = () => {
                 ref={formRef}
                 initialValues={{ image_upload: defaultImages }}
                 name="control-ref"
-                onFinish={handleCropCardManagerSubmit}
+                onFinish={handleDiseaseCardManagerSubmit}
                 style={{
                     maxWidth: 600,
                 }}
             >
                 <Form.Item
-                    name="crop_name"
-                    label="Crop"
+                    name="disease_name"
+                    label="Disease"
                     rules={[
                         {
                             required: true,
                         },
                     ]}
                 >
-                    <Input value={form.getFieldValue('crop_name')} onChange={(e) => form.setFieldsValue({ crop_name: e.target.value })} placeholder={'Enter Crop Name'} />
+                    <Input value={form.getFieldValue('disease_name')} onChange={(e) => form.setFieldsValue({ disease_name: e.target.value })} placeholder={'Enter Diseasee Name'} />
                 </Form.Item>
                 <Form.Item
                     name="image_upload"
@@ -275,19 +239,10 @@ const CropManager = () => {
 
 
                 </Form.Item>
-
-
             </Form>
-
-
-
-
-
         </Modal>
 
     )
 }
 
-
-
-export default CropManager
+export default DiseaseManager

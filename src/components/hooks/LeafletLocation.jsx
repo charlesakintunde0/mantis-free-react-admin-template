@@ -91,7 +91,7 @@ export default function LeafletLocation({ pestId, userId }) {
                     </Popup>
                 </Marker>
             </MapContainer>
-            <Button type="primary" size={'medium'} onClick={saveLatLang}>{'Submit Pest Location'}</Button>
+            <Button type="primary" size={'medium'} onClick={saveLatLang}>{'Submit  Location'}</Button>
 
         </div>
     )

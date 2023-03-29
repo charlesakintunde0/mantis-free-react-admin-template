@@ -23,7 +23,7 @@ function Home() {
         <div>
             <Searchbar placeholder='e.g. Corn' cropsData={crops.data} pestsData={pests.data} />
             <div className="container">
-                <Link to="/Crops">
+                <Link to="/crops">
                     <div className="insects con-item">
                         <h4>Insects</h4>
                     </div>
@@ -35,7 +35,7 @@ function Home() {
                     </div>
                 </Link>
 
-                <Link to="weeds">
+                <Link to="/weeds">
                     <div className="weeds con-item">
                         <h4>Weeds</h4>
                     </div>
