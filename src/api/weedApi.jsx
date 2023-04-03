@@ -103,10 +103,6 @@ export const weedApi = createApi({
             invalidatesTags: [{ type: 'WeedInfoDescription', id: 'List' },
             { type: 'WeedInfoDescription', id: (id) => id }],
         }),
-        onError: (error) => {
-            console.error('An error occurred in the API:', error);
-            // Handle the error here
-        },
         getWeedInfoDescription: builder.query({
             query: (diseaseId) => ({
                 url: `getDescription/${diseaseId}`,
