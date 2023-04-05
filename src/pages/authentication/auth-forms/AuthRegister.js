@@ -24,8 +24,10 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { Flip, Slide, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Config from "../../../config";
-import { useRegisterUserMutation } from 'api/userApi';
+
+
+// api import
+import { useRegisterUserMutation, useUserLogOutMutation } from 'api/userApi';
 
 
 
@@ -47,6 +49,7 @@ const AuthRegister = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setConfirmShowPassword] = useState(false);
     const [registerUser] = useRegisterUserMutation();
+    const [userLogOut] = useUserLogOutMutation();
     const navigate = useNavigate();
     const initialValues = {
         firstname: '',
@@ -106,7 +109,22 @@ const AuthRegister = () => {
 
                         if (response.data) {
                             resetForm({ values: initialValues });
-                            navigate('/');
+                            localStorage.setItem('user', JSON.stringify(response.data));
+
+
+                            // Clear the cache after 24 hours
+                            setTimeout(() => {
+                                userLogOut();
+                                localStorage.removeItem('user');
+                            }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds  
+
+
+                            if (window.history.length > 2) {
+                                navigate(-1); // go back to previous page
+                            } else {
+                                navigate('/', { replace: true }); // navigate to home page
+                            }
+
                         }
                         else {
                             setStatus({ success: false });

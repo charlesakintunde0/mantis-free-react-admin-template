@@ -6,7 +6,13 @@ import Comment from './Comment';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom'
 import Config from "./../../config.json"
-// import {useGet} 
+import { Notification } from 'components/Notifications/Notification';
+
+// constants
+import ADMIN from '../../Constants/userRole'
+
+
+
 
 toast.configure()
 const initialImageValues = {
@@ -19,15 +25,25 @@ const Comments = () => {
     const [comment, setComment] = useState("");
     const [allComments, setAllComments] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const userDetails = JSON.parse(localStorage.getItem('user'));
     const [loading1, setLoading1] = useState(true);
-    const [userFirstName, setUserFirstName] = useState(true);
+    const [userFirstName, setUserFirstName] = useState(null);
     const [userId, setUserId] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
     const [imgValues, setImgValues] = useState(initialImageValues);
     const [userStatus, setStatus] = useState(null);
     const [commentId, setCommentId] = useState(null);
 
+
+
+    useEffect(() => {
+        setUserFirstName(userDetails ? userDetails.uFirstName : null);
+        setUserId(userDetails ? userDetails.uId : null);
+        setUserEmail(userDetails ? userDetails.uEmail : null);
+        setStatus(userDetails ? userDetails.status : null);
+
+
+    }, [userDetails])
 
     const postComment = (e) => {
         e.preventDefault();
@@ -45,12 +61,7 @@ const Comments = () => {
                 setCommentId(res.data.fId);
                 console.log(commentId);
                 setLoading(true);
-                toast.success('Comment has been posted', { //THE SUCCESS NOTIFICATION
-                    position: toast.POSITION.TOP_RIGHT,
-                    hideProgressBar: false,
-                    autoClose: 2000,
-
-                });
+                Notification('success', "Operation successful", "Comment added successfully")
             })
             .catch(err => console.log(err))
     }
@@ -62,31 +73,8 @@ const Comments = () => {
         }
     }
 
-    const getUser = async () => {
 
-        try {
-            const res = await fetch(Config.GET_USER, {
-                headers: { "Content-Type": 'application/json;charset=UTF-8' },
-                credentials: 'include',
-            });
-            const content = await res.json();
-
-            console.log(content);
-
-            setUserId(content[0].uId);
-            setUserFirstName(content[0].uFirstName);
-            setUserEmail(content[0].uEmail);
-            setStatus(content[0].isAdmin)
-
-            setLoading1(false);
-        } catch (err) {
-            console.log(err);
-        }
-    }
     useEffect(() => {
-        if (loading1) {
-            getUser();
-        }
         loadComments();
         if (loading) {
             loadComments();
@@ -150,12 +138,7 @@ const Comments = () => {
                 }
                 //console.log(commentId);
                 setLoading(true);
-                toast.success('Comment has been posted', { //THE SUCCESS NOTIFICATION
-                    position: toast.POSITION.TOP_RIGHT,
-                    hideProgressBar: false,
-                    autoClose: 2000,
-
-                });
+                Notification('sucess', "Operation Successful", "Comment added successfully")
             })
             .catch(err => console.log(err.response))
 

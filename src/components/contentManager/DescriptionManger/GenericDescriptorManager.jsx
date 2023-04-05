@@ -141,42 +141,47 @@ const DescriptionManager = ({ isOpen, Id, componentData, closeDescriptionModal, 
     };
 
 
+
+
     const handleImageRemove = (file) => {
-        if (fileList.length > 1) {
+        try {
+            if (fileList.length === 1) {
+                Notification('warning', 'You cannot remove last image!', 'Add another image as replacement to delete this one')
+                return false;
+
+            }
+
             const newFileList = fileList.filter((f) => f.uid !== file.uid);
-            form.setFieldsValue({ image_upload: newFileList });
+
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+            setFileList(newFileList);
             deleteUploadedImage(file.imgId)
                 .then(() => {
-                    Notification('success', 'Operation successful', "Image deleted successfully");
+                    setLoading(false);
+                    setOpen(false);
+                    Notification('success', 'Operation successful', 'Image deleted sucessfully');
                 })
                 .catch(error => {
-                    Notification('error', 'Operation failed', error.message);
+                    Notification('error', 'Operation failed', error.message)
                 }).catch(error => {
-                    console.log(error);
+                    Notification('error', 'Operation failed', error.message)
                 });
-        } else {
-            Notification('error', 'Operation failed', 'At least one image must be uploaded!');
+
+        } catch (error) {
+            Notification('error', 'Operation failed', error.message)
         }
-
     }
-
 
     const handleImageChange = ({ fileList }) => {
 
         // Check if the fileList has only one file
-        if (fileList.length === 1) {
-            // Set showRemoveIcon to false to prevent deletion
-            fileList[0].showRemoveIcon = false;
-        }
-
         if (fileList.length > 5) {
             fileList.splice(5);
+            Notification('warning', 'You can only upload up to five(5) images', 'You can replace an existing image');
         }
 
         setFileList(fileList);
         form.setFieldsValue({ image_upload: { fileList: fileList } })
-
-
 
     }
     return (
@@ -233,7 +238,7 @@ const DescriptionManager = ({ isOpen, Id, componentData, closeDescriptionModal, 
                         },
                     ]}
                 >
-                    <TextArea value={form.getFieldValue('description')} onChange={(e) => form.setFieldsValue({ description: e.target.value })} rows={4} placeholder="maxLength is 600" maxLength={600} />
+                    <TextArea value={form.getFieldValue('description')} onChange={(e) => form.setFieldsValue({ description: e.target.value })} rows={4} placeholder="maxLength is 1000" maxLength={1000} />
                 </Form.Item>
 
                 <Form.Item

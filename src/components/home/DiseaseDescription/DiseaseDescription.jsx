@@ -17,6 +17,7 @@ import '../../../GenericStyles/styles.css';
 // antd
 import {
   Button,
+  Empty
 } from 'antd';
 //router
 import { useParams } from 'react-router'
@@ -56,12 +57,13 @@ import { useDeleteDiseaseInfoDescriptionMutation } from '../../../api/diseasesAp
 const DiseaseDescription = () => {
   const dispatch = useDispatch();
   const anchorRef = useRef(null);
-  const [createPestInfoDescription] = useCreateDiseaseInfoDescriptionMutation();
   const { desricptionModalIsOpen, descriptionComponentData } = useSelector(state => state.diseaseModal);
   const [createUserCoordinates] = useCreateCoordinatesMutation();
+  const [isLoadingDescription, setIsLoadingDescription] = useState(false);
   const drawerOpen = useSelector(state => state.menu.drawerOpen);
   const { diseaseId, diseaseName } = useParams(); //saves the pest ID from previous page
   const pestInfoDescriptionData = useGetDiseaseInfoDescriptionQuery(diseaseId);
+
   const currentlyLoggedInUser = JSON.parse(localStorage.getItem('user'));
   const userId = currentlyLoggedInUser.uId;
   const map = LeafletLocation(diseaseId, userId);
@@ -74,6 +76,7 @@ const DiseaseDescription = () => {
   const navigate = useNavigate(); // to keep track of the history. Might use later to navigate to different pages
 
   useEffect(() => {
+    setIsLoadingDescription(pestInfoDescriptionData.isLoading)
     if (pestInfoDescriptionData.isSuccess) {
       setPestInfoDescription(pestInfoDescriptionData.data)
 
@@ -118,7 +121,10 @@ const DiseaseDescription = () => {
             spacing={2}
           >
 
-            <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+            <Grid
+              item
+              xs={12}
+              lg={drawerOpen ? 10 : 11}>
               <MainCard>
                 <Grid
                   container
@@ -129,11 +135,15 @@ const DiseaseDescription = () => {
 
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                       <Box flexGrow={2}>
-                        <Typography variant='h5'>{diseaseName ? diseaseName.toUpperCase() : "PEST NAME"}</Typography>
+                        <Typography
+                          variant='h5'>
+                          {diseaseName ? diseaseName.toUpperCase() : "PEST NAME"}</Typography>
                       </Box>
                       <Box alignSelf="flex-end">
 
-                        <Button onClick={handleAddButtonClick} type="primary"
+                        <Button
+                          onClick={handleAddButtonClick}
+                          type="primary"
                           icon={<PlusOutlined />} >
                           {'Add Description'}
                         </Button>
@@ -142,29 +152,56 @@ const DiseaseDescription = () => {
                     </Box>
                   </Grid>
                 </Grid>
-                <DescriptionManager Id={diseaseId} componentData={descriptionComponentData} isOpen={desricptionModalIsOpen} useDeleteUploadedImageMutation={useDeleteUploadedImageInDiseaseInfoDescriptionMutation} closeDescriptionModal={closeDescriptionModal} useUpdateInfoDescriptionMutation={useUpdateDiseaseInfoDescriptionMutation} useCreateInfoDescriptionMutation={useCreateDiseaseInfoDescriptionMutation} />
+                <DescriptionManager
+                  Id={diseaseId}
+                  componentData={descriptionComponentData}
+                  isOpen={desricptionModalIsOpen}
+                  useDeleteUploadedImageMutation=
+                  {useDeleteUploadedImageInDiseaseInfoDescriptionMutation}
+                  closeDescriptionModal={closeDescriptionModal}
+                  useUpdateInfoDescriptionMutation=
+                  {useUpdateDiseaseInfoDescriptionMutation}
+                  useCreateInfoDescriptionMutation=
+                  {useCreateDiseaseInfoDescriptionMutation} />
               </MainCard>
 
             </Grid>
-            {pestInfoDescriptionData.isLoading && pestInfoDescriptionData.status === 'fulfilled' ? <Loading /> : !pestInfoDescriptionData.isLoading && !pestInfoDescriptionData.status !== 'fulfilled' && pestInfoDescriptionData.data.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'description'} parentName={diseaseName.toUpperCase()} /> </Grid> : <> {pestInfoDescription.map((description) =>
-            (
-              <Grid key={description.id} item xs={12} lg={drawerOpen ? 10 : 12}>
-                <Descriptor key={description.id} storedDescriptionCardData={storedDescriptionCardData} description={description} useDeleteDiseaseInfoDescriptionMutation={useDeleteDiseaseInfoDescriptionMutation} />
-                <>{description.id}</>
-              </Grid>
+            {isLoadingDescription ?
+              <Loading /> :
+              pestInfoDescription.length === 0 ?
+                <Grid
+                  item
+                  xs={12}
+                  lg={drawerOpen ? 10 : 11}>
+                  <EmptySet
+                    componentName={'description'} />
+                </Grid> : <>
+                  {pestInfoDescription.map((description) =>
+                  (
+                    <Grid key={description.id} item xs={12} lg={drawerOpen ? 5 : 5.5}>
+                      <Descriptor
+                        key={description.id}
+                        storedDescriptionCardData={storedDescriptionCardData}
+                        description={description}
+                        useDeleteInfoDescriptionMutation=
+                        {useDeleteDiseaseInfoDescriptionMutation} />
+                    </Grid>
 
-            )
-            )
-            }
+                  )
+                  )
+                  }
 
-            </>}
+                </>}
 
 
             {
-              pestInfoDescriptionData.data.length === 0 ?
+              pestInfoDescription.length === 0 ?
                 ''
                 :
-                <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                <Grid
+                  item
+                  xs={12}
+                  lg={drawerOpen ? 10 : 11}>
                   {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
                     <p>Was this information helpful? </p>
                     <button onClick={saveUserCoordinataes}>Yes</button>
@@ -179,21 +216,24 @@ const DiseaseDescription = () => {
             }
 
 
+            {pestInfoDescription.length !== 0 ?
+              <Grid
+                item
+                xs={12}
+                lg={drawerOpen ? 10 : 11}>
+                <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}
+                  <Box className="helpImprove">
+                    <h4>Help us improve</h4>
+                    <p>Drag the marker on the map to the location where you saw this pest</p>
+                  </Box>
 
-            <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
-              <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}
-                <Box className="helpImprove">
-                  <h4>Help us improve</h4>
-                  <p>Drag the marker on the map to the location where you saw this pest</p>
+
+                  <Box>
+                    {map}
+                  </Box>
+
                 </Box>
-
-
-                <Box>
-                  {map}
-                </Box>
-
-              </Box>
-            </Grid>
+              </Grid> : ''}
 
           </Grid>
         </div>

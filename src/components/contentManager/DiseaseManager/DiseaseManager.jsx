@@ -137,40 +137,51 @@ const DiseaseManager = () => {
     };
 
     const handleImageRemove = (file) => {
-        // try {
+        try {
+            if (fileList.length === 1) {
+                Notification('warning', 'You cannot remove last image!', 'Click the upload button to replace it instead')
+                return false;
 
-        //     const newFileList = fileList.filter((f) => f.uid !== file.uid);
+            }
 
-        //     form.setFieldsValue({ image_upload: { fileList: newFileList } })
-        //     setFileList(newFileList);
-        //     deleteUploadedImage(file.imgId)
-        //         .then(() => {
-        //             setLoading(false);
-        //             setOpen(false);
-        //             Notification('success', 'Operation successful', 'Image deleted sucessfully');
-        //         })
-        //         .catch(error => {
-        //             Notification('error', 'Operation failed', error.message)
-        //         }).catch(error => {
-        //             Notification('error', 'Operation failed', error.message)
-        //         });
+            const newFileList = fileList.filter((f) => f.uid !== file.uid);
 
-        // } catch (error) {
-        //     Notification('error', 'Operation failed', error.message)
-        // }
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+            setFileList(newFileList);
+            deleteUploadedImage(file.imgId)
+                .then(() => {
+                    setLoading(false);
+                    setOpen(false);
+                    handleCancel();
+                    Notification('success', 'Operation successful', 'Image deleted sucessfully');
+                })
+                .catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                }).catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                });
 
-    }
-
-    const handleImageChange = ({ fileList }) => {
-
-        if (fileList.length > 1) {
-            fileList.splice(0);
+        } catch (error) {
+            Notification('error', 'Operation failed', error.message)
         }
 
-        setFileList(fileList);
-        form.setFieldsValue({ image_upload: { fileList: fileList } })
+    }
+
+
+    const handleImageChange = ({ fileList }) => {
+        if (fileList.length > 1) {
+            const newFileList = [fileList[fileList.length - 1]];
+            setFileList(newFileList);
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+        } else {
+            setFileList(fileList);
+            form.setFieldsValue({ image_upload: { fileList: fileList } })
+        }
+
 
     }
+
+
     return (
         <Modal
             open={isOpen}

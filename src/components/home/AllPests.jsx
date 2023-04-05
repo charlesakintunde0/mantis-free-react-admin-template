@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router'
-import axios from 'axios'
 import { Link } from "react-router-dom";
-import Config from "./../../config.json";
 
 // material-ui
 import {
@@ -11,17 +9,14 @@ import {
     Box
 } from '@mui/material';
 
-
 // antd
 import {
-    Space,
-    Spin,
     Button,
     Tooltip,
     Card
 } from 'antd';
 
-
+// card
 import MainCard from 'components/MainCard';
 
 //antd icons
@@ -31,16 +26,19 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 //component
 import PestManager from 'components/contentManager/PestManager/PestManager';
 
-
-
 // api 
 import { useGetUserQuery } from 'api/userApi';
+import { useGetCropsPestQuery, useDeletePestMutation, } from 'api/pestApi';
+
 
 import { useDispatch, useSelector } from 'react-redux';
 import { openPestModal, storedPestCardData } from 'store/reducers/pestModal';
 
 //constant 
 import userRole from 'Constants/userRole';
+import EmptySet from 'components/EmptySet/EmptySet';
+import Loader from 'components/Loader';
+import { handleDeleteWithIdConfirmation, Notification } from 'components/Notifications/Notification';
 
 const contentStyle = {
     width: '100%',
@@ -55,35 +53,16 @@ const contentStyle = {
 
 
 function AllPests() {
-    //test comment
-    const currentlyLoggedInUserData = useGetUserQuery();
     const cropID = useParams().cropID;
-    const toAdmin = {
-        pathname: "/AdminPests",
-        param1: cropID,
-    }
+    const currentlyLoggedInUserData = useGetUserQuery();
+    const getCropsPest = useGetCropsPestQuery(cropID);
+    const [deleteCropsPest] = useDeletePestMutation();
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
     const dispatch = useDispatch();
     const [pest, setPest] = useState([]);
     const [cropName, setCropName] = useState([]);
+    const [isPestLoading, setIsPestLoading] = useState(false);
     const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
-
-    const [add, setAdd] = useState(false);
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // for populating all the states until its false
-    const [loading1, setLoading1] = useState(true);
-
-    useEffect(() => {
-        fetchUser();
-        if (loading) {
-            fetchUser();
-        }
-        fetchPests();
-        if (loading1) {
-            fetchPests();
-        }
-
-    }, [loading, loading1])
 
     const handleAddButtonClick = () => {
         dispatch(openPestModal({
@@ -94,53 +73,24 @@ function AllPests() {
 
 
     useEffect(() => {
-        if (currentlyLoggedInUserData.data) {
-            setCurentlyLoggedInUser(currentlyLoggedInUserData.data[0])
-        }
-        // if (allStoredCrops.data) {
-        //     setAllCrop(allStoredCrops.data)
-        // }
-    }, [currentlyLoggedInUserData.status]);
 
-    const fetchPests = async () => {
-        try {
-            const res = await axios.get(Config.FETCH_SPECIFIC_CROP + cropID);
-            setCropName(res.data[0].cropName);
-            setPest(res.data[0].pestDetails);
-            console.log(res.data[0].pestDetails);
-
-        } catch (err) {
-            console.log(err);
-        }
-
-    }
-
-    const fetchUser = async () => {
-        try {
-            const res = await fetch(Config.GET_USER, {
-                headers: { "Content-Type": 'application/json;charset=UTF-8' },
-                credentials: 'include',
-            });
-
-            const content = await res.json();
-            setUser(content[0]);
-            console.log(user);
-            if (curentlyLoggedInUser && curentlyLoggedInUser.isAdmin == userRole.ADMIN) {
-                setAdd(true);
-
+        const fetchPests = async () => {
+            try {
+                setIsPestLoading(getCropsPest.isLoading)
+                if (getCropsPest.data) {
+                    setCropName(getCropsPest.data[0].cropName);
+                    setPest(getCropsPest.data[0].pests);
+                }
             }
-            setLoading(false);
+            catch (e) { }
         }
-        catch (e) {
-            console.log(e);
-        }
-    }
+        fetchPests();
 
+    }, [getCropsPest.status]);
 
+    console.log(getCropsPest)
 
-
-
-    const handleEditCrop = (pest) => {
+    const handleEditPest = (pest) => {
 
         dispatch(storedPestCardData({
             componentData: pest,
@@ -151,26 +101,14 @@ function AllPests() {
 
     }
 
-    const handleDeleteCrop = (pestId) => {
-        console.log(pestId)
-
-        axios.delete(`${Config.DELETE_PEST_FROM_CROP}/${cropID}/${pestId
-            }`)
+    const handleDeletePest = (pestId) => {
+        deleteCropsPest(pestId)
             .then(res => {
-                // toast.success('record has been deleted', { //THE SUCCESS NOTIFICATION
-                //     position: toast.POSITION.TOP_RIGHT,
-                //     hideProgressBar: false,
-                //     autoClose: 2000,
-
-                // });
+                Notification('success', 'Operation successful', 'Disease deleted successfully')
+            }).catch(err => {
+                Notification('error', 'Operation failed', err)
             })
-
-
-
-
     }
-
-
 
     return (
         <>
@@ -200,46 +138,45 @@ function AllPests() {
                 <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
                     <Grid container spacing={5}>
                         {
-                            pest ? <> {
-                                pest.map(p => (
-
-                                    <Grid item xs={12} sm={6} md={4}>
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                <Link to={`/Pest/Description/${p.pName}/${p.pId}`}>
-                                                    <img
-                                                        alt="Loading Images"
-                                                        src={p.pUrl}
-                                                        style={contentStyle}
-                                                    />
-                                                </Link>
-                                            }
-                                            actions={[
-                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(p)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteCrop(p.pId)} />
-
-                                            ]}
-                                        >
-                                            <Link to={`/Pest/Description/${p.pName}/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
-                                        </Card>
-
-
-                                    </Grid>
-
-                                )
-                                )
-                            } </>
-                                : <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                        <Space size="middle">
-                                            <Spin tip={'Loading content...'} size="large" />
-                                        </Space>
-
-                                    </Box>
+                            pest.length == 0 ?
+                                <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                                    <EmptySet componentName={'pest'} />
                                 </Grid>
+                                : isPestLoading ?
+                                    <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                                        <Loader />
+                                    </Grid>
+                                    : <> {
+                                        pest.map(p => (
 
-                        }
+                                            <Grid item xs={12} sm={3} md={3} lg={3}>
+                                                <Card
+                                                    hoverable
+                                                    cover={
+                                                        <Link to={`/Pest/Description/${p.pName}/${p.pId}`}>
+                                                            <img
+                                                                alt="Loading Images"
+                                                                src={p.image}
+                                                                style={contentStyle}
+                                                            />
+                                                        </Link>
+                                                    }
+                                                    actions={[
+                                                        <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditPest(p)} />,
+                                                        <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeletePest, p.pId)} />
+
+                                                    ]}
+                                                >
+                                                    <Link to={`/Pest/Description/${p.pName}/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
+                                                </Card>
+
+
+                                            </Grid>
+
+                                        )
+                                        )
+                                    } </>}
+
                     </Grid>
 
                 </Grid>

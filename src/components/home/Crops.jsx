@@ -71,6 +71,7 @@ function Crops() {
     const [deleteCrop] = useDeleteCropMutation();
     const allStoredCrops = useGetAllCropsQuery(null);
     const [allCrops, setAllCrop] = useState([]);
+    const [isCropLoading, setCropLoading] = useState(false);
     const dispatch = useDispatch();
 
     const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
@@ -108,6 +109,8 @@ function Crops() {
 
 
     useEffect(() => {
+
+        setCropLoading(allStoredCrops.isLoading);
         if (currentlyLoggedInUserData.data) {
             setCurentlyLoggedInUser(currentlyLoggedInUserData.data[0])
             dispatch(setUser(currentlyLoggedInUserData.data[0]));
@@ -130,10 +133,12 @@ function Crops() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}>{'Select Crop'}</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-                                <Tooltip placement="bottom" title={'Add Crop'}>
-                                    <Button onClick={handleAddButtonClick} type="primary"
-                                        icon={<PlusOutlined />} />
-                                </Tooltip>
+
+                                <Button onClick={handleAddButtonClick} type="primary"
+                                    icon={<PlusOutlined />} >
+                                    {'Add Crop'}
+                                </Button>
+
                             </Box>
                         </Box>
                         <CropManager />
@@ -146,40 +151,42 @@ function Crops() {
 
 
 
-                        {allStoredCrops.isLoading &&
-                            allStoredCrops.status === 'fulfilled' ? <Loading /> : !allStoredCrops.isLoading && !allStoredCrops.status !== 'fulfilled' && allCrops.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'crop'} parentName={''} /> </Grid> : <>{
-                                allCrops.map(crop => (
+                        {isCropLoading
+                            ? <Grid item xs={12}>  <Loading /> </Grid> : allCrops.length === 0 ?
+                                <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                                    <EmptySet componentName={'crop'} /> </Grid> : <>{
+                                        allCrops.map(crop => (
 
-                                    <Grid item xs={12} sm={6} md={4}>
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                <Link to={`/Crops/${crop.id}`} key={crop.id}>
-                                                    <img
-                                                        alt="Loading Images"
-                                                        src={crop.image}
-                                                        style={contentStyle}
-                                                    />
-                                                </Link>
-                                            }
-                                            actions={[
+                                            <Grid item xs={6} sm={4} md={4} lg={3}>
+                                                <Card
+                                                    hoverable
+                                                    cover={
+                                                        <Link to={`/Crops/${crop.id}`} key={crop.id}>
+                                                            <img
+                                                                alt="Loading Images"
+                                                                src={crop.image}
+                                                                style={contentStyle}
+                                                            />
+                                                        </Link>
+                                                    }
+                                                    actions={[
 
-                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, crop.id)} />
+                                                        <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
+                                                        <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, crop.id)} />
 
-                                            ]}
-                                        >
-                                            <Link to={`/Crops/${crop.id}`} key={crop.id}><Typography variant={'h5'}> {crop.crop}</Typography></Link>
-                                        </Card>
+                                                    ]}
+                                                >
+                                                    <Link to={`/Crops/${crop.id}`} key={crop.id}><Typography variant={'h5'}> {crop.crop}</Typography></Link>
+                                                </Card>
 
 
-                                    </Grid>
+                                            </Grid>
 
-                                )
-                                )
-                            }
+                                        )
+                                        )
+                                    }
 
-                            </>}
+                                </>}
 
 
 

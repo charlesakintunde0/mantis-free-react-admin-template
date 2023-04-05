@@ -94,7 +94,13 @@ export default function UsersTable() {
 
     }
     return (
-        <Modal title={'EDIT USERS'} open={isOpen} onCancel={handleCancel} width={800} footer={null}>
+        <Modal
+            title={'EDIT USERS'}
+            open={isOpen}
+            onCancel={handleCancel}
+            width={800}
+            footer={null}
+            maskable>
             <Box>
                 <TableContainer
                     sx={{

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Upload, Input, Form, notification } from 'antd';
+import { Button, Modal, Upload, Input, Form, message } from 'antd';
 
 //utils
 import { getImage } from 'Helper/Utils';
@@ -31,37 +31,6 @@ const WeedManager = () => {
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
 
-
-    // helper functions 
-
-    // const getImage = async (imageUrl, imgId) => {
-    //     try {
-    //         const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-    //         const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/\d+/g, '');
-    //         const urlObject = new URL(imageUrl);
-    //         const ext = urlObject.pathname.split('.').pop();
-    //         const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
-
-    //         const response = await axios.get('https://localhost:44361/api/pests/getImageFile?url=' + imageUrl, { responseType: 'arraybuffer' });
-    //         const blob = new Blob([response.data], { type: response.headers['content-type'] });
-    //         const fileUid = uuidv4();
-    //         const file = new File([blob], `${imageName}.${ext}`, { type: `image/${format}` });
-    //         const thumbUrl = URL.createObjectURL(file);
-    //         console.log(thumbUrl);
-    //         return {
-    //             uid: fileUid,
-    //             originFileObj: file,
-    //             thumbUrl,
-    //             name: imageName,
-    //             imgId: imgId
-    //         };
-
-
-    //     } catch (error) {
-    //         console.error(error);
-    //         return null;
-    //     }
-    // };
 
     useEffect(() => {
         if (isOpen) {
@@ -144,40 +113,50 @@ const WeedManager = () => {
     };
 
     const handleImageRemove = (file) => {
-        // try {
+        try {
+            if (fileList.length === 1) {
+                Notification('warning', 'You cannot remove last image!', 'Click the upload button to replace it instead')
+                return false;
 
-        //     const newFileList = fileList.filter((f) => f.uid !== file.uid);
+            }
 
-        //     form.setFieldsValue({ image_upload: { fileList: newFileList } })
-        //     setFileList(newFileList);
-        //     deleteUploadedImage(file.imgId)
-        //         .then(() => {
-        //             setLoading(false);
-        //             setOpen(false);
-        //             Notification('success', 'Operation successful', 'Image deleted sucessfully');
-        //         })
-        //         .catch(error => {
-        //             Notification('error', 'Operation failed', error.message)
-        //         }).catch(error => {
-        //             Notification('error', 'Operation failed', error.message)
-        //         });
+            const newFileList = fileList.filter((f) => f.uid !== file.uid);
 
-        // } catch (error) {
-        //     Notification('error', 'Operation failed', error.message)
-        // }
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+            setFileList(newFileList);
+            deleteUploadedImage(file.imgId)
+                .then(() => {
+                    setLoading(false);
+                    setOpen(false);
+                    handleCancel();
+                    Notification('success', 'Operation successful', 'Image deleted sucessfully');
+                })
+                .catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                }).catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                });
 
-    }
-
-    const handleImageChange = ({ fileList }) => {
-
-        if (fileList.length > 1) {
-            fileList.splice(0);
+        } catch (error) {
+            Notification('error', 'Operation failed', error.message)
         }
 
-        setFileList(fileList);
-        form.setFieldsValue({ image_upload: { fileList: fileList } })
+    }
+
+
+    const handleImageChange = ({ fileList }) => {
+        if (fileList.length > 1) {
+            const newFileList = [fileList[fileList.length - 1]];
+            setFileList(newFileList);
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+        } else {
+            setFileList(fileList);
+            form.setFieldsValue({ image_upload: { fileList: fileList } })
+        }
+
 
     }
+
     return (
         <Modal
             open={isOpen}
@@ -231,10 +210,9 @@ const WeedManager = () => {
                 >
                     <Upload
                         onRemove={handleImageRemove}
-                        onChange={handleImageChange}
+                        onChange={() => handleImageChange}
                         limit={1}
                         accept=".jpg,.jpeg,.png"
-                        beforeUpload={false}
                         multiple={false}
                         listType="picture"
                         fileList={fileList}

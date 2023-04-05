@@ -1,0 +1,15 @@
+.icon {
+    display: inline-block;
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.up {
+    transform: rotate(-180deg);
+}
+
+.down {
+    transform: rotate(180deg);
+}

@@ -14,6 +14,53 @@ export const pestApi = createApi({
                 method: "GET",
             }),
         }),
+        getCropsPest: builder.query({
+            query: (id) => ({
+                url: `getPests/${id}`,
+                method: "GET"
+            }),
+            providesTags: (result) => [
+                { type: 'Pest', id: 'List' },
+                ...result?.map((Pest) => ({ type: 'Pest', id: Pest.id })),
+            ],
+        }),
+        createPest: builder.mutation({
+            query: (pest) => ({
+                url: "create",
+                body: pest,
+                method: "POST",
+            }),
+            invalidatesTags: [{ type: 'Pest', id: 'List' },
+            { type: 'Pest', id: (id) => id }],
+        }),
+        updatePest: builder.mutation({
+            query: (pest) => ({
+                url: `updatePest`,
+                body: pest,
+                method: "PUT",
+            }),
+            invalidatesTags: [{ type: 'Pest', id: 'List' },
+            { type: 'Pest', id: (id) => id }],
+        }),
+        deletePest: builder.mutation({
+            query: (id) => ({
+                url: `deletePest/${id}`,
+                body: id,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: 'Pest', id: 'List' },
+            { type: 'Pest', id: (id) => id }],
+        }),
+        deleteUploadedImage: builder.mutation({
+            query: (id) => ({
+                url: `deleteUploadedImage/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: 'Pest', id: 'List' },
+            { type: 'Pest', id: (id) => id }],
+        }),
+
+        // Pest Info Description
         getPestInfoDescription: builder.query({
             query: (pestId) => ({
                 url: `getDescription/${pestId}`,
@@ -57,10 +104,6 @@ export const pestApi = createApi({
             }),
             invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
         }),
-        onError: (error) => {
-            console.error('An error occurred in the API:', error);
-            // Handle the error here
-        },
         deleteUploadedImage: builder.mutation({
             query: (id) => ({
                 url: `deleteUploadedImage/${id}`,
@@ -68,40 +111,16 @@ export const pestApi = createApi({
             }),
             invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' }, { type: 'PestInfoDescription', id: (id) => id }],
         }),
-        onError: (error) => {
-            console.error('An error occurred in the API:', error);
-            // Handle the error here
-        },
-        // getSpecificCrop: builder.query({
-        //     query: () => ({
-        //         url: "getspecific",
-        //         params: {},
-        //         method: "GET",
-        //     }),
-        // }),
-        // createPest: builder.mutation({
-        //     query: (crop) => ({
-        //         url: "create",
-        //         body: crop,
-        //         method: "POST",
-        //     }),
-        // }),
-        // updatePestDescription: builder.mutation({
-        //     query: (comment) => ({
-        //         url: `updatedescription/${comment.id}`,
-        //         body: comment,
-        //         method: "PUT",
-        //     }),
-        // }),
-        // deletePest: builder.mutation({
-        //     query: (id) => ({
-        //         url: `DeleteCrop/${id}`,
-        //         body: id,
-        //         method: "DELETE",
-        //     }),
-        // }),
+        deleteUploadedImageInPestInfoDescription: builder.mutation({
+            query: (id) => ({
+                url: `deleteUploadedImage/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: 'PestInfoDescription', id: 'List' },
+            { type: 'PestInfoDescription', id: (id) => id }],
+        }),
     }),
 });
 
 
-export const { useUpdatePestInfoDescriptionMutation, useDeletePestInfoDescriptionMutation, useDeleteUploadedImageMutation, useGetPestInfoDescriptionQuery, useGetAllPestsQuery, useCreatePestInfoDescriptionMutation } = pestApi;
+export const { useDeleteUploadedImageInPestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation, useDeletePestInfoDescriptionMutation, useGetPestInfoDescriptionQuery, useGetAllPestsQuery, useCreatePestInfoDescriptionMutation, useGetCropsPestQuery, useCreatePestMutation, useUpdatePestMutation, useDeletePestMutation, useDeleteUploadedImageMutation } = pestApi;

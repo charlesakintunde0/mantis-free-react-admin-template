@@ -2,9 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     isOpen: false,
+    weedId: null,
+    componentData: null,
     cropId: null,
-    pestId: null,
-    componentData: null
+    desricptionModalIsOpen: false,
+    descriptionComponentData: null
 };
 
 const pestModal = createSlice({
@@ -26,10 +28,22 @@ const pestModal = createSlice({
             state.pestId = action.payload.pestId;
             state.cropId = action.payload.cropId;
         },
-
+        storedDescriptionCardData(state, action) {
+            state.descriptionComponentData = action.payload.descriptionComponentData;
+            state.desricptionModalIsOpen = action.payload.desricptionModalIsOpen
+        },
+        closeDescriptionModal(state) {
+            state.desricptionModalIsOpen = false;
+            state.componentId = null;
+            state.descriptionComponentData = null;
+        },
+        openDescriptionModal(state, action) {
+            state.desricptionModalIsOpen = action.payload.desricptionModalIsOpen;
+            state.weedId = action.payload.weedId;
+        },
     }
 });
 
-export const { openPestModal, closePestModal, storedPestCardData } = pestModal.actions;
+export const { openPestModal, closePestModal, storedPestCardData, openDescriptionModal, closeDescriptionModal, storedDescriptionCardData } = pestModal.actions;
 
 export default pestModal.reducer;

@@ -68,6 +68,7 @@ const contentStyle = {
 function Weeds() {
     const currentlyLoggedInUserData = useGetUserQuery();
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
+    const [isWeedLoading, setIsWeedLoading] = useState(false)
     const [deleteWeed] = useDeleteWeedMutation();
     const allStoredWeeds = useGetAllWeedsQuery();
     const [allWeeds, setAllWeed] = useState([]);
@@ -108,6 +109,7 @@ function Weeds() {
 
 
     useEffect(() => {
+        setIsWeedLoading(allStoredWeeds.isLoading)
         if (currentlyLoggedInUserData.data) {
             setCurentlyLoggedInUser(currentlyLoggedInUserData.data[0])
             dispatch(setUser(currentlyLoggedInUserData.data[0]));
@@ -148,40 +150,42 @@ function Weeds() {
 
 
 
-                        {allStoredWeeds.isLoading &&
-                            allStoredWeeds.status === 'fulfilled' ? <Loading /> : !allStoredWeeds.isLoading && !allStoredWeeds.status !== 'fulfilled' && allWeeds.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'Weed'} parentName={''} /> </Grid> : <>{
-                                allWeeds.map(Weed => (
+                        {isWeedLoading ? <Loading /> :
+                            !allStoredWeeds.isLoading && !allStoredWeeds.status !== 'fulfilled' && allWeeds.length === 0 ?
+                                <EmptySet componentName={'Weed'} parentName={''} />
+                                : <>{
+                                    allWeeds.map(Weed => (
 
-                                    <Grid item xs={12} sm={6} md={4}>
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                <Link to={`/weed/description/${Weed.weed}/${Weed.id}`} key={Weed.id}>
-                                                    <img
-                                                        alt="Loading Images"
-                                                        src={Weed.image}
-                                                        style={contentStyle}
-                                                    />
-                                                </Link>
-                                            }
-                                            actions={[
+                                        <Grid item xs={12} sm={6} md={4}>
+                                            <Card
+                                                hoverable
+                                                cover={
+                                                    <Link to={`/weed/description/${Weed.weed}/${Weed.id}`} key={Weed.id}>
+                                                        <img
+                                                            alt="Loading Images"
+                                                            src={Weed.image}
+                                                            style={contentStyle}
+                                                        />
+                                                    </Link>
+                                                }
+                                                actions={[
 
-                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditWeed(Weed)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteWeed, Weed.id)} />
+                                                    <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditWeed(Weed)} />,
+                                                    <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteWeed, Weed.id)} />
 
-                                            ]}
-                                        >
-                                            <Link to={`/weed/description/${Weed.weed}/${Weed.id}`} key={Weed.id}><Typography variant={'h5'}> {Weed.weed}</Typography></Link>
-                                        </Card>
+                                                ]}
+                                            >
+                                                <Link to={`/weed/description/${Weed.weed}/${Weed.id}`} key={Weed.id}><Typography variant={'h5'}> {Weed.weed}</Typography></Link>
+                                            </Card>
 
 
-                                    </Grid>
+                                        </Grid>
 
-                                )
-                                )
-                            }
+                                    )
+                                    )
+                                }
 
-                            </>}
+                                </>}
 
 
 

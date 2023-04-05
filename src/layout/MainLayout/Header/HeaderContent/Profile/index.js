@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useRef, useState } from 'react';
+import './index.css'
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -19,6 +20,15 @@ import {
     Typography
 } from '@mui/material';
 
+//api 
+import { useUserLogOutMutation } from 'api/userApi';
+
+// antd
+import { DownOutlined } from '@ant-design/icons';
+
+// redux
+import { useNavigate } from 'react-router'
+
 // project import
 import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
@@ -27,7 +37,8 @@ import SettingTab from './SettingTab';
 
 // assets
 import avatar1 from 'assets/images/users/avatar-1.png';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, SettingOutlined, UserOutlined, UpOutlined } from '@ant-design/icons';
+import { Notification } from 'components/Notifications/Notification';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -55,21 +66,54 @@ function a11yProps(index) {
 
 const Profile = () => {
     const theme = useTheme();
+    const [isIconUp, setIsIconUp] = useState(true);
+    const [userLogOut, { isSuccess }] = useUserLogOutMutation();
+    const userDetails = JSON.parse(localStorage.getItem('user'))
+    const navigate = useNavigate();
 
-    const handleLogout = async () => {
-        // logout
-    };
+    const [user, setUser] = useState(userDetails ? {
+        userName: userDetails.uFirstName + ' ' + userDetails.uLastName,
+        role: userDetails.uRole
+    } : null
+    );
+
+    // const handleProfileClick = () => {
+    //     setIsIconUp(!isIconUp);
+    //     handleClose()
+    // };
+
+
+
+    const handleLogout = () => {
+
+        userLogOut().unwrap().then(() => {
+
+            localStorage.removeItem('user');
+            Notification('success', "Operation Successful", "Logout Success");
+            navigate('/login');
+        }).catch((err) => {
+            console.error(err);
+            Notification('error', "Error Occured", err.toString());
+        });
+
+
+
+
+    }
+
 
     const anchorRef = useRef(null);
     const [open, setOpen] = useState(false);
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
+        setIsIconUp(!isIconUp);
     };
 
     const handleClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
         }
+        setIsIconUp(!isIconUp);
         setOpen(false);
     };
 
@@ -83,24 +127,39 @@ const Profile = () => {
 
     return (
         <Box sx={{ flexShrink: 0, ml: 0.75 }}>
-            <ButtonBase
-                sx={{
-                    p: 0.25,
-                    bgcolor: open ? iconBackColorOpen : 'transparent',
-                    borderRadius: 1,
-                    '&:hover': { bgcolor: 'secondary.lighter' }
-                }}
-                aria-label="open profile"
-                ref={anchorRef}
-                aria-controls={open ? 'profile-grow' : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-            >
-                <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-                    <Typography variant="subtitle1">John Doe</Typography>
-                </Stack>
-            </ButtonBase>
+
+            {
+                user ?
+                    <ButtonBase
+                        sx={{
+                            p: 0.25,
+                            bgcolor: open ? iconBackColorOpen : 'transparent',
+                            borderRadius: 1,
+                            '&:hover': { bgcolor: 'secondary.lighter' }
+                        }}
+                        aria-label="open profile"
+                        ref={anchorRef}
+                        aria-controls={open ? 'profile-grow' : undefined}
+                        aria-haspopup="true"
+                        onClick={handleToggle}
+                        className="icon-change-button"
+                    >
+                        {userDetails ?
+                            <Stack onClick={handleClose} direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
+                                <Typography variant="subtitle1">{user.userName}
+
+                                </Typography>
+                                <Box className={`icon ${isIconUp ? "up" : "down"}`}>
+                                    {isIconUp ? <UpOutlined /> : <DownOutlined />}
+                                </Box>
+
+
+                            </Stack>
+                            : ''}
+                    </ButtonBase>
+                    :
+                    ''}
+
             <Popper
                 placement="bottom-end"
                 open={open}
@@ -139,11 +198,11 @@ const Profile = () => {
                                             <Grid container justifyContent="space-between" alignItems="center">
                                                 <Grid item>
                                                     <Stack direction="row" spacing={1.25} alignItems="center">
-                                                        <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
+                                                        {/* <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} /> */}
                                                         <Stack>
-                                                            <Typography variant="h6">John Doe</Typography>
+                                                            <Typography variant="h6">{user.userName}</Typography>
                                                             <Typography variant="body2" color="textSecondary">
-                                                                UI/UX Designer
+                                                                {user.role}
                                                             </Typography>
                                                         </Stack>
                                                     </Stack>
@@ -191,11 +250,9 @@ const Profile = () => {
                                                     </Tabs>
                                                 </Box>
                                                 <TabPanel value={value} index={0} dir={theme.direction}>
-                                                    <ProfileTab handleLogout={handleLogout} />
+                                                    <ProfileTab handlePopperClose={handleClose} handleLogout={handleLogout} />
                                                 </TabPanel>
-                                                <TabPanel value={value} index={1} dir={theme.direction}>
-                                                    <SettingTab />
-                                                </TabPanel>
+
                                             </>
                                         )}
                                     </MainCard>

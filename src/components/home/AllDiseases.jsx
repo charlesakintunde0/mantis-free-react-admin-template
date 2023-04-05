@@ -25,7 +25,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 //api
-import { useGetCropsDiseaseQuery, useCreateDiseaseMutation, useUpdateDiseaseMutation, useDeleteDiseaseMutation, useGetDiseaseInfoDescriptionQuery, useCreateDiseaseInfoDescription } from 'api/diseasesApi';
+import { useGetCropsDiseaseQuery, useDeleteDiseaseMutation, } from 'api/diseasesApi';
 
 import MainCard from 'components/MainCard';
 
@@ -61,10 +61,12 @@ function AllDiseases() {
     const [cropName, setCropName] = useState([]);
     const getCropDiseases = useGetCropsDiseaseQuery(cropId);
     const [deleteDisease] = useDeleteDiseaseMutation();
+    const [isDiseaseLoading, setIsDiseaseLoading] = useState(false)
 
 
     useEffect(() => {
         const fetchDiseases = async () => {
+            setIsDiseaseLoading(getCropDiseases.isLoading)
             try {
                 if (getCropDiseases.data) {
                     setCropName(getCropDiseases.data[0].cropName);
@@ -120,10 +122,10 @@ function AllDiseases() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}>{'Select Disease'}</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-                                <Tooltip placement="bottom" title={'Add Disease'}>
-                                    <Button onClick={handleAddButtonClick} type="primary"
-                                        icon={<PlusOutlined />} />
-                                </Tooltip>
+                                <Button onClick={handleAddButtonClick} type="primary"
+                                    icon={<PlusOutlined />} >
+                                    {'Add Disease'}
+                                </Button>
                             </Box>
                         </Box>
                         <DiseaseManager />
@@ -132,40 +134,43 @@ function AllDiseases() {
 
                 <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
                     <Grid container spacing={5}>
-                        {getCropDiseases.isLoading &&
-                            getCropDiseases.status === 'fulfilled' ? <Loading /> : !getCropDiseases.isLoading && !getCropDiseases.status !== 'fulfilled' && disease.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'disease'} parentName={''} /> </Grid> : <>{
-                                disease.map(disease => (
+                        {isDiseaseLoading ? <Loading /> :
+                            disease.length === 0 ?
+                                <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                                    <EmptySet componentName={'disease'} /> </Grid> : <>{
+                                        disease.map(disease => (
 
-                                    <Grid item xs={12} sm={6} md={4}>
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                <Link to={`/disease/description/${disease.dName}/${disease.dId}`} key={disease.dId}>
-                                                    <img
-                                                        alt="Loading Images"
-                                                        src={disease.image}
-                                                        style={contentStyle}
-                                                    />
-                                                </Link>
-                                            }
-                                            actions={[
+                                            <Grid item xs={6} sm={4} md={4} lg={3}>
+                                                <Card
+                                                    hoverable
+                                                    cover={
+                                                        <Link to={`/disease/description/${disease.dName}/${disease.dId}`} key={disease.dId}>
+                                                            <img
+                                                                alt="Loading Images"
+                                                                src={disease.image}
+                                                                style={contentStyle}
+                                                            />
+                                                        </Link>
+                                                    }
+                                                    actions={[
 
-                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(disease)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, disease.dId)} />
+                                                        <Button
+                                                            type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(disease)} />,
+                                                        <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, disease.dId)} />
 
-                                            ]}
-                                        >
-                                            <Link to={`/disease/description/${disease.dName}/${disease.dId}`} key={disease.dId}><Typography variant={'h5'}> {disease.dName}</Typography></Link>
-                                        </Card>
+                                                    ]}
+                                                >
+                                                    <Link to={`/disease/description/${disease.dName}/${disease.dId}`} key={disease.dId}><Typography variant={'h5'}> {disease.dName}</Typography></Link>
+                                                </Card>
 
 
-                                    </Grid>
+                                            </Grid>
 
-                                )
-                                )
-                            }
+                                        )
+                                        )
+                                    }
 
-                            </>}
+                                </>}
                     </Grid>
 
                 </Grid>

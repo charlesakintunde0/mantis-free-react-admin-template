@@ -63,7 +63,8 @@ const WeedDescription = () => {
     const userId = currentlyLoggedInUser.uId;
     const map = LeafletLocation(weedId, userId);
     const userLocation = useGeoLocation();
-    const [weedInfoDescription, setWeedInfoDescription] = useState([])
+    const [weedInfoDescription, setWeedInfoDescription] = useState([]);
+    const [isWeedInfoDescriptionLoading, setIsWeedInfoDescriptionLoading] = useState(false);
 
     const [role, setRole] = useState(null);
     const [edit, setEdit] = useState(false);
@@ -71,6 +72,7 @@ const WeedDescription = () => {
     const navigate = useNavigate(); // to keep track of the history. Might use later to navigate to different pages
 
     useEffect(() => {
+        setIsWeedInfoDescriptionLoading(weedInfoDescriptionData.isLoading)
         if (weedInfoDescriptionData.isSuccess) {
             setWeedInfoDescription(weedInfoDescriptionData.data)
 
@@ -115,7 +117,7 @@ const WeedDescription = () => {
                         spacing={2}
                     >
 
-                        <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                        <Grid item xs={12} lg={drawerOpen ? 11 : 12}>
                             <MainCard>
                                 <Grid
                                     container
@@ -139,28 +141,49 @@ const WeedDescription = () => {
                                         </Box>
                                     </Grid>
                                 </Grid>
-                                <DescriptionManager Id={weedId} componentData={descriptionComponentData} isOpen={desricptionModalIsOpen} useDeleteUploadedImageMutation={useDeleteUploadedImageInWeedInfoDescriptionMutation} closeDescriptionModal={closeDescriptionModal} useUpdateInfoDescriptionMutation={useUpdateWeedInfoDescriptionMutation} useCreateInfoDescriptionMutation={useCreateWeedInfoDescriptionMutation} />
+                                <DescriptionManager
+                                    Id={weedId}
+                                    componentData={descriptionComponentData}
+                                    isOpen={desricptionModalIsOpen}
+                                    useDeleteUploadedImageMutation={useDeleteUploadedImageInWeedInfoDescriptionMutation}
+                                    closeDescriptionModal={closeDescriptionModal}
+                                    useUpdateInfoDescriptionMutation={useUpdateWeedInfoDescriptionMutation}
+                                    useCreateInfoDescriptionMutation={useCreateWeedInfoDescriptionMutation} />
                             </MainCard>
 
                         </Grid>
-                        {weedInfoDescriptionData.isLoading && weedInfoDescriptionData.status === 'fulfilled' ? <Loading /> : !weedInfoDescriptionData.isLoading && !weedInfoDescriptionData.status !== 'fulfilled' && weedInfoDescriptionData.data.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'description'} parentName={weedName.toUpperCase()} /> </Grid> : <> {weedInfoDescription.map((description) =>
-                        (
-                            <Grid key={description.id} item xs={12} lg={drawerOpen ? 10 : 12}>
-                                <Descriptor key={description.id} storedDescriptionCardData={storedDescriptionCardData} description={description} useDeleteInfoDescriptionMutation={useDeleteWeedInfoDescriptionMutation} />
+                        {isWeedInfoDescriptionLoading ?
+                            <Grid item xs={12} lg={drawerOpen ? 11 : 12}>
+                                <Loading />
                             </Grid>
+                            : weedInfoDescription.length === 0 ?
+                                <Grid item xs={12} lg={drawerOpen ? 11 : 12}><EmptySet componentName={'description'} /> </Grid>
+                                :
+                                <> {weedInfoDescription.map((description) =>
+                                (
+                                    <Grid
+                                        item
+                                        xs={12}
+                                        lg={drawerOpen ? 5 : 6}>
+                                        <Descriptor
+                                            key={description.id}
+                                            storedDescriptionCardData={storedDescriptionCardData}
+                                            description={description}
+                                            useDeleteInfoDescriptionMutation={useDeleteWeedInfoDescriptionMutation} />
+                                    </Grid>
 
-                        )
-                        )
-                        }
+                                )
+                                )
+                                }
 
-                        </>}
+                                </>}
 
 
 
                         {
-                            weedInfoDescriptionData.data.length === 0
+                            weedInfoDescription.length === 0
                                 ? '' :
-                                <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                                <Grid item xs={12} lg={drawerOpen ? 11 : 12}>
                                     {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
                                         <p>Was this information helpful? </p>
                                         <button onClick={saveUserCoordinataes}>Yes</button>
@@ -176,7 +199,7 @@ const WeedDescription = () => {
 
 
 
-                        <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
+                        <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 11 : 12}>
                             <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}
                                 <Box className="helpImprove">
                                     <h4>Help us improve</h4>

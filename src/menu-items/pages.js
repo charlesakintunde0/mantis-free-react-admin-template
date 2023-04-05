@@ -4,6 +4,7 @@ import {
     ProfileOutlined,
     MessageFilled,
     CustomerServiceFilled,
+    LogoutOutlined
 
 } from '@ant-design/icons';
 
@@ -13,6 +14,7 @@ const icons = {
     ProfileOutlined,
     MessageFilled,
     CustomerServiceFilled,
+    LogoutOutlined
 
 };
 
@@ -40,27 +42,28 @@ const pages = {
             breadcrumbs: false
         },
         {
-            id: 'login1',
+            id: 'register',
+            title: 'Register',
+            type: 'item',
+            url: '/register',
+            icon: icons.ProfileOutlined,
+            target: true
+        },
+        {
+            id: 'login',
             title: 'Login',
             type: 'item',
             url: '/login',
             icon: icons.LoginOutlined,
             target: true
         },
+
         {
-            id: 'register1',
-            title: 'Register',
+            id: 'logout',
+            title: 'Logout',
             type: 'item',
-            url: '/register',
-            icon: icons.ProfileOutlined,
-            target: true
-        },
-        {
-            id: 'register1',
-            title: 'Register',
-            type: 'item',
-            url: '/register',
-            icon: icons.ProfileOutlined,
+            url: '/logout',
+            icon: icons.LogoutOutlined,
             target: true
         },
 

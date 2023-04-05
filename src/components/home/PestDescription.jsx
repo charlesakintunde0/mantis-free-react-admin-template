@@ -15,14 +15,13 @@ import {
     Box
 } from '@mui/material';
 
-
+// react redux
+import { useSelector } from 'react-redux';
 
 
 // antd
 import {
-    Carousel,
     Button,
-    Tooltip,
 } from 'antd';
 //router
 import { useParams } from 'react-router'
@@ -30,14 +29,16 @@ import { useParams } from 'react-router'
 // react router
 import { Link, useNavigate } from 'react-router-dom';
 
+
+
 //redux
 import { setUser } from 'store/reducers/user';
-import { useDispatch, useSelector } from 'react-redux';
-import { openDescriptionModal } from 'store/reducers/descriptionModal';
+import { useDispatch, } from 'react-redux';
+import { closeDescriptionModal, openDescriptionModal, storedDescriptionCardData } from 'store/reducers/pestModal';
 
 // components
-import Descriptor from 'components/Descriptor/PestDescriptor';
-import DescriptionManager from 'components/contentManager/DescriptionManger/DescriptionManager';
+import Descriptor from 'components/Descriptor/Descriptor';
+import DescriptionManager from 'components/contentManager/DescriptionManger/GenericDescriptorManager';
 import EmptySet from 'components/EmptySet/EmptySet';
 
 // notifications
@@ -48,7 +49,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 // api
 import { useGetUserQuery } from 'api/userApi';
-import { useGetPestInfoDescriptionQuery, useCreatePestInfoDescriptionMutation } from 'api/pestApi';
+import { useGetPestInfoDescriptionQuery, useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation, useDeleteUploadedImageInPestInfoDescriptionMutation, useDeletePestInfoDescriptionMutation } from 'api/pestApi';
 import { useCreateCoordinatesMutation } from 'api/coordinates';
 import MainCard from 'components/MainCard';
 import Loading from 'components/Loading';
@@ -58,6 +59,7 @@ toast.configure()
 function PestDescription() {
     const dispatch = useDispatch();
     const anchorRef = useRef(null);
+    const { desricptionModalIsOpen, descriptionComponentData } = useSelector(state => state.weedModal);
     const [createPestInfoDescription] = useCreatePestInfoDescriptionMutation();
     const [createUserCoordinates] = useCreateCoordinatesMutation();
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
@@ -68,26 +70,21 @@ function PestDescription() {
     const map = LeafletLocation(pestId, userId);
     console.log(pestInfoDescriptionData)
     const userLocation = useGeoLocation();
-    const [loading, setLoading] = useState(true); // for populating all the states until its false
-    const [loading1, setLoading1] = useState(true);
-    const [saving, setSaving] = useState(false); //for changing the button to "saving" and disabled after clicking save
     const [show, setShow] = useState(true);
     const [pestInfoDescription, setPestInfoDescription] = useState([])
+    const [isLoading, setIsLoading] = useState(true);
+    const [isFulfilled, setIsFulfilled] = useState(false)
 
-
-
-    // const [userId, setUserId] = useState(null);
-    const [role, setRole] = useState(null);
-    const [edit, setEdit] = useState(false);
     const [informative, setinformative] = useState(false);
     const navigate = useNavigate(); // to keep track of the history. Might use later to navigate to different pages
 
 
     console.log(pestInfoDescriptionData.data)
     useEffect(() => {
+        setIsLoading(pestInfoDescriptionData.isLoading);
+        setIsFulfilled(pestInfoDescriptionData.status === 'fulfilled' ? true : false);
         if (pestInfoDescriptionData.isSuccess) {
             setPestInfoDescription(pestInfoDescriptionData.data)
-
         }
 
     }, [pestInfoDescriptionData])
@@ -97,7 +94,7 @@ function PestDescription() {
         console.log(pestId)
 
         dispatch(openDescriptionModal({
-            isOpen: true,
+            desricptionModalIsOpen: true,
             pestId: pestId
         }));
     }
@@ -124,36 +121,6 @@ function PestDescription() {
         }
     }
 
-    const getRole = async () => {
-
-        try {
-            const res = await fetch(Config.GET_USER, {
-                headers: { "Content-Type": 'application/json;charset=UTF-8' },
-                credentials: 'include',
-            });
-            const content = await res.json();
-            //console.log(content);
-            setRole(content[0].uAuthLevel);
-            // setUserId(content[0].uId);
-            if (role === 'Admin') {
-                // console.log("dhumse");
-                setEdit(true);
-                setShow(true);
-            }
-            setLoading1(false);
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    const toggle = () => {
-        console.log(role)
-        if (role === 'Admin') {
-            setShow(false);
-        }
-    }
-    console.log(edit);
-
     return (
         <>
             <div className="container">
@@ -162,7 +129,7 @@ function PestDescription() {
                     spacing={2}
                 >
 
-                    <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                    <Grid item xs={12} lg={drawerOpen ? 10 : 11}>
                         <MainCard>
                             <Grid
                                 container
@@ -186,7 +153,14 @@ function PestDescription() {
                                     </Box>
                                 </Grid>
                             </Grid>
-                            <DescriptionManager />
+                            <DescriptionManager
+                                Id={pestId}
+                                componentData={descriptionComponentData}
+                                isOpen={desricptionModalIsOpen}
+                                useDeleteUploadedImageMutation={useDeleteUploadedImageInPestInfoDescriptionMutation}
+                                closeDescriptionModal={closeDescriptionModal}
+                                useUpdateInfoDescriptionMutation={useUpdatePestInfoDescriptionMutation}
+                                useCreateInfoDescriptionMutation={useCreatePestInfoDescriptionMutation} />
                         </MainCard>
 
                     </Grid>
@@ -194,23 +168,34 @@ function PestDescription() {
 
 
 
-                    {pestInfoDescriptionData.isLoading && pestInfoDescriptionData.status === 'fulfilled' ? <Loading /> : !pestInfoDescriptionData.isLoading && !pestInfoDescriptionData.status !== 'fulfilled' && pestInfoDescriptionData.data.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'description'} parentName={pestName.toUpperCase()} /> </Grid> : <> {pestInfoDescription.map((description) =>
-                    (
-                        <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
-                            <Descriptor key={description.id} description={description} />
+                    {isLoading ?
+                        <Grid item xs={12} lg={drawerOpen ? 10 : 11}>
+                            <Loading />
                         </Grid>
+                        : pestInfoDescription.length === 0 ?
+                            <Grid item xs={12} lg={drawerOpen ? 10 : 11}>
+                                <EmptySet componentName={'description'} />
+                            </Grid> : <> {pestInfoDescription.map((description) =>
+                            (
+                                <Grid item xs={12} lg={drawerOpen ? 5 : 5.5}>
+                                    <Descriptor
+                                        key={description.id}
+                                        storedDescriptionCardData={storedDescriptionCardData}
+                                        description={description}
+                                        useDeleteInfoDescriptionMutation={useDeletePestInfoDescriptionMutation} />
+                                </Grid>
 
-                    )
-                    )
-                    }
+                            )
+                            )
+                            }
 
-                    </>}
+                            </>}
 
                     {
-                        pestInfoDescriptionData.data.length === 0
+                        pestInfoDescription.length === 0
                             ? ''
                             :
-                            <Grid item xs={12} lg={drawerOpen ? 10 : 12}>
+                            <Grid item xs={12} lg={drawerOpen ? 11 : 11}>
                                 {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
                                     <p>Was this information helpful? </p>
                                     <button onClick={saveUserCoordinataes}>Yes</button>
@@ -228,20 +213,21 @@ function PestDescription() {
 
 
 
-                    <Grid item xs={12} sm={12} md={12} lg={drawerOpen ? 10 : 12}>
-                        <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}
-                            <Box className="helpImprove">
-                                <h4>Help us improve</h4>
-                                <p>Drag the marker on the map to the location where you saw this pest</p>
+                    {pestInfoDescription.length !== 0 ?
+                        <Grid item xs={12} lg={drawerOpen ? 11 : 11}>
+                            <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}
+                                <Box className="helpImprove">
+                                    <h4>Help us improve</h4>
+                                    <p>Drag the marker on the map to the location where you saw this pest</p>
+                                </Box>
+
+
+                                <Box>
+                                    {map}
+                                </Box>
+
                             </Box>
-
-
-                            <Box>
-                                {map}
-                            </Box>
-
-                        </Box>
-                    </Grid>
+                        </Grid> : ''}
 
                 </Grid>
             </div>

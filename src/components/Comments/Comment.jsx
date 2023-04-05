@@ -7,7 +7,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Config from "./../../config.json";
 
-
+// constants
+import ADMIN from '../../Constants/userRole'
 
 // reducer
 import { useSelector } from 'react-redux';
@@ -25,10 +26,7 @@ function Comment({ userId, userAuth, userName, userEmail, FId, uName, uComment, 
     const [loading, setLoading] = useState(true);
     const [replyClick, setReplyClick] = useState(false);
     const [reply, setReply] = useState("");
-    const { user } = useSelector(state => state);
-    // const { currentLoggedInUser } = useGetUserQuery();
 
-    // console.log(currentLoggedInUser)
 
 
 
@@ -123,7 +121,7 @@ function Comment({ userId, userAuth, userName, userEmail, FId, uName, uComment, 
                         <p className="commentTime CDchild">{(new Date(uTime)).toLocaleDateString()}</p>
                         <button className="dot CDchild">·</button>
                         {userId ? <button className="commentReply CDchild" onClick={replyClickEvent}>Reply</button> : null}
-                        {userAuth == 'Admin' ? <div className="dot-delete CDchild">
+                        {userAuth == ADMIN ? <div className="dot-delete CDchild">
                             <button className="dot CDchild">·</button>
                             <button className="commentRemove CDchild" onClick={removeComment}>Delete</button>
                         </div> : null}
@@ -140,7 +138,10 @@ function Comment({ userId, userAuth, userName, userEmail, FId, uName, uComment, 
                             onChange={e => setReply(e.target.value)}
                             value={reply}
                         />
-                        <button onClick={postReply}>Reply</button>
+                        {userAuth == ADMIN ?
+                            <button onClick={postReply}>Reply</button> : ''
+                        }
+
                     </div> : null}
                 </div>
 

@@ -96,9 +96,9 @@ const Descriptor = ({ description }) => {
                 <Grid item xs={12}>
                     <Box >
                         <Carousel >
-                            {description.peiPestInfoDescriptionImages.map((img) => (<>
+                            {description.peiInfoDescriptionImages.map((img) => (<>
 
-                                <img key={img.id} style={contentStyle} src={img.peiPestDescriptionInfoImageUrl} />
+                                <img key={img.id} style={contentStyle} src={img.peiDescriptionInfoImageUrl} />
                             </>))}
 
                         </Carousel>
@@ -106,8 +106,7 @@ const Descriptor = ({ description }) => {
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Typography variant='p'>{description.peiPestInfoDescriptionContent
-                    }</Typography>
+                    <Typography variant='p'>{description.peiInfoDescriptionContent}</Typography>
                 </Grid>
             </Grid>
         </MainCard>

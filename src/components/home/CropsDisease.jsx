@@ -61,6 +61,7 @@ function CropsDisease() {
     const currentlyLoggedInUserData = useGetUserQuery();
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
     const [deleteCrop] = useDeleteCropMutation();
+    const [isCropLoading, setIsCropLoading] = useState(false)
     const allStoredCrops = useGetAllCropsQuery(null);
     const [allCrops, setAllCrop] = useState([]);
     const dispatch = useDispatch();
@@ -100,6 +101,7 @@ function CropsDisease() {
 
 
     useEffect(() => {
+        setIsCropLoading(allStoredCrops.isLoading)
         if (currentlyLoggedInUserData.data) {
             setCurentlyLoggedInUser(currentlyLoggedInUserData.data[0])
             dispatch(setUser(currentlyLoggedInUserData.data[0]));
@@ -121,10 +123,10 @@ function CropsDisease() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}>{'Select Crop'}</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-                                <Tooltip placement="bottom" title={'Add Crop'}>
-                                    <Button onClick={handleAddButtonClick} type="primary"
-                                        icon={<PlusOutlined />} />
-                                </Tooltip>
+                                <Button onClick={handleAddButtonClick} type="primary"
+                                    icon={<PlusOutlined />} >
+                                    {'Add Crop'}
+                                </Button>
                             </Box>
                         </Box>
                         <CropManager />
@@ -133,40 +135,46 @@ function CropsDisease() {
 
                 <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
                     <Grid container spacing={5}>
-                        {allStoredCrops.isLoading &&
-                            allStoredCrops.status === 'fulfilled' ? <Loading /> : !allStoredCrops.isLoading && !allStoredCrops.status !== 'fulfilled' && allCrops.length === 0 ? <Grid item xs={12} lg={drawerOpen ? 10 : 12}><EmptySet componentName={'crop'} parentName={''} /> </Grid> : <>{
-                                allCrops.map(crop => (
+                        {isCropLoading ?
+                            <Grid item xs={12} lg={drawerOpen ? 12 : 12}>
+                                <Loading />
+                            </Grid> :
+                            allCrops.length === 0 ?
 
-                                    <Grid item xs={12} sm={6} md={4}>
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                <Link to={`/diseases/${crop.id}`} key={crop.id}>
-                                                    <img
-                                                        alt="Loading Images"
-                                                        src={crop.image}
-                                                        style={contentStyle}
-                                                    />
-                                                </Link>
-                                            }
-                                            actions={[
+                                <EmptySet componentName={'crop'} parentName={''} />
+                                : <>{
+                                    allCrops.map(crop => (
 
-                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
-                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, crop.id)} />
+                                        <Grid item xs={6} sm={4} md={4} lg={3}>
+                                            <Card
+                                                hoverable
+                                                cover={
+                                                    <Link to={`/diseases/${crop.id}`} key={crop.id}>
+                                                        <img
+                                                            alt="Loading Images"
+                                                            src={crop.image}
+                                                            style={contentStyle}
+                                                        />
+                                                    </Link>
+                                                }
+                                                actions={[
 
-                                            ]}
-                                        >
-                                            <Link to={`/diseases/${crop.id}`} key={crop.id}><Typography variant={'h5'}> {crop.crop}</Typography></Link>
-                                        </Card>
+                                                    <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
+                                                    <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, crop.id)} />
+
+                                                ]}
+                                            >
+                                                <Link to={`/diseases/${crop.id}`} key={crop.id}><Typography variant={'h5'}> {crop.crop}</Typography></Link>
+                                            </Card>
 
 
-                                    </Grid>
+                                        </Grid>
 
-                                )
-                                )
-                            }
+                                    )
+                                    )
+                                }
 
-                            </>}
+                                </>}
                     </Grid>
 
                 </Grid>

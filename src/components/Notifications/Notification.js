@@ -7,17 +7,13 @@ const notificationStyle = {
     marginTop: '54px', // change this value to adjust the distance from the top
 };
 
-const closeConfirmationNotification = (deleteFunction) => {
-    deleteFunction()
-    // notification.close('deleteConfirmation');
-}
 
 export const Notification = (type, message, description) => {
     notification[type]({
         message,
         description,
         placement: 'topRight',
-        duration: 2,
+        duration: 3,
         style: notificationStyle,
     });
 };

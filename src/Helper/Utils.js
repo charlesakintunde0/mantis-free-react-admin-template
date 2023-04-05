@@ -31,3 +31,7 @@ export const getImage = async (imageUrl, imgId) => {
         return null;
     }
 };
+
+export function reloadPage() {
+    window.location.reload();
+}

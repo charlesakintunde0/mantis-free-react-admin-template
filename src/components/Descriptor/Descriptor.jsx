@@ -99,8 +99,11 @@ const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescr
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Typography variant='p'>{description.peiInfoDescriptionContent
-                    }</Typography>
+                    <Box style={{ height: '200px', overflow: 'auto' }}>
+                        <Typography variant='p'>
+                            {description.peiInfoDescriptionContent}
+                        </Typography>
+                    </Box>
                 </Grid>
             </Grid>
         </MainCard>

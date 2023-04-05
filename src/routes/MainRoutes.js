@@ -1,5 +1,11 @@
+import { Notification } from 'components/Notifications/Notification';
+import { set } from 'lodash';
+import React, { useEffect, useState, } from 'react'
+
 import { lazy } from 'react';
 
+
+import { Route, Navigate, Routes, useNavigate } from 'react-router-dom';
 
 // project import
 import Loadable from '../components/Loadable';
@@ -8,9 +14,10 @@ import MainLayout from '../layout/MainLayout';
 
 
 
+
+
+
 // render - utilities 
-const AdminDashboard = lazy(() => import('pages/admin-dashboard/index'));
-const SamplePage = lazy(() => import('pages/extra-pages/SamplePage'));
 const Login = lazy(() => import('../pages/authentication/Login'));
 const Register = lazy(() => import('../pages/authentication/Register'));
 const Home = Loadable(lazy(() => import('../components/home/home')));
@@ -24,19 +31,44 @@ const AllDiseases = Loadable(lazy(() => import('../components/home/AllDiseases')
 const CropsDisease = Loadable(lazy(() => import('../components/home/CropsDisease')));
 const Comments = Loadable(lazy(() => import('../components/Comments/Comments')));
 const ExampleComment = Loadable(lazy(() => import('../components/Comments/ExampleComment')));
+const NotFoundPage = Loadable(lazy(() => import('pages/NotFoundPage')))
 const About = Loadable(lazy(() => import('pages/About')));
 
+
+function PrivateRoute({ component: Component, ...rest }) {
+    const navigate = useNavigate();
+    const userDetails = JSON.parse(localStorage.getItem('user'));
+    const isLoggedIn = userDetails ? true : false;
+
+
+
+    if (!isLoggedIn) {
+        Notification('warning', 'You are not logged in!', 'You must be logged in to view content')
+    }
+
+
+
+    // Redirect to login page if user is not authenticated
+    useEffect(() => {
+        if (!isLoggedIn) {
+            navigate('/login');
+        }
+    }, [isLoggedIn, navigate, userDetails]);
+
+    // Render the component if user is authenticated
+    return isLoggedIn ? <Component {...rest} /> : null;
+}
 // ==============================|| MAIN ROUTING ||============================== //
 const MainRoutes = {
     path: '/',
     element: <MainLayout />,
     children: [
         {
-            path: 'home',
+            path: '/',
             element: <Home />
         },
         {
-            path: 'registration',
+            path: 'register',
             element: <Register />
         },
         {
@@ -44,63 +76,57 @@ const MainRoutes = {
             element: <Login />
         },
         {
+            path: '/about',
+            element: <About />
+        },
+
+        // Private routes that require authentication
+        {
             path: '/crops',
-            element: <Crops />
+            element: <PrivateRoute component={Crops} />
         },
         {
             path: '/diseases',
-            element: <CropsDisease />
+            element: <PrivateRoute component={CropsDisease} />
         },
         {
             path: '/diseases/:cropID',
-            element: <AllDiseases />
+            element: <PrivateRoute component={AllDiseases} />
         },
         {
-            path: 'weeds',
-            element: <Weeds />
-        },
-        {
-            path: 'about',
-            element: <About />
-        },
-        {
-            path: '/diseases',
-            element: <CropsDisease />
+            path: '/weeds',
+            element: <PrivateRoute component={Weeds} />
         },
         {
             path: '/crops/:cropID',
-            element: <AllPests />
+            element: <PrivateRoute component={AllPests} />
         },
         {
             path: '/Pest/Description/:pestName/:pestId',
-            element: <PestDescription />
+            element: <PrivateRoute component={PestDescription} />
         },
         {
             path: '/disease/description/:diseaseName/:diseaseId',
-            element: <DiseaseDescription />
+            element: <PrivateRoute component={DiseaseDescription} />
         },
         {
             path: '/weed/description/:weedName/:weedId',
-            element: <WeedDescription />
+            element: <PrivateRoute component={WeedDescription} />
         },
         {
             path: '/Comments',
-            element: <Comments />
+            element: <PrivateRoute component={Comments} />
         },
         {
             path: '/examplecomments',
-            element: <ExampleComment />
+            element: <PrivateRoute component={ExampleComment} />
         },
         {
-            path: '/samplepages',
-            element: <SamplePage />
-        },
-        {
-            path: '/dashboard',
-            element: <AdminDashboard />
+            path: '*',
+            element: <NotFoundPage />
         }
-
     ]
 };
+
 
 export default MainRoutes;

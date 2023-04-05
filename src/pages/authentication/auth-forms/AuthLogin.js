@@ -7,6 +7,9 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
 
+// utils 
+import { reloadPage } from 'Helper/Utils';
+
 // material-ui
 import {
     Button,
@@ -41,7 +44,10 @@ import { setToken } from 'store/reducers/auth';
 import { setUser } from 'store/reducers/user';
 
 // api import
-import { useUserLoginMutation } from 'api/userApi';
+import { useUserLoginMutation, useUserLogOutMutation } from 'api/userApi';
+
+// componenets
+import { Notification } from 'components/Notifications/Notification';
 
 toast.configure()
 // ============================|| FIREBASE - LOGIN ||============================ //
@@ -51,6 +57,7 @@ toast.configure()
 const AuthLogin = ({ }) => {
     const [checked, setChecked] = React.useState(false);
     const [userLogin] = useUserLoginMutation();
+    const [userLogOut] = useUserLogOutMutation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const initialValues = {
@@ -93,11 +100,19 @@ const AuthLogin = ({ }) => {
                         resetForm({ values: initialValues });
 
                         if (response.data) {
-                            dispatch(setToken(response.data.jwt));
+                            // dispatch(setToken(response.data.jwt));
                             dispatch(setUser(response.data));
                             localStorage.setItem('user', JSON.stringify(response.data));
 
-                            navigate('/');
+                            setTimeout(() => {
+                                userLogOut();
+                                localStorage.removeItem('user');
+                            }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds  
+
+
+                            Notification('success', 'Operation successful', 'Login successful');
+                            navigate('/', { replace: true }); // navigate to home page
+
                         } else {
                             setStatus({ success: false });
                             setErrors({ submit: "Your password or username is incorrect" });

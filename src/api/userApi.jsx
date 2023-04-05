@@ -6,13 +6,6 @@ export const userApi = createApi({
     reducerPath: "userApi",
     baseQuery: fetchBaseQuery({
         baseUrl: "https://localhost:44361/api/users/",
-        //     prepareHeaders: (headers, { getState }) => {
-        //         const token = getState().auth.token;
-        //         if (token) {
-        //             headers.Authorization = `Bearer ${token}`;
-        //         }
-        //         return headers;
-        //     }   //
     }),
     endpoints: (builder) => ({
         getAllUsers: builder.query({
@@ -26,6 +19,14 @@ export const userApi = createApi({
                 ...result?.map((user) => ({ type: 'User', id: user.id })),
             ],
         }),
+        userLogOut: builder.mutation({
+            query: () => ({
+                url: "logout",
+                params: {},
+                method: "GET",
+            }),
+        }),
+
         getUser: builder.query({
             query: () => ({
                 url: "getuser",
@@ -86,4 +87,4 @@ export const userApi = createApi({
 });
 
 
-export const { useDeleteUserMutation, useGetAllUsersQuery, useChangeUserRoleMutation, useUserLoginMutation, useRegisterUserMutation, useGetUserQuery } = userApi;
+export const { useUserLogOutMutation, useDeleteUserMutation, useGetAllUsersQuery, useChangeUserRoleMutation, useUserLoginMutation, useRegisterUserMutation, useGetUserQuery } = userApi;

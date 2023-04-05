@@ -1,81 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import './PestManager.css'
 
-import MainCard from 'components/MainCard'
-
+//antd
 import { Button, Modal, Upload, Input, Form } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
-import axios from 'axios';
-
-
 import { UploadOutlined } from '@ant-design/icons';
-
-
+// utils 
+import { getImage } from 'Helper/Utils';
 // api
-import { useCreatePestInfoDescriptionMutation, useUpdatePestInfoDescriptionMutation } from '../../../api/pestApi'
-
+import { useDeleteUploadedImageMutation, useCreatePestMutation, useUpdatePestMutation, } from '../../../api/pestApi'
 // react-redux
 import { useSelector, useDispatch } from 'react-redux';
-
 // reducers
 import { closePestModal } from 'store/reducers/pestModal';
+import { Notification } from 'components/Notifications/Notification';
 
 const PestManager = () => {
-    const { TextArea } = Input;
     const dispatch = useDispatch();
     const formRef = React.useRef(null);
+    const [createPest] = useCreatePestMutation();
+    const [updatePest] = useUpdatePestMutation();
+    const [deleteUploadedImage] = useDeleteUploadedImageMutation();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const [createPestInfoDescription, { isLoading }] = useCreatePestInfoDescriptionMutation();
-    const [updatePestInfoDescription] = useUpdatePestInfoDescriptionMutation();
     const { isOpen, componentData, cropId, pestId } = useSelector(state => state.pestModal);
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [defaultImages, setDefaultImages] = useState([]);
-    const [addedImages, setAddedImages] = useState([]);
 
-
-
-
-
-    // helper functions 
-
-    const getImage = async (imageUrl, imgId) => {
-        try {
-            const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/\d+/g, '');
-            const urlObject = new URL(imageUrl);
-            const ext = urlObject.pathname.split('.').pop();
-            const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
-
-            const response = await axios.get('https://localhost:44361/api/pests/getImageFile?url=' + imageUrl, { responseType: 'arraybuffer' });
-            const blob = new Blob([response.data], { type: response.headers['content-type'] });
-            const fileUid = uuidv4();
-            const file = new File([blob], `${imageName}.${ext}`, { type: `image/${format}` });
-            const thumbUrl = URL.createObjectURL(file);
-
-            return {
-                uid: fileUid,
-                originFileObj: file,
-                thumbUrl,
-                name: imageName,
-                imgId: imgId
-            };
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    };
 
 
     useEffect(() => {
         if (isOpen) {
             const fetchImages = async () => {
 
-                const img = componentData;
-                const imgId = img.pid;
-                const imageUrl = img.pUrl;
-                const images = await getImage(imageUrl, imgId);
+                const data = componentData;
+                const imgId = data.pId;
+                const imageUrl = data.image;
+                const images = await getImage(imageUrl, imgId); // util
                 return images;
 
             };
@@ -95,28 +55,26 @@ const PestManager = () => {
 
             const formData = new FormData();
 
-            console.log(values.image_upload.file.originFileObj);
+            console.log(values)
 
             formData.append('PName', values.pest_name);
             formData.append('PImageFile', values.image_upload.file.originFileObj);
             formData.append('CrId', cropId);
 
-            axios.post('https://localhost:44361/api/pests/create', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-            }).
+            createPest(formData).
                 then(() => {
                     setLoading(false);
                     setOpen(false);
                     handleCancel();
+                    Notification('success', 'Operation successful', 'Crops created successfully')
                 })
                 .catch(error => {
-                    console.log(error);
+                    Notification('error', 'Operation failed', 'Unable to creat new pest')
                 });
         }).catch(error => {
-            console.log(error);
+            Notification('error', 'Operation failed', 'Unable to creat new pest')
         });
+
     };
 
 
@@ -135,11 +93,7 @@ const PestManager = () => {
 
             });
 
-            axios.put('https://localhost:44361/api/pests/updatePest', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
-            })
+            updatePest(formData)
                 .then(() => {
                     setLoading(false);
                     setOpen(false);
@@ -158,34 +112,48 @@ const PestManager = () => {
         form.resetFields();
         setFileList([]);
     };
+
+
+
     const handleImageRemove = (file) => {
-        console.log(file);
-        const newFileList = fileList.filter((f) => f.uid !== file.uid);
+        try {
+            if (fileList.length === 1) {
+                Notification('warning', 'You cannot remove last image!', 'Click the upload button to replace it instead')
+                return false;
 
-        form.setFieldsValue({ image_upload: { fileList: newFileList } })
-        setFileList(newFileList);
+            }
 
-        axios.delete(`https://localhost:44361/api/pests/deleteUploadedImage/${file.imgId}`, {
-        })
-            .then(() => {
-                setLoading(false);
-                setOpen(false);
-                handleCancel();
-            })
-            .catch(error => {
-                console.log(error);
-            }).catch(error => {
-                console.log(error);
-            });
+            const newFileList = fileList.filter((f) => f.uid !== file.uid);
+
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+            setFileList(newFileList);
+            deleteUploadedImage(file.imgId)
+                .then(() => {
+                    setLoading(false);
+                    setOpen(false);
+                    Notification('success', 'Operation successful', 'Image deleted sucessfully');
+                })
+                .catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                }).catch(error => {
+                    Notification('error', 'Operation failed', error.message)
+                });
+
+        } catch (error) {
+            Notification('error', 'Operation failed', error.message)
+        }
     }
 
     const handleImageChange = ({ fileList }) => {
         if (fileList.length > 1) {
-            fileList.splice(-1, 1);
+            const newFileList = [fileList[fileList.length - 1]];
+            setFileList(newFileList);
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+        } else {
+            setFileList(fileList);
+            form.setFieldsValue({ image_upload: { fileList: fileList } })
         }
 
-        setFileList(fileList);
-        form.setFieldsValue({ image_upload: { fileList: fileList } })
 
     }
     return (

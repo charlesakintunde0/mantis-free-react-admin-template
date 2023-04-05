@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './CropManager.css'
 
-import MainCard from 'components/MainCard'
+import { Button, Modal, Upload, Input, Form, message } from 'antd';
 
-import { Button, Modal, Upload, Input, Form, notification } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
-import axios from 'axios';
 
 // antd
 import { UploadOutlined } from '@ant-design/icons';
@@ -13,6 +10,8 @@ import { UploadOutlined } from '@ant-design/icons';
 // componenets
 import { Notification } from 'components/Notifications/Notification';
 
+// utils
+import { getImage, handleImageChange, handleImageRemove } from 'Helper/Utils';
 
 // api
 import { useCreateCropsMutation, useUpdateCropMutation, useDeleteUploadedImageMutation } from 'api/cropApi';
@@ -23,7 +22,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { closeCropModal } from 'store/reducers/cropModal';
 
 const CropManager = () => {
-    const { TextArea } = Input;
     const dispatch = useDispatch();
     const formRef = React.useRef(null);
     const [form] = Form.useForm();
@@ -35,44 +33,6 @@ const CropManager = () => {
     const [open, setOpen] = useState(false);
     const [fileList, setFileList] = useState([]);
     const [defaultImages, setDefaultImages] = useState([]);
-    const [api, contextHolder] = notification.useNotification();
-
-    const [addedImages, setAddedImages] = useState([]);
-
-
-
-
-
-    // helper functions 
-
-    const getImage = async (imageUrl, imgId) => {
-        try {
-            const afterSlash = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-            const imageName = afterSlash.substring(0, afterSlash.lastIndexOf('.')).replace(/\d+/g, '');
-            const urlObject = new URL(imageUrl);
-            const ext = urlObject.pathname.split('.').pop();
-            const format = ext === 'png' ? 'png' : ext === 'jpg' || ext === 'jpeg' ? 'jpeg' : 'jfif';
-
-            const response = await axios.get('https://localhost:44361/api/pests/getImageFile?url=' + imageUrl, { responseType: 'arraybuffer' });
-            const blob = new Blob([response.data], { type: response.headers['content-type'] });
-            const fileUid = uuidv4();
-            const file = new File([blob], `${imageName}.${ext}`, { type: `image/${format}` });
-            const thumbUrl = URL.createObjectURL(file);
-            console.log(thumbUrl);
-            return {
-                uid: fileUid,
-                originFileObj: file,
-                thumbUrl,
-                name: imageName,
-                imgId: imgId
-            };
-
-
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    };
 
     useEffect(() => {
         if (isOpen) {
@@ -96,7 +56,7 @@ const CropManager = () => {
 
     const handleCropCardManagerSubmit = () => {
         form.validateFields().then(values => {
-            // setLoading(true);
+
 
 
             const formData = new FormData();
@@ -106,12 +66,6 @@ const CropManager = () => {
             formData.append('CName', values.crop_name);
             formData.append('CImageFile', values.image_upload.file.originFileObj);
 
-
-            // axios.post('https://localhost:44361/api/crops/Create', formData, {
-            //     headers: {
-            //         "Content-Type": "multipart/form-data"
-            //     },
-            // }).
             createCreateCrops(formData).
                 then(() => {
                     setLoading(false);
@@ -130,7 +84,6 @@ const CropManager = () => {
 
     const handleCropCardManagerEdit = () => {
         form.validateFields().then(values => {
-            // setLoading(true);
 
 
             console.log(componentData)
@@ -145,11 +98,6 @@ const CropManager = () => {
 
             });
 
-            // axios.put('https://localhost:44361/api/crops/updateCrop', formData, {
-            //     headers: {
-            //         "Content-Type": "multipart/form-data"
-            //     },
-            // })
             updateCrops(formData)
                 .then(() => {
                     setLoading(false);
@@ -171,13 +119,16 @@ const CropManager = () => {
     };
     const handleImageRemove = (file) => {
         try {
-            console.log(file);
+            if (fileList.length === 1) {
+                Notification('warning', 'You cannot remove last image!', 'Click the upload button to replace it instead')
+                return false;
+
+            }
+
             const newFileList = fileList.filter((f) => f.uid !== file.uid);
 
             form.setFieldsValue({ image_upload: { fileList: newFileList } })
             setFileList(newFileList);
-
-
             deleteUploadedImage(file.imgId)
                 .then(() => {
                     setLoading(false);
@@ -197,16 +148,20 @@ const CropManager = () => {
 
     }
 
-    const handleImageChange = ({ fileList }) => {
 
+    const handleImageChange = ({ fileList }) => {
         if (fileList.length > 1) {
-            fileList.splice(0);
+            const newFileList = [fileList[fileList.length - 1]];
+            setFileList(newFileList);
+            form.setFieldsValue({ image_upload: { fileList: newFileList } })
+        } else {
+            setFileList(fileList);
+            form.setFieldsValue({ image_upload: { fileList: fileList } })
         }
 
-        setFileList(fileList);
-        form.setFieldsValue({ image_upload: { fileList: fileList } })
 
     }
+
     return (
         <Modal
             open={isOpen}
@@ -263,11 +218,11 @@ const CropManager = () => {
                         onChange={handleImageChange}
                         limit={1}
                         accept=".jpg,.jpeg,.png"
-                        beforeUpload={false}
                         multiple={false}
                         listType="picture"
                         defaultFileList={defaultImages}
                         fileList={fileList}
+                        removeIcon={false}
                         className="upload-list-inline"
                     >
                         <Button icon={<UploadOutlined />}>Upload</Button>
