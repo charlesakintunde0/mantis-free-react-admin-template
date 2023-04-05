@@ -195,7 +195,7 @@ function PestDescription() {
                         pestInfoDescription.length === 0
                             ? ''
                             :
-                            <Grid item xs={12} lg={drawerOpen ? 11 : 11}>
+                            <Grid item xs={12} lg={drawerOpen ? 10 : 11}>
                                 {!informative ? <Box sx={{ display: 'flex', justifyContent: 'center' }} className="helpful">
                                     <p>Was this information helpful? </p>
                                     <button onClick={saveUserCoordinataes}>Yes</button>
@@ -214,7 +214,7 @@ function PestDescription() {
 
 
                     {pestInfoDescription.length !== 0 ?
-                        <Grid item xs={12} lg={drawerOpen ? 11 : 11}>
+                        <Grid item xs={12} lg={drawerOpen ? 10 : 11}>
                             <Box className="location child1"> {/* The Map DIv will be shown in the end of the description */}
                                 <Box className="helpImprove">
                                     <h4>Help us improve</h4>
