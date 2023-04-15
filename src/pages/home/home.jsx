@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from "react-router-dom";
 import './home.css'
-import Searchbar from '../SearchBar/Searchbar';
-import Footer from '../Footer/Footer';
+
+//api
 import { useGetAllPestsQuery } from 'api/pestApi';
 import { useGetAllCropsQuery } from 'api/cropApi';
 import { useGetAllWeedsQuery } from 'api/weedApi';
 import { useGetAllDiseasesQuery } from 'api/diseasesApi';
+
+import Searchbar from 'components/SearchBar/Searchbar';
 
 function Home() {
     const crops = useGetAllCropsQuery();

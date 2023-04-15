@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react'
-import LeafletLocation from '../../hooks/LeafletLocation';
 
-import useGeoLocation from '../../hooks/useGeoLocation';
 
 // material-ui
 import {
@@ -50,6 +48,11 @@ import { closeDescriptionModal, openDescriptionModal, storedDescriptionCardData 
 import { useGetDiseaseInfoDescriptionQuery, useUpdateDiseaseInfoDescriptionMutation, useCreateDiseaseInfoDescriptionMutation, useDeleteUploadedImageInDiseaseInfoDescriptionMutation } from '../../../api/diseasesApi';
 import { useCreateCoordinatesMutation } from 'api/coordinates';
 import { useDeleteDiseaseInfoDescriptionMutation } from '../../../api/diseasesApi';
+
+import LeafletLocation from 'components/hooks/LeafletLocation';
+
+
+import useGeoLocation from 'components/hooks/LeafletLocation';
 
 
 const DiseaseDescription = () => {

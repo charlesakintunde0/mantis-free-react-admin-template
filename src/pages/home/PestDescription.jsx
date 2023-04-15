@@ -1,10 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import "./PestDescription.css";
-import LeafletLocation from '../hooks/LeafletLocation';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import useGeoLocation from '../hooks/useGeoLocation';
+
+import useGeoLocation from 'components/hooks/useGeoLocation';
+
+import LeafletLocation from 'components/hooks/LeafletLocation';
+
 
 
 // material-ui

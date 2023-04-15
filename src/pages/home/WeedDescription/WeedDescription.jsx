@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import LeafletLocation from '../../hooks/LeafletLocation';
 
-import useGeoLocation from '../../hooks/useGeoLocation';
 
 // material-ui
 import {
@@ -50,7 +48,9 @@ import { closeDescriptionModal, openDescriptionModal, storedDescriptionCardData 
 import { useGetWeedInfoDescriptionQuery, useUpdateWeedInfoDescriptionMutation, useCreateWeedInfoDescriptionMutation, useDeleteUploadedImageInWeedInfoDescriptionMutation, useDeleteWeedInfoDescriptionMutation } from '../../../api/weedApi';
 import { useCreateCoordinatesMutation } from 'api/coordinates';
 
+import useGeoLocation from 'components/hooks/LeafletLocation';
 
+import LeafletLocation from 'components/hooks/LeafletLocation';
 
 
 const WeedDescription = () => {
