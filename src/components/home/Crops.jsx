@@ -23,7 +23,6 @@ import {
 // antd
 import {
     Button,
-    Tooltip,
     Card
 } from 'antd';
 
@@ -72,6 +71,14 @@ function Crops() {
     const allStoredCrops = useGetAllCropsQuery(null);
     const [allCrops, setAllCrop] = useState([]);
     const [isCropLoading, setCropLoading] = useState(false);
+    const user = JSON.parse(localStorage.getItem('user'));
+    const [role, setRole] = useState();
+
+    useEffect(() => {
+        setRole(user ? user.uRole : null)
+    }, [user])
+
+
     const dispatch = useDispatch();
 
     const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
@@ -133,11 +140,12 @@ function Crops() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}>{'Select Crop'}</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-
-                                <Button onClick={handleAddButtonClick} type="primary"
-                                    icon={<PlusOutlined />} >
-                                    {'Add Crop'}
-                                </Button>
+                                {role == userRole.ADMIN
+                                    ?
+                                    <Button onClick={handleAddButtonClick} type="primary"
+                                        icon={<PlusOutlined />} >
+                                        {'Add Crop'}
+                                    </Button> : ''}
 
                             </Box>
                         </Box>
