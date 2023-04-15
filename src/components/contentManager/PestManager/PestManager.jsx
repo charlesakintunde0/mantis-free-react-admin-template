@@ -50,9 +50,6 @@ const PestManager = () => {
 
     const handlePestCardManagerSubmit = () => {
         form.validateFields().then(values => {
-            // setLoading(true);
-
-
             const formData = new FormData();
 
             console.log(values)
@@ -81,9 +78,6 @@ const PestManager = () => {
     const handlePestCardManagerEdit = () => {
         form.validateFields().then(values => {
             // setLoading(true);
-
-
-            console.log(pestId)
             const formData = new FormData();
             formData.append('PName', values.pest_name);
             formData.append('PId', pestId);

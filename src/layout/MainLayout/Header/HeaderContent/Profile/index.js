@@ -20,11 +20,14 @@ import {
     Typography
 } from '@mui/material';
 
+// router
+import { Link } from 'react-router-dom';
+
 //api 
 import { useUserLogOutMutation } from 'api/userApi';
 
 // antd
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 // redux
 import { useNavigate } from 'react-router'
@@ -36,7 +39,6 @@ import ProfileTab from './ProfileTab';
 import SettingTab from './SettingTab';
 
 // assets
-import avatar1 from 'assets/images/users/avatar-1.png';
 import { LogoutOutlined, SettingOutlined, UserOutlined, UpOutlined } from '@ant-design/icons';
 import { Notification } from 'components/Notifications/Notification';
 
@@ -62,6 +64,13 @@ function a11yProps(index) {
     };
 }
 
+// CSS Style
+const linkStyle = {
+    color: 'inherit',  // Set color to inherit from parent element
+    textDecoration: 'none', // Remove underline
+    padding: 20,
+}
+
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 const Profile = () => {
@@ -77,28 +86,24 @@ const Profile = () => {
     } : null
     );
 
-    // const handleProfileClick = () => {
-    //     setIsIconUp(!isIconUp);
-    //     handleClose()
-    // };
-
-
-
     const handleLogout = () => {
 
         userLogOut().unwrap().then(() => {
-
-            localStorage.removeItem('user');
             Notification('success', "Operation Successful", "Logout Success");
             navigate('/login');
         }).catch((err) => {
             console.error(err);
             Notification('error', "Error Occured", err.toString());
         });
+        localStorage.removeItem('user');
 
 
 
+    }
 
+    function handleClick(event) {
+        // do something else, like navigate programmatically
+        navigate('/login');
     }
 
 
@@ -155,10 +160,31 @@ const Profile = () => {
 
 
                             </Stack>
-                            : ''}
+                            :
+                            ''
+                        }
                     </ButtonBase>
                     :
-                    ''}
+
+                    <ButtonBase
+                        sx={{
+                            p: 1,
+                            bgcolor: open ? iconBackColorOpen : 'transparent',
+                            borderRadius: 1,
+                            '&:hover': { bgcolor: 'secondary.lighter' }
+                        }}
+                        aria-label="open profile"
+                        ref={anchorRef}
+                        aria-haspopup="true"
+                        className="icon-change-button"
+                        onClick={handleClick}
+                    >
+                        <Typography variant="paragraph">
+                            <InfoCircleOutlined style={{ marginRight: '8px', color: '#f57f17' }} />
+                            {'Please sign in'}
+                        </Typography>
+                    </ButtonBase>
+            }
 
             <Popper
                 placement="bottom-end"
@@ -198,7 +224,6 @@ const Profile = () => {
                                             <Grid container justifyContent="space-between" alignItems="center">
                                                 <Grid item>
                                                     <Stack direction="row" spacing={1.25} alignItems="center">
-                                                        {/* <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} /> */}
                                                         <Stack>
                                                             <Typography variant="h6">{user.userName}</Typography>
                                                             <Typography variant="body2" color="textSecondary">

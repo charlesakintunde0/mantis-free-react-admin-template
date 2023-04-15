@@ -8,6 +8,7 @@ import { Box, Drawer, useMediaQuery } from '@mui/material';
 // project import
 import DrawerHeader from './DrawerHeader';
 import DrawerContent from './DrawerContent';
+import DrawerFooter from './DrawerFooter';
 import MiniDrawerStyled from './MiniDrawerStyled';
 import { drawerWidth } from 'config';
 
@@ -23,6 +24,7 @@ const MainDrawer = ({ open, handleDrawerToggle, window }) => {
     // header content
     const drawerContent = useMemo(() => <DrawerContent />, []);
     const drawerHeader = useMemo(() => <DrawerHeader open={open} />, [open]);
+    const drawerFooter = useMemo(() => <DrawerFooter open={open} />, [open]);
 
     return (
         <Box component="nav" sx={{ flexShrink: { md: 0 }, zIndex: 1300 }} aria-label="mailbox folders">
@@ -30,6 +32,7 @@ const MainDrawer = ({ open, handleDrawerToggle, window }) => {
                 <MiniDrawerStyled variant="permanent" open={open}>
                     {drawerHeader}
                     {drawerContent}
+                    {drawerFooter}
                 </MiniDrawerStyled>
             ) : (
                 <Drawer
@@ -51,6 +54,8 @@ const MainDrawer = ({ open, handleDrawerToggle, window }) => {
                 >
                     {open && drawerHeader}
                     {open && drawerContent}
+                    {open && drawerFooter}
+
                 </Drawer>
             )}
         </Box>

@@ -7,19 +7,26 @@ const About = () => {
     return (
         <MainCard sx={{ p: 2 }}>
             <Typography variant="h4" gutterBottom>
-                About Our Integrated Pest Management System
+                About Us
             </Typography>
             <Typography variant="subtitle1" gutterBottom>
-                Learn more about how our system can help manage pests for your business.
+                Learn more about our company and mission.
             </Typography>
             <Typography variant="body1" paragraph>
-                Our integrated pest management system is designed to provide a complete solution for businesses that need to manage pests. With our system, you can track and monitor pest activity in your facility, create customized treatment plans, and get real-time alerts when new pests are detected.
+                Here at our company, we are dedicated to providing the best possible
+                service to our customers. Our mission is to make life easier for people
+                by providing innovative solutions to everyday problems. We are always
+                looking for ways to improve our products and services, and we welcome
+                feedback from our customers.
             </Typography>
             <Typography variant="body1" paragraph>
-                Our team of experts has years of experience in pest management, and we have designed our system to be user-friendly and effective. Our system is customizable to meet the needs of your specific business, and we offer ongoing support to ensure that you are getting the most out of our system.
+                Our team is made up of talented and experienced individuals who are
+                passionate about what they do. We believe that by working together, we
+                can achieve great things and make a positive impact on the world.
             </Typography>
             <Typography variant="body1">
-                Thank you for considering our integrated pest management system. We are committed to providing the highest quality service and support to our customers, and we look forward to helping you manage pests more effectively.
+                Thank you for choosing our company. We look forward to serving you and
+                exceeding your expectations.
             </Typography>
         </MainCard>
     );

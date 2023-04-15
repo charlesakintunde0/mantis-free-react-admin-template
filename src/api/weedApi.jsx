@@ -59,7 +59,7 @@ export const weedApi = createApi({
         }),
 
 
-        /// DiseaseInfoDescription
+        /// WeedInfoDescription
         createWeedInfoDescription: builder.mutation({
             query: (formData) => {
                 return {

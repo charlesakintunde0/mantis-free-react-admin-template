@@ -4,7 +4,6 @@ import {
     ProfileOutlined,
     MessageFilled,
     CustomerServiceFilled,
-    LogoutOutlined
 
 } from '@ant-design/icons';
 
@@ -14,7 +13,6 @@ const icons = {
     ProfileOutlined,
     MessageFilled,
     CustomerServiceFilled,
-    LogoutOutlined
 
 };
 
@@ -55,15 +53,6 @@ const pages = {
             type: 'item',
             url: '/login',
             icon: icons.LoginOutlined,
-            target: true
-        },
-
-        {
-            id: 'logout',
-            title: 'Logout',
-            type: 'item',
-            url: '/logout',
-            icon: icons.LogoutOutlined,
             target: true
         },
 

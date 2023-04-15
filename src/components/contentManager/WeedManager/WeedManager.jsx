@@ -71,7 +71,7 @@ const WeedManager = () => {
                     Notification('error', 'Operation failed', 'An error occured, Unable to create crop!')
                 });
         }).catch(error => {
-            Notification('error', 'Operation failed', 'An error occured, Unable to create crop!')
+            Notification('error', 'Operation failed', 'Ensure all the text and image inputs are filled!')
         });
     };
 
@@ -93,11 +93,11 @@ const WeedManager = () => {
                     handleCancel();
                 })
                 .catch(error => {
-                    Notification('error', 'Operation failed', error)
-                    console.log(error)
+                    Notification('error', 'Operation failed', 'Ensure all the text and image inputs are filled!')
                 });
         }).catch(error => {
-            Notification('error', 'Operation failed', error)
+
+            Notification('error', 'Operation failed', 'Ensure all the text and image inputs are filled!')
             console.log(error)
         });
 
@@ -154,8 +154,8 @@ const WeedManager = () => {
             form.setFieldsValue({ image_upload: { fileList: fileList } })
         }
 
-
     }
+
 
     return (
         <Modal
@@ -198,10 +198,11 @@ const WeedManager = () => {
                         },
                     ]}
                 >
-                    <Input value={form.getFieldValue('weed_name')} onChange={(e) => form.setFieldsValue({ weed_name: e.target.value })} placeholder={'Enter Diseasee Name'} />
+                    <Input value={form.getFieldValue('weed_name')} onChange={(e) => form.setFieldsValue({ weed_name: e.target.value })} placeholder={'Enter Weed Name'} />
                 </Form.Item>
                 <Form.Item
                     name="image_upload"
+                    label="Image Upload"
                     rules={[
                         {
                             required: true,
@@ -210,7 +211,7 @@ const WeedManager = () => {
                 >
                     <Upload
                         onRemove={handleImageRemove}
-                        onChange={() => handleImageChange}
+                        onChange={handleImageChange}
                         limit={1}
                         accept=".jpg,.jpeg,.png"
                         multiple={false}

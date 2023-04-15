@@ -6,6 +6,13 @@ export const diseasesApi = createApi({
         baseUrl: "https://localhost:44361/api/diseases/"
     }),
     endpoints: (builder) => ({
+        getAllDiseases: builder.query({
+            query: () => ({
+                url: "getAll",
+                params: {},
+                method: "GET",
+            }),
+        }),
         getCropsDisease: builder.query({
             query: (id) => ({
                 url: `getDiseases/${id}`,
@@ -120,4 +127,4 @@ export const diseasesApi = createApi({
 });
 
 
-export const { useDeleteUploadedImageInDiseaseInfoDescriptionMutation, useDeleteUploadedImageMutation, useDeleteDiseaseInfoDescriptionMutation, useUpdateDiseaseInfoDescriptionMutation, useGetCropsDiseaseQuery, useCreateDiseaseMutation, useUpdateDiseaseMutation, useDeleteDiseaseMutation, useGetDiseaseInfoDescriptionQuery, useCreateDiseaseInfoDescriptionMutation } = diseasesApi;
+export const { useGetAllDiseasesQuery, useDeleteUploadedImageInDiseaseInfoDescriptionMutation, useDeleteUploadedImageMutation, useDeleteDiseaseInfoDescriptionMutation, useUpdateDiseaseInfoDescriptionMutation, useGetCropsDiseaseQuery, useCreateDiseaseMutation, useUpdateDiseaseMutation, useDeleteDiseaseMutation, useGetDiseaseInfoDescriptionQuery, useCreateDiseaseInfoDescriptionMutation } = diseasesApi;

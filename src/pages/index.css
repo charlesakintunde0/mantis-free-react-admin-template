@@ -1,0 +1,47 @@
+.root {
+    padding: 2;
+    background: linear-gradient(to right, #0077c2, #004fa2, #001e6c);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.root:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: radial-gradient(ellipse at center, #70bfff 0%, #0077c2 100%);
+    opacity: 0.7;
+    z-index: -1;
+}
+
+.title {
+    margin-bottom: 3px;
+    font-weight: bold;
+    font-size: 3rem;
+    text-shadow: 2px 2px #c51162;
+}
+
+.subtitle {
+    margin-bottom: 4px;
+    font-size: 1.5rem;
+    text-shadow: 1px 1px #c51162;
+}
+
+.body {
+    margin-bottom: 2px;
+    line-height: 1.5;
+    font-size: 1.2rem;
+    text-align: justify;
+}
+
+.icon {
+    font-size: 10rem;
+    margin-bottom: 2px;
+}
