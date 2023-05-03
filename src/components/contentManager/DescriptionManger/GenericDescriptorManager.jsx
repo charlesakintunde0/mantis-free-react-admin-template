@@ -17,7 +17,7 @@ import { getImage } from 'Helper/Utils';
 // notification
 import { Notification } from 'components/Notifications/Notification';
 
-const DescriptionManager = ({ isOpen, Id, componentData, closeDescriptionModal, useUpdateInfoDescriptionMutation, useCreateInfoDescriptionMutation, useDeleteUploadedImageMutation }) => {
+const DescriptionManager = ({ isOpen, Id, componentData, closeDescriptionModal, useUpdateInfoDescriptionMutation, useCreateInfoDescriptionMutation, useDeleteUploadedImageMutation, isEditable }) => {
     const { TextArea } = Input;
     const dispatch = useDispatch();
     const formRef = React.useRef(null);

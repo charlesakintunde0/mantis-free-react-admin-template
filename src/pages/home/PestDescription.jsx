@@ -31,7 +31,8 @@ import { useParams } from 'react-router'
 // react router
 import { Link, useNavigate } from 'react-router-dom';
 
-
+// constants
+import userRole from 'Constants/userRole';
 
 //redux
 import { setUser } from 'store/reducers/user';
@@ -60,7 +61,6 @@ toast.configure()
 
 function PestDescription() {
     const dispatch = useDispatch();
-    const user = JSON.parse(localStorage.getItem('user'));
     const { desricptionModalIsOpen, descriptionComponentData } = useSelector(state => state.weedModal); const [createUserCoordinates] = useCreateCoordinatesMutation();
     const drawerOpen = useSelector(state => state.menu.drawerOpen);
     const { pestId, pestName } = useParams(); //saves the pest ID from previous page
@@ -71,6 +71,19 @@ function PestDescription() {
     const userLocation = useGeoLocation();
     const [pestInfoDescription, setPestInfoDescription] = useState([])
     const [isLoading, setIsLoading] = useState(true);
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const [role, setRole] = useState();
+
+
+    const [isEditable, setIsEditable] = useState(false)
+
+    useEffect(() => {
+        setRole(user ? user.uRole : null)
+
+        setIsEditable(role == userRole.ADMIN ? true : false);
+    }, [user])
+
 
 
 
@@ -145,11 +158,14 @@ function PestDescription() {
                                             <Typography variant='h5'>{pestName ? pestName.toUpperCase() : "PEST NAME"}</Typography>
                                         </Box>
                                         <Box alignSelf="flex-end">
+                                            {
+                                                role === userRole.ADMIN ?
+                                                    <Button onClick={handleAddButtonClick} type="primary"
+                                                        icon={<PlusOutlined />} >
+                                                        {'Add Description'}
+                                                    </Button> : ''
+                                            }
 
-                                            <Button onClick={handleAddButtonClick} type="primary"
-                                                icon={<PlusOutlined />} >
-                                                {'Add Description'}
-                                            </Button>
 
                                         </Box>
                                     </Box>
@@ -157,6 +173,7 @@ function PestDescription() {
                             </Grid>
                             <DescriptionManager
                                 Id={pestId}
+                                isEditable={isEditable}
                                 componentData={descriptionComponentData}
                                 isOpen={desricptionModalIsOpen}
                                 useDeleteUploadedImageMutation={useDeleteUploadedImageInPestInfoDescriptionMutation}
@@ -184,6 +201,7 @@ function PestDescription() {
                                         key={description.id}
                                         storedDescriptionCardData={storedDescriptionCardData}
                                         description={description}
+                                        isEditable={isEditable}
                                         useDeleteInfoDescriptionMutation={useDeletePestInfoDescriptionMutation} />
                                 </Grid>
 
