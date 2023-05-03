@@ -69,8 +69,13 @@ function AllPests() {
     const user = JSON.parse(localStorage.getItem('user'));
     const [role, setRole] = useState();
 
+
+    const [isEditable, setIsEditable] = useState(false)
+
     useEffect(() => {
         setRole(user ? user.uRole : null)
+
+        setIsEditable(role == userRole.ADMIN ? true : false);
     }, [user])
 
 
@@ -134,7 +139,7 @@ function AllPests() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}> {cropName} PEST</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-                                {role == userRole.ADMIN
+                                {isEditable
                                     ?
                                     <Button onClick={handleAddButtonClick} type="primary"
                                         icon={<PlusOutlined />} >
@@ -176,11 +181,14 @@ function AllPests() {
                                                             />
                                                         </Link>
                                                     }
-                                                    actions={[
-                                                        <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditPest(p)} />,
-                                                        <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeletePest, p.pId)} />
+                                                    actions={
+                                                        isEditable ?
+                                                            [
+                                                                <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditPest(p)} />,
+                                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeletePest, p.pId)} />
 
-                                                    ]}
+                                                            ] : ''
+                                                    }
                                                 >
                                                     <Link to={`/Pest/Description/${p.pName}/${p.pId}`}><Typography variant={'h5'}> {p.pName}</Typography></Link>
                                                 </Card>

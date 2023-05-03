@@ -78,10 +78,14 @@ function Weeds() {
 
     const [curentlyLoggedInUser, setCurentlyLoggedInUser] = useState(null);
 
+
+    const [isEditable, setIsEditable] = useState(false)
+
     useEffect(() => {
         setRole(user ? user.uRole : null)
-    }, [user])
 
+        setIsEditable(role == userRole.ADMIN ? true : false);
+    }, [user])
 
     const handleAddButtonClick = () => {
         dispatch(openWeedModal({
@@ -98,9 +102,6 @@ function Weeds() {
 
 
     }
-
-
-
     const handleDeleteWeed = (weedId) => {
 
         deleteWeed(weedId)
@@ -111,9 +112,6 @@ function Weeds() {
             })
 
     }
-
-
-
     useEffect(() => {
         setIsWeedLoading(allStoredWeeds.isLoading)
         if (currentlyLoggedInUserData.data) {
@@ -124,8 +122,6 @@ function Weeds() {
             setAllWeed(allStoredWeeds.data)
         }
     }, [allStoredWeeds.status]);
-
-    console.log(allWeeds)
 
     return (
         <>
@@ -140,7 +136,7 @@ function Weeds() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}>{'Select Weed'}</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-                                {role == userRole.ADMIN
+                                {isEditable
                                     ?
                                     <Button onClick={handleAddButtonClick} type="primary"
                                         icon={<PlusOutlined />} >
@@ -178,12 +174,15 @@ function Weeds() {
                                                         />
                                                     </Link>
                                                 }
-                                                actions={[
+                                                actions={
+                                                    isEditable ?
+                                                        [
 
-                                                    <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditWeed(Weed)} />,
-                                                    <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteWeed, Weed.id)} />
+                                                            <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditWeed(Weed)} />,
+                                                            <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteWeed, Weed.id)} />
 
-                                                ]}
+                                                        ]
+                                                        : ''}
                                             >
                                                 <Link to={`/weed/description/${Weed.weed}/${Weed.id}`} key={Weed.id}><Typography variant={'h5'}> {Weed.weed}</Typography></Link>
                                             </Card>

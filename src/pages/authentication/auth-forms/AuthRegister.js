@@ -123,6 +123,7 @@ const AuthRegister = () => {
                                 navigate(-1); // go back to previous page
                             } else {
                                 navigate('/', { replace: true }); // navigate to home page
+                                window.location.reload()
                             }
 
                         }

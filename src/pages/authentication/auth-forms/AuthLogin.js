@@ -113,6 +113,8 @@ const AuthLogin = ({ }) => {
                             Notification('success', 'Operation successful', 'Login successful');
                             navigate('/', { replace: true }); // navigate to home page
 
+                            window.location.reload()
+
                         } else {
                             setStatus({ success: false });
                             setErrors({ submit: "Your password or username is incorrect" });

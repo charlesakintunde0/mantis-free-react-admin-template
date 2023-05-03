@@ -49,10 +49,10 @@ import { useGetDiseaseInfoDescriptionQuery, useUpdateDiseaseInfoDescriptionMutat
 import { useCreateCoordinatesMutation } from 'api/coordinates';
 import { useDeleteDiseaseInfoDescriptionMutation } from '../../../api/diseasesApi';
 
-import LeafletLocation from 'components/hooks/LeafletLocation';
+// import LeafletLocation from 'components/hooks/LeafletLocation';
 
 
-import useGeoLocation from 'components/hooks/LeafletLocation';
+// import useGeoLocation from 'components/hooks/LeafletLocation';
 
 
 const DiseaseDescription = () => {
@@ -63,18 +63,22 @@ const DiseaseDescription = () => {
   const drawerOpen = useSelector(state => state.menu.drawerOpen);
   const { diseaseId, diseaseName } = useParams(); //saves the pest ID from previous page
   const pestInfoDescriptionData = useGetDiseaseInfoDescriptionQuery(diseaseId);
-
+  const pestId = diseaseId;
   const currentlyLoggedInUser = JSON.parse(localStorage.getItem('user'));
   const userId = currentlyLoggedInUser.uId;
-  const map = LeafletLocation(diseaseId, userId);
-  const userLocation = useGeoLocation();
+  // const map = LeafletLocation(pestId, userId);
+  // const userLocation = useGeoLocation();
   const [pestInfoDescription, setPestInfoDescription] = useState([])
   const [informative, setinformative] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
   const [role, setRole] = useState();
 
+  const [isEditable, setIsEditable] = useState(false)
+
   useEffect(() => {
     setRole(user ? user.uRole : null)
+
+    setIsEditable(role == userRole.ADMIN ? true : false);
   }, [user])
 
   useEffect(() => {
@@ -101,22 +105,22 @@ const DiseaseDescription = () => {
   }, [user])
 
   const saveUserCoordinataes = (e) => {
-    e.preventDefault();
-    setinformative(true);
-    if (userLocation.loaded) {
-      createUserCoordinates(
-        JSON.stringify({
-          PId: diseaseId,
-          UId: userId,
-          CoordLat: userLocation.coordinates.lat,
-          CoordLng: userLocation.coordinates.lng
-        })
-      )
-        .then(() => {
+    // e.preventDefault();
+    // setinformative(true);
+    // if (userLocation.loaded) {
+    //   createUserCoordinates(
+    //     JSON.stringify({
+    //       PId: diseaseId,
+    //       UId: userId,
+    //       CoordLat: userLocation.coordinates.lat,
+    //       CoordLng: userLocation.coordinates.lng
+    //     })
+    //   )
+    //     .then(() => {
 
-          Notification('success', 'Operation successful', "Data saved successfully");
-        })
-    }
+    //       Notification('success', 'Operation successful', "Data saved successfully");
+    //     })
+    // }
   }
   return (
     <>
@@ -182,6 +186,7 @@ const DiseaseDescription = () => {
               (
                 <Grid key={description.id} item xs={12} lg={drawerOpen ? 5 : 5.5}>
                   <Descriptor
+                    isEditable={isEditable}
                     key={description.id}
                     storedDescriptionCardData={storedDescriptionCardData}
                     description={description}
@@ -231,7 +236,7 @@ const DiseaseDescription = () => {
 
 
               <Box>
-                {map}
+                {/* {map} */}
               </Box>
 
             </Box>

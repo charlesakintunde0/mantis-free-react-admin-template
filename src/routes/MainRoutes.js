@@ -38,20 +38,18 @@ function PrivateRoute({ component: Component, ...rest }) {
     const userDetails = JSON.parse(localStorage.getItem('user'));
     const isLoggedIn = userDetails ? true : false;
 
-
-
-    if (!isLoggedIn) {
-        Notification('warning', 'You are not logged in!', 'You must be logged in to view content')
-    }
-
-
-
     // Redirect to login page if user is not authenticated
     useEffect(() => {
         if (!isLoggedIn) {
             navigate('/login');
+            Notification('warning', 'You are not logged in!', 'You must be logged in to view content')
         }
-    }, [isLoggedIn, navigate, userDetails]);
+    }, []);
+
+    // if (!isLoggedIn) {s
+
+    // }
+
 
     // Render the component if user is authenticated
     return isLoggedIn ? <Component {...rest} /> : null;

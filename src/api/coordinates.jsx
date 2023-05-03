@@ -15,6 +15,22 @@ export const coordinatesApi = createApi({
                 method: "POST",
             }),
         }),
+        createDiseaseCoord: builder.mutation({
+            query: (coordinates) => ({
+                url: "createDiseaseCoord",
+                body: coordinates,
+                headers: { "Content-Type": 'application/json;charset=UTF-8' },
+                method: "POST",
+            }),
+        }),
+        createWeedCoord: builder.mutation({
+            query: (coordinates) => ({
+                url: "createWeedCoord",
+                body: coordinates,
+                headers: { "Content-Type": 'application/json;charset=UTF-8' },
+                method: "POST",
+            }),
+        }),
     }),
 });
 

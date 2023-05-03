@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 
 
-const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescriptionCardData }) => {
+const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescriptionCardData, isEditable }) => {
     const dispatch = useDispatch();
     const store = useSelector(state => state.descriptionModal);
 
@@ -74,15 +74,16 @@ const Descriptor = ({ description, useDeleteInfoDescriptionMutation, storedDescr
                         <Box flexGrow={1}>
                             <Typography variant='h5'>{description.descriptionTitle ? description.descriptionTitle.toUpperCase() : ''}</Typography>
                         </Box>
-                        <Box alignSelf="flex-end">
-                            <Tooltip placement="top" title={'Edit'}>
-                                <Button onClick={handleEditDescription} type="primary" ghost icon={<EditOutlined />} />
-                            </Tooltip>
+                        {isEditable ?
+                            <Box alignSelf="flex-end">
+                                <Tooltip placement="top" title={'Edit'}>
+                                    <Button onClick={handleEditDescription} type="primary" ghost icon={<EditOutlined />} />
+                                </Tooltip>
 
-                            <Tooltip placement="top" title={'Delete'}>
-                                <Button onClick={() => { handleDeleteConfirmation(handleDeleteDescription) }} type="primary" ghost danger icon={<DeleteFilled />} />
-                            </Tooltip>
-                        </Box>
+                                <Tooltip placement="top" title={'Delete'}>
+                                    <Button onClick={() => { handleDeleteConfirmation(handleDeleteDescription) }} type="primary" ghost danger icon={<DeleteFilled />} />
+                                </Tooltip>
+                            </Box> : ''}
                     </Box>
                 </Grid>
 

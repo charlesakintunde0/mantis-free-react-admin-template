@@ -28,10 +28,6 @@ const HeaderContent = () => {
 
             {!matchesXs && <Search />}
             {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
-
-            {/* {userDetails !== null ?
-                <Logout /> : ''
-            } */}
             {!matchesXs && <Profile />}
             {matchesXs && <MobileSection />}
         </>

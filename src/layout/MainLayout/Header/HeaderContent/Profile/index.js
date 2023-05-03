@@ -41,6 +41,7 @@ import SettingTab from './SettingTab';
 // assets
 import { LogoutOutlined, SettingOutlined, UserOutlined, UpOutlined } from '@ant-design/icons';
 import { Notification } from 'components/Notifications/Notification';
+import userRole from 'Constants/userRole';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -91,6 +92,7 @@ const Profile = () => {
         userLogOut().unwrap().then(() => {
             Notification('success', "Operation Successful", "Logout Success");
             navigate('/login');
+            window.location.reload();
         }).catch((err) => {
             console.error(err);
             Notification('error', "Error Occured", err.toString());
@@ -104,6 +106,7 @@ const Profile = () => {
     function handleClick(event) {
         // do something else, like navigate programmatically
         navigate('/login');
+        window.location.reload();
     }
 
 
@@ -130,6 +133,9 @@ const Profile = () => {
 
     const iconBackColorOpen = 'grey.300';
 
+
+
+    console.log(userDetails)
     return (
         <Box sx={{ flexShrink: 0, ml: 0.75 }}>
 
@@ -274,10 +280,18 @@ const Profile = () => {
                                                         />
                                                     </Tabs>
                                                 </Box>
-                                                <TabPanel value={value} index={0} dir={theme.direction}>
-                                                    <ProfileTab handlePopperClose={handleClose} handleLogout={handleLogout} />
-                                                </TabPanel>
+                                                {
+                                                    user.role === userRole.ADMIN
+                                                        ?
+                                                        <TabPanel value={value} index={0} dir={theme.direction}>
 
+                                                            <ProfileTab handlePopperClose={handleClose} handleLogout={handleLogout} />
+
+                                                        </TabPanel>
+                                                        :
+                                                        ""
+
+                                                }
                                             </>
                                         )}
                                     </MainCard>

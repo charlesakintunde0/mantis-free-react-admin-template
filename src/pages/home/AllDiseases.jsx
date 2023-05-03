@@ -66,8 +66,13 @@ function AllDiseases() {
     const user = JSON.parse(localStorage.getItem('user'));
     const [role, setRole] = useState();
 
+
+    const [isEditable, setIsEditable] = useState(false)
+
     useEffect(() => {
         setRole(user ? user.uRole : null)
+
+        setIsEditable(role == userRole.ADMIN ? true : false);
     }, [user])
 
 
@@ -130,7 +135,7 @@ function AllDiseases() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}>{'Select Disease'}</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-                                {role == userRole.ADMIN
+                                {isEditable
                                     ?
                                     <Button onClick={handleAddButtonClick} type="primary"
                                         icon={<PlusOutlined />} >
@@ -163,13 +168,15 @@ function AllDiseases() {
                                                             />
                                                         </Link>
                                                     }
-                                                    actions={[
+                                                    actions={
+                                                        isEditable ?
+                                                            [
 
-                                                        <Button
-                                                            type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(disease)} />,
-                                                        <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, disease.dId)} />
+                                                                <Button
+                                                                    type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(disease)} />,
+                                                                <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, disease.dId)} />
 
-                                                    ]}
+                                                            ] : ''}
                                                 >
                                                     <Link to={`/disease/description/${disease.dName}/${disease.dId}`} key={disease.dId}><Typography variant={'h5'}> {disease.dName}</Typography></Link>
                                                 </Card>

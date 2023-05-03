@@ -69,10 +69,13 @@ function CropsDisease() {
     const user = JSON.parse(localStorage.getItem('user'));
     const [role, setRole] = useState();
 
+    const [isEditable, setIsEditable] = useState(false)
+
     useEffect(() => {
         setRole(user ? user.uRole : null)
-    }, [user])
 
+        setIsEditable(role == userRole.ADMIN ? true : false);
+    }, [user])
 
 
     const handleAddButtonClick = () => {
@@ -129,7 +132,7 @@ function CropsDisease() {
                                 <Typography variant='h5' style={{ textTransform: 'uppercase' }}>{'Select Crop'}</Typography>
                             </Box>
                             <Box alignSelf="flex-end">
-                                {role == userRole.ADMIN
+                                {isEditable
                                     ?
                                     <Button onClick={handleAddButtonClick} type="primary"
                                         icon={<PlusOutlined />} >
@@ -167,12 +170,15 @@ function CropsDisease() {
                                                         />
                                                     </Link>
                                                 }
-                                                actions={[
+                                                actions={
+                                                    isEditable ?
+                                                        [
 
-                                                    <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
-                                                    <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, crop.id)} />
+                                                            <Button type="primary" ghost style={{ outline: 'none' }} icon={<EditOutlined />} onClick={() => handleEditCrop(crop)} />,
+                                                            <Button type="primary" danger ghost style={{ outline: 'none' }} icon={<DeleteOutlined />} onClick={() => handleDeleteWithIdConfirmation(handleDeleteCrop, crop.id)} />
 
-                                                ]}
+                                                        ] : ''
+                                                }
                                             >
                                                 <Link to={`/diseases/${crop.id}`} key={crop.id}><Typography variant={'h5'}> {crop.crop}</Typography></Link>
                                             </Card>

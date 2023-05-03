@@ -16,6 +16,9 @@ import { Button } from 'antd'
 // redux
 import { useNavigate } from 'react-router'
 
+// notifications
+import { Notification } from 'components/Notifications/Notification';
+
 // api
 import { useUserLogOutMutation, } from 'api/userApi';
 
@@ -42,38 +45,53 @@ const DrawerFooter = ({ open }) => {
     const handleLogout = () => {
 
         userLogOut().unwrap().then(() => {
-
-            Notification('success', "Operation Successful", "Logout Successful");
+            Notification('success', "Operation Successful", "Logout Success");
             navigate('/login');
+
+            // Add a delay before reloading the window
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000); // Delay in milliseconds
         }).catch((err) => {
             console.error(err);
             Notification('error', "Error Occured", err.toString());
         });
+
         localStorage.removeItem('user');
     }
-
 
 
     return (
         <DrawerFooterStyled theme={theme} open={open}>
             <Stack direction="row" spacing={1} alignItems="center">
                 {
-                    userDetails ?
-                        <AnimateButton>
+
+                    <AnimateButton
+                    >
+                        {userDetails ?
                             <Button
+                                onClick={handleLogout}
                                 style={buttonStyle}
                                 ghost
                                 type='primary'
-                                onClick={handleLogout}
                                 icon={<LogoutOutlined />}>
-                                Logout
+                                {'Logout'}
                             </Button>
+                            :
+                            // <Button
+                            //     onClick={navigate('/login')}
+                            //     style={buttonStyle}
+                            //     ghost
+                            //     type='primary'
+                            //     icon={<LoginOutlined />}>
+                            //     {'Login'}
+                            // </Button>
+                            ""}
+                    </AnimateButton>
 
-                        </AnimateButton>
-                        : ''
                 }
             </Stack>
-        </DrawerFooterStyled>
+        </DrawerFooterStyled >
     );
 };
 

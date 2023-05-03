@@ -22,6 +22,7 @@ const Logout = () => {
             localStorage.removeItem('user');
             Notification('success', "Operation Successful", "Logout Success");
             navigate('/login');
+            window.location.reload()
         }).catch((err) => {
             console.error(err);
             Notification('error', "Error Occured", err.toString());

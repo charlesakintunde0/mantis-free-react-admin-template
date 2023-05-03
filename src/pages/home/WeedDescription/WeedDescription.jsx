@@ -62,8 +62,9 @@ const WeedDescription = () => {
     const weedInfoDescriptionData = useGetWeedInfoDescriptionQuery(weedId);
     const currentlyLoggedInUser = JSON.parse(localStorage.getItem('user'));
     const userId = currentlyLoggedInUser.uId;
-    const map = LeafletLocation(weedId, userId);
-    const userLocation = useGeoLocation();
+    const pestId = weedId;
+    // const map = LeafletLocation(pestId, userId);
+    // const userLocation = useGeoLocation();
     const [weedInfoDescription, setWeedInfoDescription] = useState([]);
     const [isWeedInfoDescriptionLoading, setIsWeedInfoDescriptionLoading] = useState(false);
     const [informative, setinformative] = useState(false);
@@ -71,8 +72,12 @@ const WeedDescription = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const [role, setRole] = useState();
 
+    const [isEditable, setIsEditable] = useState(false)
+
     useEffect(() => {
         setRole(user ? user.uRole : null)
+
+        setIsEditable(role == userRole.ADMIN ? true : false);
     }, [user])
 
     useEffect(() => {
@@ -93,22 +98,22 @@ const WeedDescription = () => {
     }
 
     const saveUserCoordinataes = (e) => {
-        e.preventDefault();
-        setinformative(true);
-        if (userLocation.loaded) {
-            createUserCoordinates(
-                JSON.stringify({
-                    PId: weedId,
-                    UId: userId,
-                    CoordLat: userLocation.coordinates.lat,
-                    CoordLng: userLocation.coordinates.lng
-                })
-            )
-                .then(() => {
+        // e.preventDefault();
+        // setinformative(true);
+        // if (userLocation.loaded) {
+        //     createUserCoordinates(
+        //         JSON.stringify({
+        //             PId: weedId,
+        //             UId: userId,
+        //             CoordLat: userLocation.coordinates.lat,
+        //             CoordLng: userLocation.coordinates.lng
+        //         })
+        //     )
+        //         .then(() => {
 
-                    Notification('success', 'Operation successful', "Data saved successfully");
-                })
-        }
+        //             Notification('success', 'Operation successful', "Data saved successfully");
+        //         })
+        // }
     }
 
 
@@ -174,6 +179,7 @@ const WeedDescription = () => {
                                 xs={12}
                                 lg={drawerOpen ? 5 : 5.5}>
                                 <Descriptor
+                                    isEditable={isEditable}
                                     key={description.id}
                                     storedDescriptionCardData={storedDescriptionCardData}
                                     description={description}
@@ -219,7 +225,7 @@ const WeedDescription = () => {
 
 
                                 <Box>
-                                    {map}
+                                    {/* {map} */}
                                 </Box>
 
                             </Box>

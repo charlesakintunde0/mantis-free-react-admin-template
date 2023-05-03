@@ -74,8 +74,6 @@ function PestDescription() {
 
     const user = JSON.parse(localStorage.getItem('user'));
     const [role, setRole] = useState();
-
-
     const [isEditable, setIsEditable] = useState(false)
 
     useEffect(() => {
